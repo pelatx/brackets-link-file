@@ -1,0 +1,15 @@
+{
+    "name": "pelatx.brackets-link-file",
+    "title": "Brackets Link File",
+    "description": "Easily insert links to javascript scripts and CSS files into focused HTML document. As well as include PHP files into focused PHP documents. Just right click on the file in the project tree -> Link File, and the link with the correct relative path will be inserted into the document.",
+    "homepage": "https://github.com/pelatx/brackets-link-file",
+    "version": "1.0.0",
+    "author": "José A. Martínez <pelatx@gmail.com>",
+    "license": "MIT",
+    "keywords": [
+        "javascript", "css", "file", "link", "php"
+    ],
+    "engines": {
+        "brackets": ">=0.34.0"
+    }
+}
