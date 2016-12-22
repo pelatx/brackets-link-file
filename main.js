@@ -21,8 +21,8 @@ define(function (require, exports, module) {
         MENU_ITEM_LINK   = "Link File",
         DOC_LANGUAGES = ['html', 'php'],
         LINK_TEMPLATES   = {
-            'javascript' : "<script type='text/javascript' src='{RELPATH}'></script>",
-            'css' : "<link type='text/css' href='{RELPATH}' rel='stylesheet'>",
+            'javascript' : '<script type="text/javascript" src="{RELPATH}"></script>',
+            'css' : '<link type="text/css" href="{RELPATH}" rel="stylesheet">',
             'php' : "include('{RELPATH}');"
         };
   
