@@ -7,7 +7,11 @@
     "author": "José A. Martínez <pelatx@gmail.com>",
     "license": "MIT",
     "keywords": [
-        "javascript", "css", "file", "link", "php"
+        "javascript",
+        "css",
+        "file",
+        "link",
+        "php"
     ],
     "engines": {
         "brackets": ">=0.34.0"
