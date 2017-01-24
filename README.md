@@ -19,3 +19,9 @@ Easily insert links to javascript scripts and CSS files into focused HTML docume
 Just right click on the file in the Project tree -> Link File, and the link with the correct relative path will be inserted into the document.  
 (Note that it only works if the file is saved).
 
+## Changelog
+
+#### 1.0.1
+Fixed double quotes instead of simple in script and stylesheet tags.   
+#### 1.1.0
+Added support for image links in HTML and CSS.
