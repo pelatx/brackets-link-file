@@ -19,11 +19,15 @@ define(function (require, exports, module) {
     /* Constants */
     var COMMAND_ID  = "bracketslf.link",
         MENU_ITEM_LINK   = "Link File",
-        DOC_LANGUAGES = ['html', 'php'],
+        DOC_LANGUAGES = ['html', 'php', 'css'],
         LINK_TEMPLATES   = {
             'javascript' : '<script type="text/javascript" src="{RELPATH}"></script>',
             'css' : '<link type="text/css" href="{RELPATH}" rel="stylesheet">',
-            'php' : "include('{RELPATH}');"
+            'php' : "include('{RELPATH}');",
+            'image' : {
+                'html' : '<img src="{RELPATH}" alt="">',
+                'css' : 'url("{RELPATH}")'
+            }
         };
   
     /* Functions */
@@ -89,12 +93,18 @@ define(function (require, exports, module) {
         // Find if file language is supported
         if (fileLang in LINK_TEMPLATES) {
             // Only link php 'include()' in php documents
-            if (fileLang !== 'php' && docLang === 'php') { 
-                return null; 
+            if (fileLang !== 'php' && docLang === 'php') {
+                return null;
             } else if (fileLang === 'php' && docLang === 'html') {
                 return null;
+            } else if (fileLang !== 'image' && docLang === 'css') {
+                return null;
             } else {
-                link = LINK_TEMPLATES[fileLang].replace('{RELPATH}', relPath);
+                if (fileLang === 'image') {
+                    link = LINK_TEMPLATES[fileLang][docLang].replace('{RELPATH}', relPath);
+                } else {
+                    link = LINK_TEMPLATES[fileLang].replace('{RELPATH}', relPath);
+                }
             }
         } else {
             return null;
@@ -143,7 +153,7 @@ define(function (require, exports, module) {
             selection = editor.getSelection();
             editor.document.replaceRange(
                 link,
-                selection.start, 
+                selection.start,
                 selection.end
             );
         }
