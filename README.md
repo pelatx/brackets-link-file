@@ -29,9 +29,9 @@ Right click on a directory in the Project tree -> Link File. You will be prompte
 
 ## Changelog
 
-**v1.0.1 - ** Fixed double quotes instead of simple in script and stylesheet tags.   
-**v1.1.0 - ** Added support for image links in HTML and CSS.  
-**v1.2.0 - ** Added new functionality: automatic copy and link of files anywhere on the hard drive to the project.
+v1.0.1 - Fixed double quotes instead of simple in script and stylesheet tags.   
+v1.1.0 - Added support for image links in HTML and CSS.  
+v1.2.0 - Added new functionality: automatic copy and link of files anywhere on the hard drive to the project.
 
 ## Credits
 Folder icon from [Ionicons][ionicons].
