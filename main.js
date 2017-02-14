@@ -14,7 +14,11 @@ define(function (require, exports, module) {
         EditorManager   = brackets.getModule("editor/EditorManager"),
         LanguageManager = brackets.getModule("language/LanguageManager"),
         Menus           = brackets.getModule("command/Menus"),
-        Commands        = brackets.getModule("command/Commands");
+        Commands        = brackets.getModule("command/Commands"),
+        FileSystem      = brackets.getModule("filesystem/FileSystem"),
+        FileUtils       = brackets.getModule("file/FileUtils"),
+        File            = require("pFileUtils"),
+        OpenDialog      = require("BracketsOpenDialog");
 
     /* Constants */
     var COMMAND_ID  = "bracketslf.link",
@@ -31,8 +35,16 @@ define(function (require, exports, module) {
         };
   
     /* Functions */
+
+    /**
+     * Find the relative path between two absolute paths.
+     * @author pelatx
+     * @param   {string} filePath Target file path.
+     * @param   {string} docPath  Path of the file that is focused in the editor.
+     * @returns {string} Relative path.
+     */
     function findRelativePath(filePath, docPath) {
-        // Test if valid file and document paths
+        // Tests if valid file and document paths
         if (!filePath || !docPath) { return null; }
         // Don't link document to itself
         if (filePath === docPath) { return null; }
@@ -49,50 +61,59 @@ define(function (require, exports, module) {
         // Remove the first empty item created by split('/')    
         fileArray.shift();
         docArray.shift();
-        // Remove document name from array
+        // Removes document name from array
         docArray.pop();
         
         // Find the shortest array to iterate
         numIterations = (fileArray.length <= docArray.length) ? fileArray.length : docArray.length;
             
-        // Find the last common node 
+        // Finds the last common node
         for (i = 0; i < numIterations; i++) {
             if (fileArray[i] !== docArray[i]) {
                 break;
             }
             lastCommonNode = i;
         }
-        //Update each array with uncommon nodes only
+        //Updates each array with uncommon nodes only
         if (lastCommonNode !== null) {
             fileArray = fileArray.slice(lastCommonNode + 1);
             docArray = docArray.slice(lastCommonNode + 1);
         }
         
-        // Append needed '../'s to relative path
+        // Appends needed '../'s to relative path
         for (j = 0; j < docArray.length; j++) {
             relativePath += '../';
         }
-        // Append the rest of the relative path
+        // Appends the rest of the relative path
         for (k = 0; k < fileArray.length; k++) {
             relativePath += fileArray[k] + '/';
         }
-        // Append file name
+        // Appends file name
         relativePath += fileName;
         
         return relativePath;
     }
     
+    /**
+     * Configures and creates the tag with the relative path,
+     * depending on the file types.
+     * @author pelatx
+     * @param   {string} relPath  Relative path.
+     * @param   {string} fileLang Type/Language of the target file.
+     * @param   {string} docLang  Type/Language of the focused document.
+     * @returns {string} A tag that links the file.
+     */
     function makeLink(relPath, fileLang, docLang) {
         var link = null;
         
-        // Find lost parameters
+        // Finds lost parameters
         if (!relPath || !fileLang || !docLang) { return null; }
-        // Find if document language is supported
+        // Finds if document language is supported
         if ($.inArray(docLang, DOC_LANGUAGES) < 0) { return null; }
         
-        // Find if file language is supported
+        // Finds if file language is supported
         if (fileLang in LINK_TEMPLATES) {
-            // Only link php 'include()' in php documents
+            // Only links php 'include()' in php documents
             if (fileLang !== 'php' && docLang === 'php') {
                 return null;
             } else if (fileLang === 'php' && docLang === 'html') {
@@ -113,53 +134,110 @@ define(function (require, exports, module) {
         return link;
     }
     
-    function linkFile() {
-        var selectedFile,
-            editor,
-            fileLang = null,
-            docLang = null,
+    /**
+     * Recognizes the two different ways to use the extension
+     * and performs the necessary actions.
+     * @author pelatx
+     * @returns {object} Promise with an array of file objects.
+     */
+    function chooseFile() {
+        var files = [],
+            counter = 0,
             filePath = null,
+            fileLang = null,
+            fileName = null,
+            deferred = new $.Deferred(),
+            selectedItem = ProjectManager.getSelectedItem();
+
+        if (selectedItem) {
+            // If file, pushes full path and language object
+            // to files array and resolves.
+            if (!selectedItem.isDirectory) {
+                filePath = selectedItem.fullPath;
+                fileLang = LanguageManager.getLanguageForPath(filePath).getId();
+                files.push({
+                    path: filePath,
+                    lang: fileLang
+                });
+                deferred.resolve(files);
+            // If directory, shows files selection dialog.
+            } else {
+                OpenDialog.show().done(function (entries) {
+                    if (entries.length > 0) {
+                        // Copies every selected file to project directory
+                        // and adds a file object to files array for each.
+                        entries.forEach(function (entry) {
+                            fileName = FileUtils.getBaseName(entry);
+                            File.copy(entry, selectedItem.fullPath, fileName).done(function (newFile) {
+                                fileLang = LanguageManager.getLanguageForPath(newFile).getId();
+                                files.push({
+                                    path: newFile,
+                                    lang: fileLang
+                                });
+                                // Don't resolve until all entries are in the files array.
+                                counter++;
+                                if (counter === entries.length) {
+                                    deferred.resolve(files);
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        } else {
+            deferred.reject();
+        }
+        return deferred.promise();
+    }
+
+    /**
+     * Puts it all together and writes in fact the links in the document.
+     * @author pelatx
+     */
+    function linkFile() {
+        var editor,
+            docLang = null,
             docPath = null,
             relPath,
             link,
-            selection;
+            selection,
+            linkCounter = 0;
         
-        // Get the file item selected in project tree
-        selectedFile = ProjectManager.getSelectedItem();
-        if (selectedFile && !selectedFile.isDirectory) {
-            filePath = selectedFile.fullPath;
-            // Get the file language
-            fileLang = LanguageManager.getLanguageForPath(filePath).getId();
-        }
-        
-        // Get the file of the focused editor
+        // Gets the file of focused editor
         editor = EditorManager.getFocusedEditor();
         if (editor && !editor.document.isUntitled()) {
             docPath = editor.getFile().fullPath;
-            // Get the document language
+            // Gets the document language
             docLang = editor.getLanguageForSelection().getId();
         }
         
-        // Find the relative path
-        relPath = findRelativePath(filePath, docPath);
-        
-        // Make link with the relative path
-        link = makeLink(relPath, fileLang, docLang);
-        
-        // Write the link in the document
-        if (!link) {
-            return;
-        } else {
-            selection = editor.getSelection();
-            editor.document.replaceRange(
-                link,
-                selection.start,
-                selection.end
-            );
-        }
+        // Gets item selected in project tree or choosed from filesystem
+        chooseFile().done(function (files) {
+            if (files.length > 0) {
+                files.forEach(function (file) {
+                    // Finds the relative path
+                    relPath = findRelativePath(file.path, docPath);
+                    // Makes link with the relative path
+                    link = makeLink(relPath, file.lang, docLang);
+                    linkCounter++;
+                    if (linkCounter < files.length) {
+                        link += "\n";
+                    }
+                    // Writess the link in the document
+                    if (link !== null) {
+                        selection = editor.getSelection();
+                        editor.document.replaceRange(
+                            link,
+                            selection.start,
+                            selection.end
+                        );
+                    }
+                });
+            }
+        });
     }
     
-    /* Initialize extension */
+    /* Initializes extension */
     AppInit.appReady(function () {
         var menu;
         
