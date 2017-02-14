@@ -1,6 +1,8 @@
 # Brackets Link File
 
-Easily insert links to javascript scripts and CSS files into focused HTML document. As well as include PHP files into focused PHP documents. 
+Easily insert links to javascript scripts, CSS files and image files, into focused HTML document. As well as include PHP files into focused PHP documents. 
+
+Now with a new feature: right click on a directory in the project tree and you will be prompted with a dialog where you can select one or more files anywhere on your hard disk. These files will be automatically copied to this directory and the necessary tags will be added in the focused document.
 
 ## Install from Brackets
 
@@ -16,12 +18,24 @@ Easily insert links to javascript scripts and CSS files into focused HTML docume
 
 ## Instructions
 
-Just right click on the file in the Project tree -> Link File, and the link with the correct relative path will be inserted into the document.  
-(Note that it only works if the file is saved).
+(Note that the extension only works if the focused editor file is saved).
+#### Original usage
+
+Just right click on a file in the Project tree -> Link File, and the link with the correct relative path will be inserted into the document. Watch it in [this video][video-only-linking].  
+
+#### New feature usage
+
+Right click on a directory in the Project tree -> Link File. You will be prompted with a dialog where you can select one or more files anywhere on your hard disk. These files will be automatically copied to this directory and the necessary tags will be added in the focused document. Watch it in [this video][video-copying-and-linking].
 
 ## Changelog
 
-#### 1.0.1
-Fixed double quotes instead of simple in script and stylesheet tags.   
-#### 1.1.0
-Added support for image links in HTML and CSS.
+**v1.0.1 - ** Fixed double quotes instead of simple in script and stylesheet tags.   
+**v1.1.0 - ** Added support for image links in HTML and CSS.  
+**v1.2.0 - ** Added new functionality: automatic copy and link of files anywhere on the hard drive to the project.
+
+## Credits
+Folder icon from [Ionicons][ionicons].
+
+[video-only-linking]: https://vimeo.com/203813633
+[video-copying-and-linking]: https://vimeo.com/203813648
+[ionicons]: http://ionicons.com/
