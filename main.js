@@ -29,7 +29,7 @@ define(function (require, exports, module) {
             'css' : '<link type="text/css" href="{RELPATH}" rel="stylesheet">',
             'php' : "include('{RELPATH}');",
             'image' : {
-                'html' : '<img src="{RELPATH}" alt="">',
+                'html' : '<img src="{RELPATH}" alt="" height="" width="">',
                 'css' : 'url("{RELPATH}")'
             }
         };
@@ -106,14 +106,16 @@ define(function (require, exports, module) {
     function makeLink(relPath, fileLang, docLang) {
         var link = null;
         
-        // Finds lost parameters
+        // Finds lost parameters.
         if (!relPath || !fileLang || !docLang) { return null; }
-        // Finds if document language is supported
+        // If It is SVG file, treats it like an image.
+        if (fileLang === "svg") { fileLang = "image"; }
+        // Finds if document language is supported.
         if ($.inArray(docLang, DOC_LANGUAGES) < 0) { return null; }
         
-        // Finds if file language is supported
+        // Finds if file language is supported.
         if (fileLang in LINK_TEMPLATES) {
-            // Only links php 'include()' in php documents
+            // Only links php 'include()' in php documents.
             if (fileLang !== 'php' && docLang === 'php') {
                 return null;
             } else if (fileLang === 'php' && docLang === 'html') {
@@ -200,8 +202,7 @@ define(function (require, exports, module) {
             docPath = null,
             relPath,
             link,
-            selection,
-            linkCounter = 0;
+            selection;
         
         // Gets the file of focused editor
         editor = EditorManager.getFocusedEditor();
@@ -214,17 +215,16 @@ define(function (require, exports, module) {
         // Gets item selected in project tree or choosed from filesystem
         chooseFile().done(function (files) {
             if (files.length > 0) {
-                files.forEach(function (file) {
+                for (var i = 0; i < files.length; i++) {
                     // Finds the relative path
-                    relPath = findRelativePath(file.path, docPath);
+                    relPath = findRelativePath(files[i].path, docPath);
                     // Makes link with the relative path
-                    link = makeLink(relPath, file.lang, docLang);
-                    linkCounter++;
-                    if (linkCounter < files.length) {
-                        link += "\n";
-                    }
-                    // Writess the link in the document
-                    if (link !== null) {
+                    link = makeLink(relPath, files[i].lang, docLang);
+                    if (link) {
+                        if (i < files.length - 1) {
+                            link += "\n";
+                        }
+                        // Writes links in the document
                         selection = editor.getSelection();
                         editor.document.replaceRange(
                             link,
@@ -232,7 +232,7 @@ define(function (require, exports, module) {
                             selection.end
                         );
                     }
-                });
+                }
             }
         });
     }
