@@ -18,7 +18,11 @@ define(function (require, exports, module) {
     // Saves the last directory where files were copied.
     var prefs = PreferencesManager.getExtensionPrefs("pelatx.brackets-open-dialog");
     prefs.definePreference("lastDir", "string");
-
+    
+    /* Variables */
+    var currentDir = "", // Directory been shown.
+        dialog; // Single dialog instance.
+    
     /* Functions */
     /**
      * Evaluate which platform is running Brackets
@@ -64,7 +68,7 @@ define(function (require, exports, module) {
         // Get the platform filesystem root.
         _getPlatformRoot().done(function (fsRoot) {
             if (!dir) { // if no supplied directory ...
-                lastDir = prefs.get("lastDir"); // try to read saved last.
+                lastDir = prefs.get("lastDir"); // try to read saved last dir.
                 if (lastDir) {
                     dir = lastDir; // if exists, choose it.
                 } else {
@@ -91,8 +95,8 @@ define(function (require, exports, module) {
      * @param   {Array}  paths Array of full path strings.
      * @returns {string} HTML formated string.
      */
-    function _renderContents(paths) {
-        var name, linkColor, result = "",
+    function _renderContents(paths, dirLabel) {
+        var name, linkColor, result = "<section id='lf-list'>",
             extensionDir = FileUtils.getNativeModuleDirectoryPath(module),
             iconPath = extensionDir + "/ionicons/ionicons-folder-32x32.png";
 
@@ -102,7 +106,10 @@ define(function (require, exports, module) {
         } else {
             linkColor = "#0083e8";
         }
-
+        // Adds the current path.
+        if (dirLabel) {
+            result += "<b><span>You are into: </span><span style='color:#c52929;'>" + dirLabel + "</span></b></br></br>";
+        }
         // Adds two points link to going up in the directory tree
         result += "<span><img src='" + iconPath + "' alt='Directorty' style='width:20px;height:20px;'></span>";
         result += "<a class='bod-dir-link' href='#' data-path='dir-up' style='text-decoration: none;color:" + linkColor + ";'>";
@@ -121,24 +128,29 @@ define(function (require, exports, module) {
             }
             result += "</br>";
         });
+        result += "</section>";
         return result;
     }
 
     /**
-    * Shows open files dialog.
-    * @author pelatx
-    * @param   {string}   scrDir Folder to show first.
-    * @returns {object}   Promise with an array of selected items full path strings.
-    */
-    function show(scrDir) {
+     * Shows open files dialog.
+     * @author pelatx
+     * @param   {string}  scrDir Folder to show first.
+     * @param   {boolean} update If it is a list update only.
+     * @returns {object}  Promise with an array of selected items full path strings.
+     */
+    function show(scrDir, update) {
         var dir, i, name, path, paths = [], render, selected = [],
-            dialog, btnProceed, btnCancel, btnCheckAll, btnUncheckAll,
-            newScrDir = "", deferred = new $.Deferred();
+            btnProceed, btnCancel, btnCheckAll, btnUncheckAll,
+            btnProceedHandler, btnCancelHandler, btnCheckAllHandler, btnUncheckAllHandler,
+            deferred = new $.Deferred();
 
         // We always need a valid directory to show first.
         _setValidDir(scrDir).done(function (validDir) {
-            scrDir = validDir;
-            dir = FileSystem.getDirectoryForPath(scrDir);
+            currentDir = validDir;
+            
+            // Begins the directory scanning.
+            dir = FileSystem.getDirectoryForPath(currentDir);
             dir.getContents(function (err, entries) {
                 // Makes an array of full paths with directory entries.
                 for (i = 0; i < entries.length; i++) {
@@ -150,85 +162,89 @@ define(function (require, exports, module) {
                     }
                 }
                 // Renders full paths array.
-                render = _renderContents(paths);
-                // Show custom dialog.
-                dialog = Dialogs.showModalDialog(
-                    brackets.DIALOG_ID_SAVE_CLOSE,
-                    scrDir,
-                    render,
-                    [{
-                        className: Dialogs.DIALOG_BTN_CLASS_NORMAL,
-                        id: "bod.checkall",
-                        text: "Check All"
-                    }, {
-                        className: Dialogs.DIALOG_BTN_CLASS_NORMAL,
-                        id: "bod.uncheckall",
-                        text: "Uncheck All"
-                    }, {
-                        className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
-                        id: "bod.cancel",
-                        text: "Cancel"
-                    }, {
-                        className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
-                        id: "bod.proceed",
-                        text: "Proceed"
-                    }],
-                    false
-                );
-
-                // Buttons click handlers.
-                btnProceed = $('.dialog-button').filter('[data-button-id="bod.proceed"]');
-                btnProceed.click(function () {
-                    $("input:checkbox[name=bod-file-checkbox]:checked").each(function () {
-                        selected.push($(this).data('path'));
+                render = _renderContents(paths, currentDir);
+                // If it is a new instance, show the custom dialog
+                // and assigns button handlers.
+                if (!update) {
+                    dialog = Dialogs.showModalDialog(
+                        brackets.DIALOG_ID_SAVE_CLOSE,
+                        "Add files to project",
+                        render,
+                        [{
+                            className: Dialogs.DIALOG_BTN_CLASS_NORMAL,
+                            id: "bod.checkall",
+                            text: "Check All"
+                        }, {
+                            className: Dialogs.DIALOG_BTN_CLASS_NORMAL,
+                            id: "bod.uncheckall",
+                            text: "Uncheck All"
+                        }, {
+                            className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
+                            id: "bod.cancel",
+                            text: "Cancel"
+                        }, {
+                            className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
+                            id: "bod.proceed",
+                            text: "Proceed"
+                        }],
+                        false
+                    );
+                    
+                   
+                    // Buttons click handlers.
+                    btnProceed = $('.dialog-button').filter('[data-button-id="bod.proceed"]');
+                    btnProceed.click(function () {
+                        $("input:checkbox[name=bod-file-checkbox]:checked").each(function () {
+                            selected.push($(this).data('path'));
+                        });
+                        dialog.close();
+                        // if there are selected files, saves directory on preferences
+                        // and return them in an array.
+                        if (selected.length > 0) {
+                            prefs.set("lastDir", currentDir);
+                            prefs.save();
+                            deferred.resolve(selected);
+                        } else {
+                            deferred.reject();
+                        }
                     });
-                    dialog.close();
-                    // if there are selected files, saves directory on preferences
-                    // and return them in an array.
-                    if (selected.length > 0) {
-                        prefs.set("lastDir", scrDir);
-                        prefs.save();
-                        deferred.resolve(selected);
-                    } else {
+                    btnCancel = $('.dialog-button').filter('[data-button-id="bod.cancel"]');
+                    btnCancel.click(function () {
+                        dialog.close();
                         deferred.reject();
-                    }
-                });
+                    });
+                    btnCheckAll = $('.dialog-button').filter('[data-button-id="bod.checkall"]');
+                    btnCheckAll.click(function () {
+                        $("input:checkbox[name=bod-file-checkbox]").prop('checked', true);
+                    });
+                    btnUncheckAll = $('.dialog-button').filter('[data-button-id="bod.uncheckall"]');
+                    btnUncheckAll.click(function () {
+                        $("input:checkbox[name=bod-file-checkbox]").prop('checked', false);
+                    });
+                // If it is an update of the existing dialog, update list only.
+                } else {
+                    $("#lf-list").empty();
+                    $("#lf-list").append(render);
+                }
 
-                btnCancel = $('.dialog-button').filter('[data-button-id="bod.cancel"]');
-                btnCancel.click(function () {
-                    dialog.close();
-                    deferred.reject();
-                });
-
-                btnCheckAll = $('.dialog-button').filter('[data-button-id="bod.checkall"]');
-                btnCheckAll.click(function () {
-                    $("input:checkbox[name=bod-file-checkbox]").prop('checked', true);
-                });
-
-                btnUncheckAll = $('.dialog-button').filter('[data-button-id="bod.uncheckall"]');
-                btnUncheckAll.click(function () {
-                    $("input:checkbox[name=bod-file-checkbox]").prop('checked', false);
-                });
                 // If a directory item is clicked ...
                 $(".bod-dir-link").click(function () {
-                    dialog.close();
+                    //dialog.close();
                     dir = $(this).data('path');
                     // and it is '..', goes one directory up.
                     if (dir === "dir-up") {
-                        scrDir = scrDir.split("/");
-                        scrDir.pop();
-                        if (scrDir.length > 1) {
-                            scrDir.pop();
+                        currentDir = currentDir.split("/");
+                        currentDir.pop();
+                        if (currentDir.length > 1) {
+                            currentDir.pop();
                         }
-                        newScrDir += scrDir.join("/") + "/";
+                        currentDir = currentDir.join("/") + "/";
                     // if normal directory item, uses it.
                     } else {
-                        newScrDir = dir;
+                        currentDir = dir;
                     }
-                    // Show a new dialog with the selected directory.
-                    show(newScrDir).done(function (sel) {
-                        deferred.resolve(sel);
-                    });
+                    // Updates dialog with the selected directory (update flag switched on).
+                    show(currentDir, true);
                 });
             });
         });
