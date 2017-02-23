@@ -17,8 +17,8 @@ define(function (require, exports, module) {
         Commands        = brackets.getModule("command/Commands"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         FileUtils       = brackets.getModule("file/FileUtils"),
-        File            = require("pFileUtils"),
-        OpenDialog      = require("BracketsOpenDialog");
+        File            = require("src/pFileUtils"),
+        Dialog          = require("src/pFSD/pFileSelectionDialog");
 
     /* Constants */
     var COMMAND_ID  = "bracketslf.link",
@@ -164,7 +164,7 @@ define(function (require, exports, module) {
                 deferred.resolve(files);
             // If directory, shows files selection dialog.
             } else {
-                OpenDialog.show().done(function (entries) {
+                Dialog.show("Add files to project").done(function (entries) {
                     if (entries.length > 0) {
                         // Copies every selected file to project directory
                         // and adds a file object to files array for each.
