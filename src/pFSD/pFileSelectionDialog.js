@@ -22,9 +22,51 @@ define(function (require, exports, module) {
 
     /* Variables */
     var currentDir = "", // Directory been shown.
-        dialog; // Single dialog instance.
+        dialog, // Single dialog instance.
+        platform, // platform identifier.
+        winVolumes = []; // array of volumes in the Windows filesystem.
 
     /* Functions */
+
+    /**
+     * Finds platform that Brackets is running on.
+     * If Windows, finds available volumes (C:, D:, ...).
+     * @private
+     * @author pelatx
+     * @returns {object} Promise.
+     */
+    function _setPlatform() {
+        var deferred = new $.Deferred();
+        if (!platform) {
+            domain.exec("getPlatform").done(function (p) {
+                platform = p;
+                if (platform === "win32") {
+                    domain.exec("getWinVolumes");
+                    domain.on("error", function () {
+                        winVolumes.push("C:");
+                        deferred.resolve();
+                    });
+                    domain.on("out", function (event, data) {
+                        var volumes = data.match(/[A-Z]:/g);
+                        if (volumes.length === 0) {
+                            winVolumes.push("C:");
+                            deferred.resolve();
+                        } else {
+                            winVolumes = volumes;
+                            deferred.resolve();
+                        }
+                    });
+                } else {
+                    deferred.resolve();
+                }
+            }).fail(function () {
+                deferred.reject();
+            });
+        } else {
+            deferred.resolve();
+        }
+        return deferred.promise();
+    }
 
     /**
      * Sets a valid directory to show first.
@@ -35,10 +77,11 @@ define(function (require, exports, module) {
      */
     function _setValidDir(dir) {
         var fsRoot, lastDir, deferred = new $.Deferred();
-        // Get the platform filesystem root.
-        domain.exec("getPlatform").done(function (platform) {
+
+        // Set platform filesystem root and Windows volumes if necessary.
+        _setPlatform().done(function () {
             if (platform === "win32") {
-                fsRoot = "C:/";
+                fsRoot = winVolumes[0] + "/";
             } else {
                 fsRoot = "/";
             }
@@ -64,27 +107,86 @@ define(function (require, exports, module) {
         return deferred.promise();
     }
 
+    /**
+     * Renders the current volume root button with a dropdown menu,
+     * where user can change the Windows volume to be shown.
+     * @private
+     * @author pelatx
+     * @param   {string}  current       Path volume.
+     * @param   {boolean} highlightened True if volume root contents are been shown.
+     * @returns {string}  HTML output.
+     */
+    function _renderWinVolumesMenu(current, highlightened) {
+        var highlight = '', menu = '';
+
+        if (highlightened === true) {
+            highlight += ' style="background-color:#016dc4;color:white"';
+        }
+
+        menu += '<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"';
+        menu += highlight + '>';
+        menu += current;
+        menu += '<span class="caret"></span></button><ul class="dropdown-menu">';
+        for (var i = 0; i < winVolumes.length; i++) {
+            menu += '<li><a class="pfsd-dir-link" href="#" data-path="' + winVolumes[i] + '/">' + winVolumes[i] + '</a></li>';
+        }
+        menu += '</ul>';
+        return menu;
+    }
+
+    /**
+     * Renders the filesystem root button in Unix like OS.
+     * @private
+     * @author pelatx
+     * @param   {boolean} highlightened True if root contents are been shown.
+     * @returns {string}  HTML output.
+     */
+    function _renderUnixRootButton(highlightened) {
+        var highlight = '', button = '';
+        if (highlightened === true) {
+            highlight += ' style="background-color:#016dc4;color:white"';
+        }
+        button += '<a id="pfsd-unix-root-button" class="btn pfsd-dir-link" href="#" role="button" data-path="/"';
+        button += highlight;
+        button += '>/</a>';
+        return button;
+    }
+
+    /**
+     * Renders the directory navigation bar.
+     * @private
+     * @author pelatx
+     * @param   {string} dir Directory path to be shown.
+     * @returns {string} HTML output.
+     */
     function _renderDirNavbar(dir) {
-        var navbar = "", dirChain = [], root, rootLabel, label = "";
+        var i, navbar = "", dirChain = [], root, currentPath,
+            hightlight = ' style="background-color:#016dc4;color:white"',
+            hightlightFlag;
 
         dir = dir.slice(0, -1);
         dirChain = dir.split("/");
         root = dirChain.shift();
-        if (root) {
-            rootLabel = root;
-        } else {
-            rootLabel = "/";
-        }
-        if (dirChain.length > 0) {
-            label += " > ";
-        }
-        label += dirChain.join(" > ");
+        hightlightFlag = (dirChain.length === 0) ? true : false;
 
-        navbar += "<a class='btn pfsd-dir-link' href='#' role='button' data-path='";
-        navbar += root + "/";
-        navbar += "'>" + rootLabel + "</a><b><span style='color:#c52929;'>";
-        navbar += label;
-        navbar += "</span></b></br></br>";
+        navbar += '<div class="btn-group">';
+        if (root) {
+            currentPath = root + "/";
+            navbar += _renderWinVolumesMenu(root, hightlightFlag);
+        } else {
+            currentPath = "/";
+            navbar += _renderUnixRootButton(hightlightFlag);
+        }
+        for (i = 0; i < dirChain.length; i++) {
+            currentPath += dirChain[i] + "/";
+            navbar += '<a class="btn pfsd-dir-link" href="#" role="button" data-path="';
+            navbar += currentPath + '"';
+            if (i === dirChain.length - 1) {
+                navbar += hightlight;
+            }
+            navbar += '>' + dirChain[i] + '</a>';
+        }
+        navbar += '</div></br></br>';
 
         return navbar;
     }
