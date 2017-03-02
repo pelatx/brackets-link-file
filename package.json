@@ -1,7 +1,7 @@
 {
     "name": "pelatx.brackets-link-file",
     "title": "Brackets Link File",
-    "description": "Easily insert links to javascript scripts, CSS and image files, into focused HTML document. As well as include PHP files into PHP documents. New feature: right click on a directory in the project tree and you can select one or more supported files anywhere on your hard disk. These files will be automatically copied in this directory and linked in the focused document.",
+    "description": "Easily insert links to javascript, CSS and image files, into focused HTML document. As well as include PHP files into PHP documents. New feature: right click on a directory in the project tree and you can select one or more files anywhere on your mounted volumes. These files will be automatically copied in this directory and linked in the focused document.",
     "homepage": "https://github.com/pelatx/brackets-link-file",
     "version": "1.2.0",
     "author": "José A. Martínez <pelatx@gmail.com>",
