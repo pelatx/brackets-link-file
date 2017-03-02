@@ -2,7 +2,7 @@
 
 Easily insert links to javascript scripts, CSS files and image files, into focused HTML document. As well as include PHP files into focused PHP documents. 
 
-Now with a new feature: right click on a directory in the project tree and you will be prompted with a dialog where you can select one or more files anywhere on your hard disk. These files will be automatically copied to this directory and the necessary tags will be added in the focused document.
+Now with a new feature: right click on a directory in the project tree and you will be prompted with a dialog where you can select one or more files anywhere on your mounted volumes. These files will be automatically copied to this directory and the necessary tags will be added in the focused document.
 
 ## Install from Brackets
 
@@ -31,7 +31,10 @@ Right click on a directory in the Project tree -> Link File. You will be prompte
 
 v1.0.1 - Fixed double quotes instead of simple in script and stylesheet tags.   
 v1.1.0 - Added support for image links in HTML and CSS.  
-v1.2.0 - Added new functionality: automatic copy and link of files anywhere on any mounted volume to the project.
+v1.2.0 - Changes:
+- New operating mode: automatic copy and link of files anywhere on any mounted volume to the project.
+- Added height and width to image tag.
+- Added support for SVG images.
 
 ## Credits
 Folder icon from [Ionicons][ionicons].
