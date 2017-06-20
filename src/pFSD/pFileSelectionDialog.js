@@ -11,8 +11,8 @@ define(function (require, exports, module) {
         FileUtils           = brackets.getModule("file/FileUtils"),
         ExtensionUtils      = brackets.getModule("utils/ExtensionUtils"),
         PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
-        NodeDomain          = brackets.getModule("utils/NodeDomain"),
-        DropdownButton      = brackets.getModule("widgets/DropdownButton");
+        LanguageManager     = brackets.getModule("language/LanguageManager"),
+        NodeDomain          = brackets.getModule("utils/NodeDomain");
 
     // Initialize the Node domain.
     var domain = new NodeDomain("pelatxFSD", ExtensionUtils.getModulePath(module, "pFSDDomain"));
@@ -223,7 +223,7 @@ define(function (require, exports, module) {
             name = FileUtils.getBaseName(path);
             if (path.substr(-1) !== "/") {
                 result += "<input type='checkbox' name='pfsd-file-checkbox' value='" + name + "' data-path='" + path + "'> ";
-                result += StringUtils.breakableUrl(name);
+                result += "<span" + _setImageClass(path) + ">" + StringUtils.breakableUrl(name) + "</span>";
             } else {
                 result += "<span><img src='" + iconPath + "' alt='Directorty' style='width:20px;height:20px;'></span>";
                 result += "<a class='pfsd-dir-link' href='#' data-path='" + path + "' style='text-decoration: none;color:" + linkColor + ";'>";
@@ -233,6 +233,23 @@ define(function (require, exports, module) {
         });
         result += "</section>";
         return result;
+    }
+
+    function _setImageClass(path) {
+        var html = "";
+        var lang = LanguageManager.getLanguageForPath(path).getId();
+        if (lang === "image" || lang === "svg") {
+            //html = ' data-toggle="popover" data-html="true" title=\'<img src="' + path + '">\' data-content=\'<img src="' + path + '">\' data-trigger="hover" data-placement="top"';
+            html = " class='image' data-path='" + path + "'";
+        }
+        return html;
+    }
+
+    function inViewport($el) {
+        var elH = $el.outerHeight(),
+            H   = $(window).height(),
+            r   = $el[0].getBoundingClientRect(), t=r.top, b=r.bottom;
+        return Math.max(0, t>0? Math.min(elH, H-t) : (b<H?b:H));
     }
 
     /**
@@ -327,7 +344,7 @@ define(function (require, exports, module) {
                     btnUncheckAll.click(function () {
                         $("input:checkbox[name=pfsd-file-checkbox]").prop('checked', false);
                     });
-                // If it is an update of the existing dialog, update list only.
+                    // If it is an update of the existing dialog, update list only.
                 } else {
                     $("#pfsd-list").empty();
                     $("#pfsd-list").append(render);
@@ -345,12 +362,57 @@ define(function (require, exports, module) {
                             currentDir.pop();
                         }
                         currentDir = currentDir.join("/") + "/";
-                    // if normal directory item, uses it.
+                        // if normal directory item, uses it.
                     } else {
                         currentDir = dir;
                     }
                     // Updates dialog with the selected directory (update flag switched on).
                     show("", currentDir, true);
+                });
+                // Enable image previews
+                $(".image").each(function (i) {
+                    var path = $(this).data("path");
+                    var name = FileUtils.getBaseName(path);
+                    var id = name.replace(/\s/g, "").replace(/\./g, "").replace(/\:/g, "");
+                    var fullId = "#" + id;
+                    var bgColor = $(".modal-body").css("background-color");
+                    var previewHtml = "<div id='" + id + "' style='position:absolute;z-index:1055;border:2px solid black;border-radius:5px;background-color:#252121;height:158px;'><img src='file://" + path + "' style='height:150px;margin-top:4px;margin-left:4px;margin-right:4px;opacity:1;'></div>";
+
+                    $(this).hover(
+                        function (ev) {
+                            var $modal = $(".modal-body");
+                            var modalRect = $modal[0].getBoundingClientRect();
+                            var modalTop = modalRect.top;
+                            var modalBottom = modalRect.bottom;
+                            var modalLeft = modalRect.left;
+                            var modalRight = modalRect.right;
+
+                            $modal.append(previewHtml);
+                            var $preview = $(fullId);
+
+                            var $item = $('[data-path="' + path + '"]');
+                            var itemTop = $item.offset().top;
+
+                            var imageTop;
+                            if (itemTop - modalTop > 170) {
+                                imageTop = ev.offsetY - 160;
+                            } else {
+                                imageTop = ev.offsetY + 30;
+                            }
+
+                            var imageLeft = ((modalRight - modalLeft) / 2) - 100;
+
+                            $preview.css({
+                                "left": imageLeft + "px",
+                                "top": imageTop + "px"
+                            });
+                            $item.css("background-color", "#9a823b");
+                        },
+                        function () {
+                            $(fullId).remove();
+                            $('[data-path="' + path + '"]').css("background-color", bgColor);
+                        }
+                    );
                 });
             });
         });
