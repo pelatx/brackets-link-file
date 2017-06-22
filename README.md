@@ -1,8 +1,6 @@
 # Brackets Link File
 
-Easily insert links to javascript scripts, CSS files and image files, into focused HTML document. As well as include PHP files into focused PHP documents. 
-
-Now with a new feature: right click on a directory in the project tree and you will be prompted with a dialog where you can select one or more files anywhere on your mounted volumes. These files will be automatically copied to this directory and the necessary tags will be added in the focused document.
+Easily link your files (PHP, JavaScript, CSS, images) into the focused document (HTML, PHP, CSS). You can copy several files in one time to your project folders and get them tagged automatically in the current document. 
 
 ## Install from Brackets
 
@@ -16,25 +14,45 @@ Now with a new feature: right click on a directory in the project tree and you w
 2. Copy it in Brackets' `/extensions/user` folder by selecting `Help > Show Extension Folder` in the menu. 
 3. Reload Brackets.
 
-## Instructions
+## Usage
 
 (Note that the extension only works if the focused editor file is saved).
-#### Original usage
+#### Files already in the project tree
 
-Just right click on a file in the Project tree -> Link File, and the link with the correct relative path will be inserted into the document. Watch it in [this video][video-only-linking].  
+Just right click on a file in the Project tree -> Link File, and the link with the correct relative path will be inserted into the document.  
 
-#### New feature usage
+Watch it in [this video][video-only-linking].  
 
-Right click on a directory in the Project tree -> Link File. You will be prompted with a dialog where you can select one or more files anywhere on your hard disk. These files will be automatically copied to this directory and the necessary tags will be added in the focused document. Watch it in [this video][video-copying-and-linking].
+#### Selecting several files anywhere
+
+Right click on the destination directory in the Project tree -> Link File. You will be prompted with a dialog where you can select one or more files anywhere on your hard disk or any other volume. These files will be automatically copied to this directory and the correct tags will be added in the focused document. 
+
+The custom file selection dialog is also capable of displaying preview thumbnails of image files.
+
+Watch it in [this video][video-copying-and-linking].
+
+## Features
+
+### Supported file types
+
+- PHP files on PHP documents.
+- JavaScript files on HTML documents.
+- CSS files on HTML documents.
+- Image files on HTML and CSS documents.
 
 ## Changelog
 
 v1.0.1 - Fixed double quotes instead of simple in script and stylesheet tags.   
 v1.1.0 - Added support for image links in HTML and CSS.  
 v1.2.0 - Changes:
-- New operating mode: automatic copy and link of files anywhere on any mounted volume to the project.
+- Automatic copy and link of files anywhere on any mounted volume to the project.
 - Added height and width to image tag.
-- Added support for SVG images.
+- Added support for SVG images.  
+
+v1.3.0 - Changes:
+- Image previews in the file selection dialog.
+- Fixed problems with paths containing single quotes.
+- Some minor fixes.
 
 ## Credits
 Folder icon from [Ionicons][ionicons].
