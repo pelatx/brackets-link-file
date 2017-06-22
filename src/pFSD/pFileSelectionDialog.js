@@ -254,7 +254,7 @@ define(function (require, exports, module) {
             var name = FileUtils.getBaseName(path);
             var previewId = name.replace(/[ .,:&%$#@]/g, "");
             var bgColor = $(".modal-body").css("background-color");
-            var previewHtml = "<div id=\"" + previewId + "\" style=\"position:absolute;z-index:1055;border:2px solid black;border-radius:5px;background-color:#252121;height:158px;\"><img src=\"file://" + path + "\" style=\"height:150px;margin-top:4px;margin-left:4px;margin-right:4px;opacity:1;\"></div>";
+            var previewHtml = "<div id=\"" + previewId + "\" style=\"position:absolute;z-index:1055;border:2px solid black;border-radius:5px;background-color:#252121;height:158px;opacity:1;\"><img src=\"file://" + path + "\" style=\"height:150px;margin-top:4px;margin-left:4px;margin-right:4px;\"></div>";
 
             $(this).hover(
                 function (ev) {
