@@ -196,7 +196,7 @@ define(function (require, exports, module) {
         var html = "";
         var lang = LanguageManager.getLanguageForPath(path).getId();
         if (lang === "image" || lang === "svg") {
-            html = " class='image' data-path='" + path + "'";
+            html = " class=\"image\" data-path=\"" + path + "\"";
         }
         return html;
     }
@@ -208,7 +208,7 @@ define(function (require, exports, module) {
      * @returns {string} HTML formated string.
      */
     function _renderContents(paths, dir) {
-        var name, linkColor, result = "<section id='pfsd-list'>",
+        var name, linkColor, result = "<section id=\"pfsd-list\">",
             extensionDir = FileUtils.getNativeModuleDirectoryPath(module),
             iconPath = extensionDir + "/ionicons/ionicons-folder-32x32.png";
 
@@ -223,19 +223,19 @@ define(function (require, exports, module) {
             result += _renderDirNavbar(dir);
         }
         // Adds two points link to going up in the directory tree
-        result += "<span><img src='" + iconPath + "' alt='Directorty' style='width:20px;height:20px;'></span>";
-        result += "<a class='pfsd-dir-link' href='#' data-path='dir-up' style='text-decoration: none;color:" + linkColor + ";'>";
+        result += "<span><img src=\"" + iconPath + "\" alt=\"Directorty\" style=\"width:20px;height:20px;\"></span>";
+        result += "<a class=\"pfsd-dir-link\" href=\"#\" data-path=\"dir-up\" style=\"text-decoration:none;color:" + linkColor + ";\">";
         result += StringUtils.breakableUrl("..") + "</a></br>";
 
         // Creates the list of items
         paths.forEach(function (path) {
             name = FileUtils.getBaseName(path);
             if (path.substr(-1) !== "/") {
-                result += "<input type='checkbox' name='pfsd-file-checkbox' value='" + name + "' data-path='" + path + "'> ";
+                result += "<input type=\"checkbox\" name=\"pfsd-file-checkbox\" value=\"" + name + "\" data-path=\"" + path + "\"> ";
                 result += "<span" + _setAsImage(path) + ">" + StringUtils.breakableUrl(name) + "</span>";
             } else {
-                result += "<span><img src='" + iconPath + "' alt='Directorty' style='width:20px;height:20px;'></span>";
-                result += "<a class='pfsd-dir-link' href='#' data-path='" + path + "' style='text-decoration: none;color:" + linkColor + ";'>";
+                result += "<span><img src=\"" + iconPath + "\" alt=\"Directorty\" style=\"width:20px;height:20px;\"></span>";
+                result += "<a class=\"pfsd-dir-link\" href=\"#\" data-path=\"" + path + "\" style=\"text-decoration: none;color:" + linkColor + ";\">";
                 result += StringUtils.breakableUrl(name) + "</a>";
             }
             result += "</br>";
@@ -254,7 +254,7 @@ define(function (require, exports, module) {
             var name = FileUtils.getBaseName(path);
             var previewId = name.replace(/[ .,:&%$#@]/g, "");
             var bgColor = $(".modal-body").css("background-color");
-            var previewHtml = "<div id='" + previewId + "' style='position:absolute;z-index:1055;border:2px solid black;border-radius:5px;background-color:#252121;height:158px;'><img src='file://" + path + "' style='height:150px;margin-top:4px;margin-left:4px;margin-right:4px;opacity:1;'></div>";
+            var previewHtml = "<div id=\"" + previewId + "\" style=\"position:absolute;z-index:1055;border:2px solid black;border-radius:5px;background-color:#252121;height:158px;\"><img src=\"file://" + path + "\" style=\"height:150px;margin-top:4px;margin-left:4px;margin-right:4px;opacity:1;\"></div>";
 
             $(this).hover(
                 function (ev) {
