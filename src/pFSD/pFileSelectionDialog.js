@@ -32,7 +32,6 @@ define(function (require, exports, module) {
      * Finds platform that Brackets is running on.
      * If Windows, finds available volumes (C:, D:, ...).
      * @private
-     * @author pelatx
      * @returns {object} Promise.
      */
     function _setPlatform() {
@@ -71,7 +70,6 @@ define(function (require, exports, module) {
     /**
      * Sets a valid directory to show first.
      * @private
-     * @author pelatx
      * @param   {string} dir A user supplied directory.
      * @returns {object} Promise with a valid directory string.
      */
@@ -111,7 +109,6 @@ define(function (require, exports, module) {
      * Renders the current volume root button with a dropdown menu,
      * where user can change the Windows volume to be shown.
      * @private
-     * @author pelatx
      * @param   {string}  current       Path volume.
      * @param   {boolean} highlightened True if volume root contents are been shown.
      * @returns {string}  HTML output.
@@ -137,7 +134,6 @@ define(function (require, exports, module) {
     /**
      * Renders the filesystem root button in Unix like OS.
      * @private
-     * @author pelatx
      * @param   {boolean} highlightened True if root contents are been shown.
      * @returns {string}  HTML output.
      */
@@ -155,7 +151,6 @@ define(function (require, exports, module) {
     /**
      * Renders the directory navigation bar.
      * @private
-     * @author pelatx
      * @param   {string} dir Directory path to be shown.
      * @returns {string} HTML output.
      */
@@ -192,9 +187,23 @@ define(function (require, exports, module) {
     }
 
     /**
+     * Determines whether an entry corresponds to an image and inserts the required HTML.
+     * @private
+     * @param   {string} path Full path of a file.
+     * @returns {string} HTML string to be inserted (empty string if It is not an image).
+     */
+    function _setAsImage(path) {
+        var html = "";
+        var lang = LanguageManager.getLanguageForPath(path).getId();
+        if (lang === "image" || lang === "svg") {
+            html = " class='image' data-path='" + path + "'";
+        }
+        return html;
+    }
+
+    /**
      * Renders the directory contents HTML.
      * @private
-     * @author pelatx
      * @param   {Array}  paths Array of full path strings.
      * @returns {string} HTML formated string.
      */
@@ -223,7 +232,7 @@ define(function (require, exports, module) {
             name = FileUtils.getBaseName(path);
             if (path.substr(-1) !== "/") {
                 result += "<input type='checkbox' name='pfsd-file-checkbox' value='" + name + "' data-path='" + path + "'> ";
-                result += "<span" + _setImageClass(path) + ">" + StringUtils.breakableUrl(name) + "</span>";
+                result += "<span" + _setAsImage(path) + ">" + StringUtils.breakableUrl(name) + "</span>";
             } else {
                 result += "<span><img src='" + iconPath + "' alt='Directorty' style='width:20px;height:20px;'></span>";
                 result += "<a class='pfsd-dir-link' href='#' data-path='" + path + "' style='text-decoration: none;color:" + linkColor + ";'>";
@@ -235,26 +244,55 @@ define(function (require, exports, module) {
         return result;
     }
 
-    function _setImageClass(path) {
-        var html = "";
-        var lang = LanguageManager.getLanguageForPath(path).getId();
-        if (lang === "image" || lang === "svg") {
-            //html = ' data-toggle="popover" data-html="true" title=\'<img src="' + path + '">\' data-content=\'<img src="' + path + '">\' data-trigger="hover" data-placement="top"';
-            html = " class='image' data-path='" + path + "'";
-        }
-        return html;
-    }
+    /**
+     * Enables previews for image file entries.
+     * @private
+     */
+    function _enableImagePreviews() {
+        $(".image").each(function () {
+            var path = $(this).data("path");
+            var name = FileUtils.getBaseName(path);
+            var previewId = name.replace(/[ .,:&%$#@]/g, "");
+            var bgColor = $(".modal-body").css("background-color");
+            var previewHtml = "<div id='" + previewId + "' style='position:absolute;z-index:1055;border:2px solid black;border-radius:5px;background-color:#252121;height:158px;'><img src='file://" + path + "' style='height:150px;margin-top:4px;margin-left:4px;margin-right:4px;opacity:1;'></div>";
 
-    function inViewport($el) {
-        var elH = $el.outerHeight(),
-            H   = $(window).height(),
-            r   = $el[0].getBoundingClientRect(), t=r.top, b=r.bottom;
-        return Math.max(0, t>0? Math.min(elH, H-t) : (b<H?b:H));
+            $(this).hover(
+                function (ev) {
+                    var $modal = $(".modal-body");
+                    var modalRect = $modal[0].getBoundingClientRect();
+                    var modalTop = modalRect.top;
+                    var modalBottom = modalRect.bottom;
+                    var modalLeft = modalRect.left;
+                    var modalRight = modalRect.right;
+                    var itemTop = $(this).offset().top;
+                    var imageLeft = ((modalRight - modalLeft) / 2) - 100;
+
+                    var $preview = $(previewHtml);
+                    $modal.append($preview);
+
+                    var imageTop;
+                    if (itemTop - modalTop > 170) {
+                        imageTop = ev.offsetY - 160;
+                    } else {
+                        imageTop = ev.offsetY + 30;
+                    }
+
+                    $preview.css({
+                        "left": imageLeft + "px",
+                        "top": imageTop + "px"
+                    });
+                    $(this).css("background-color", "#9a823b");
+                },
+                function () {
+                    $("#" + previewId).remove();
+                    $(this).css("background-color", bgColor);
+                }
+            );
+        });
     }
 
     /**
      * Shows open files dialog.
-     * @author pelatx
      * @param   {string}  scrDir Folder to show first.
      * @param   {boolean} update If it is a list update only.
      * @returns {object}  Promise with an array of selected items full path strings.
@@ -313,7 +351,6 @@ define(function (require, exports, module) {
                         false
                     );
 
-
                     // Buttons click handlers.
                     btnProceed = $('.dialog-button').filter('[data-button-id="bod.proceed"]');
                     btnProceed.click(function () {
@@ -344,15 +381,20 @@ define(function (require, exports, module) {
                     btnUncheckAll.click(function () {
                         $("input:checkbox[name=pfsd-file-checkbox]").prop('checked', false);
                     });
+
+                    // Ensure that the dialog height is always the same.
+                    $(".modal-body").css("height", "400px");
+
                     // If it is an update of the existing dialog, update list only.
                 } else {
                     $("#pfsd-list").empty();
                     $("#pfsd-list").append(render);
+                    // Ensure that the dialog height is always the same.
+                    $(".modal-body").css("height", "400px");
                 }
 
                 // If a directory item is clicked ...
                 $(".pfsd-dir-link").click(function () {
-                    //dialog.close();
                     dir = $(this).data('path');
                     // and it is '..', goes one directory up.
                     if (dir === "dir-up") {
@@ -369,51 +411,8 @@ define(function (require, exports, module) {
                     // Updates dialog with the selected directory (update flag switched on).
                     show("", currentDir, true);
                 });
-                // Enable image previews
-                $(".image").each(function (i) {
-                    var path = $(this).data("path");
-                    var name = FileUtils.getBaseName(path);
-                    var id = name.replace(/\s/g, "").replace(/\./g, "").replace(/\:/g, "");
-                    var fullId = "#" + id;
-                    var bgColor = $(".modal-body").css("background-color");
-                    var previewHtml = "<div id='" + id + "' style='position:absolute;z-index:1055;border:2px solid black;border-radius:5px;background-color:#252121;height:158px;'><img src='file://" + path + "' style='height:150px;margin-top:4px;margin-left:4px;margin-right:4px;opacity:1;'></div>";
-
-                    $(this).hover(
-                        function (ev) {
-                            var $modal = $(".modal-body");
-                            var modalRect = $modal[0].getBoundingClientRect();
-                            var modalTop = modalRect.top;
-                            var modalBottom = modalRect.bottom;
-                            var modalLeft = modalRect.left;
-                            var modalRight = modalRect.right;
-
-                            $modal.append(previewHtml);
-                            var $preview = $(fullId);
-
-                            var $item = $('[data-path="' + path + '"]');
-                            var itemTop = $item.offset().top;
-
-                            var imageTop;
-                            if (itemTop - modalTop > 170) {
-                                imageTop = ev.offsetY - 160;
-                            } else {
-                                imageTop = ev.offsetY + 30;
-                            }
-
-                            var imageLeft = ((modalRight - modalLeft) / 2) - 100;
-
-                            $preview.css({
-                                "left": imageLeft + "px",
-                                "top": imageTop + "px"
-                            });
-                            $item.css("background-color", "#9a823b");
-                        },
-                        function () {
-                            $(fullId).remove();
-                            $('[data-path="' + path + '"]').css("background-color", bgColor);
-                        }
-                    );
-                });
+                // Enable image previews.
+                _enableImagePreviews();
             });
         });
         return deferred.promise();
