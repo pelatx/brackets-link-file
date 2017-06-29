@@ -26,7 +26,7 @@ define(function (require, exports, module) {
     var CMD_LINK  = "bracketslf.link",
         CMD_SET_DROP_DEST = "bracketslf.dropdest",
         MENU_ITEM_LINK   = "Link File (Insert tags)",
-        MENU_ITEM_DROP_DEST = "Link File (Set As DropArea destination)",
+        MENU_ITEM_DROP_DEST = "Link File (Set As DropArea Destination)",
         DOC_LANGUAGES = ['html', 'php', 'css'],
         LINK_TEMPLATES   = {
             'javascript' : '<script type="text/javascript" src="{RELPATH}"></script>',

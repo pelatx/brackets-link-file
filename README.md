@@ -19,21 +19,37 @@ Easily link your files (PHP, JavaScript, CSS, images) into the focused document 
 (Note that the extension only works if the focused editor file is saved).
 #### Files already in the project tree
 
-Just right click on a file in the Project tree -> Link File, and the link with the correct relative path will be inserted into the document.  
+Just right click on a file in the Project tree -> Link File (Insert Tags), and the link with the correct relative path will be inserted into the document.  
 
 Watch it in [this video][video-only-linking].  
 
 #### Selecting several files anywhere
 
-Right click on the destination directory in the Project tree -> Link File. You will be prompted with a dialog where you can select one or more files anywhere on your hard disk or any other volume. These files will be automatically copied to this directory and the correct tags will be added in the focused document. 
+Right click on the destination directory in the Project tree -> Link File (Insert Tags). You will be prompted with a dialog where you can select one or more files anywhere on your hard disk or any other volume. These files will be automatically copied to this directory and the correct tags will be added in the focused document. 
 
 The custom file selection dialog is also capable of displaying preview thumbnails of image files.
 
 Watch it in [this video][video-copying-and-linking].
 
+#### Dragging and dropping from OS file browser
+
+At the bottom of the sidebar you can see the drop area (resizable). And in it, in the bottom, the current directory where the files that you drop into will be copied. Hover over this to see the full path.
+
+To change the destination directory, right click on the desired in the project tree -> Link File (Set As Drop Area Destination).
+
+Open a file browser on your operating system and drop files into the drop area.
+
+Watch it in [this video][video-dragndrop]
+
 ## Features
 
-### Supported file types
+- Insert tags from already existing files in project tree.
+- Copy files to project and tag through a file selection dialog.
+- Image previews in file selection dialog.
+- Drag and drop files directly from OS file browser.
+- Non taggable files are copied anyway to project.
+
+#### Supported file types
 
 - PHP files on PHP documents.
 - JavaScript files on HTML documents.
@@ -54,9 +70,13 @@ v1.3.0 - Changes:
 - Fixed problems with paths containing single quotes.
 - Some minor fixes.
 
+v1.4.0 - Changes:
+- Added Drag and Drop support.
+
 ## Credits
 Folder icon from [Ionicons][ionicons].
 
 [video-only-linking]: https://vimeo.com/203813633
 [video-copying-and-linking]: https://vimeo.com/203813648
+[video-dragndrop]: https://vimeo.com/223621373
 [ionicons]: http://ionicons.com/
