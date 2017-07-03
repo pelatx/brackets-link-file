@@ -30,17 +30,31 @@ define(function (require, exports, module) {
         MENU_ITEM_LINK   = "Link File (Insert tags)",
         MENU_ITEM_DROP_DEST = "Link File (Set As DropArea Destination)",
         MENU_ITEM_DROP_VIEW = "Link File Drop Area",
-        DROPAREA_PREF ="droparea",
+        DROPAREA_PREF = "droparea",
         DOC_LANGUAGES = ['html', 'php', 'css'],
-        LINK_TEMPLATES   = {
+        LINK_TEMPLATES = {
             'javascript' : '<script type="text/javascript" src="{RELPATH}"></script>',
             'css' : '<link type="text/css" href="{RELPATH}" rel="stylesheet">',
             'php' : "include('{RELPATH}');",
             'image' : {
                 'html' : '<img src="{RELPATH}" alt="" height="" width="">',
                 'css' : 'url("{RELPATH}")'
-            }
+            },
+            'audio': '<audio controls src="{RELPATH}" type="audio/{TYPE}"></audio>',
+            'video': '<video controls width="" height="" src="{RELPATH}" type="video/{TYPE}"></video>'
+        },
+        AUDIO_EXTENSIONS = {
+            'ogg': 'ogg',
+            'mp3': 'mpeg',
+            'wav': 'wav'
+        },
+        VIDEO_EXTENSIONS = {
+            'mp4': 'mp4',
+            'ogg': 'ogg',
+            'ogv': 'ogg',
+            'webm': 'webm'
         };
+
 
     /* Preferences */
     var prefs = PreferencesManager.getExtensionPrefs("brackets.linkfile");
@@ -114,10 +128,20 @@ define(function (require, exports, module) {
      * @returns {string} A tag that links the file.
      */
     function makeLink(relPath, fileLang, docLang) {
-        var link = null;
+        var link = null, fileExt = null;
 
         // Finds lost parameters.
+        console.log("fileLang (makeLink)" + fileLang);
         if (!relPath || !fileLang || !docLang) { return null; }
+        // If It is an audio file, save file extension.
+        if (fileLang === "audio") {
+            fileExt = FileUtils.getFileExtension(relPath);
+        }
+        // If Brackets don't know the file language, looks if It is video.
+        if (fileLang === "unknown" || fileLang === "binary") {
+            fileExt = FileUtils.getFileExtension(relPath);
+            if (fileExt in VIDEO_EXTENSIONS) { fileLang = "video"; }
+        }
         // If It is SVG file, treats it like an image.
         if (fileLang === "svg") { fileLang = "image"; }
         // Finds if document language is supported.
@@ -135,6 +159,10 @@ define(function (require, exports, module) {
             } else {
                 if (fileLang === 'image') {
                     link = LINK_TEMPLATES[fileLang][docLang].replace('{RELPATH}', relPath);
+                } else if (fileLang === 'audio') {
+                    link = LINK_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{TYPE}', AUDIO_EXTENSIONS[fileExt]);
+                } else if (fileLang === 'video') {
+                    link = LINK_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{TYPE}', VIDEO_EXTENSIONS[fileExt]);
                 } else {
                     link = LINK_TEMPLATES[fileLang].replace('{RELPATH}', relPath);
                 }
@@ -142,7 +170,6 @@ define(function (require, exports, module) {
         } else {
             return null;
         }
-
         return link;
     }
 

@@ -1,9 +1,9 @@
 {
     "name": "pelatx.brackets-link-file",
     "title": "Brackets Link File",
-    "description": "New: Drag and Drop support. Easily link your files (PHP, JavaScript, CSS, images) into the focused document (HTML, PHP, CSS). You can copy several files in one time to your project folders and get them tagged automatically in the current document.",
+    "description": "New: Drag and Drop support. Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). You can copy several files in one time to your project folders and get them tagged automatically in the current document.",
     "homepage": "https://github.com/pelatx/brackets-link-file",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "author": "José A. Martínez <https://github.com/pelatx>",
     "license": "MIT",
     "keywords": [
@@ -13,9 +13,13 @@
         "link",
         "php",
         "image",
+        "audio",
+        "video",
         "project",
         "copy files",
-        "tags"
+        "tags",
+        "drag",
+        "drop"
     ],
     "engines": {
         "brackets": ">=0.34.0"

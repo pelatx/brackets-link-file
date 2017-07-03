@@ -39,6 +39,8 @@ To change the destination directory, right click on the desired in the project t
 
 Open a file browser on your operating system and drop files into the drop area.
 
+You can toggle show/hide the drop area in View -> Link File Drop Area.
+
 Watch it in [this video][video-dragndrop]
 
 ## Features
@@ -55,6 +57,7 @@ Watch it in [this video][video-dragndrop]
 - JavaScript files on HTML documents.
 - CSS files on HTML documents.
 - Image files on HTML and CSS documents.
+- Audio and Video files on HTML documents.
 
 ## Changelog
 
@@ -70,8 +73,11 @@ v1.3.0 - Changes:
 - Fixed problems with paths containing single quotes.
 - Some minor fixes.
 
-v1.4.0 - Changes:
-- Added Drag and Drop support.
+v1.4.0 - Added Drag and Drop support.
+
+v1.5.0 - Changes:
+- Added toggle show/hide Drop Area in View menu.
+- Added support for audio and video.
 
 ## Credits
 Folder icon from [Ionicons][ionicons].
