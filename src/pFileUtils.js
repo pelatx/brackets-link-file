@@ -15,7 +15,6 @@ define(function (require, exports, module) {
 
     /**
      * Creates a folder.
-     * @author pelatx
      * @param   {string} path Full path of folder to create.
      * @returns {object} Promise with folder full path if it fails.
      */
@@ -36,7 +35,6 @@ define(function (require, exports, module) {
 
     /**
      * Copies a file
-     * @author pelatx
      * @param   {string} scrPath Full path of the file.
      * @param   {string} destDir Full path of the destination folder.
      * @param   {string} name    Name of the new file.
@@ -58,7 +56,6 @@ define(function (require, exports, module) {
 
     /**
      * Copies a folder with recursion for inner folders.
-     * @author pelatx
      * @param   {string} scrPath  Full path of the source folder.
      * @param   {string} destPath Full path of the destination folder.
      * @param   {string} name     Name of the new folder.
@@ -99,7 +96,6 @@ define(function (require, exports, module) {
 
     /**
      * Copies an item (file or folder).
-     * @author pelatx
      * @param   {string}  scrPath  Full path of file or folder.
      * @param   {string}  destPath Full path of destination folder.
      * @param   {string}  name     Name of new file or folder.

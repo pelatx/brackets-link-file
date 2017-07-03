@@ -15,6 +15,10 @@ define(function (require, exports, module) {
 
     var _dirPath;
 
+    /**
+     * Initializes listeners for drops and project change.
+     * @param {function} callback The function to call for a drop event.
+     */
     function initListeners(callback) {
         $dropArea.on("drop", function (event) {
             event.stopPropagation();
@@ -22,7 +26,7 @@ define(function (require, exports, module) {
 
             var files = event.originalEvent.dataTransfer.files;
 
-            if (files && files.length) {
+            if (files && files.length > 0) {
                 brackets.app.getDroppedFiles(function(err, paths) {
                     if (!err) {
                         callback(paths);
@@ -36,6 +40,11 @@ define(function (require, exports, module) {
         });
     }
 
+    /**
+     * Sets the target directory for the dropped files to be copied and
+     * tagged after.
+     * @param {string} dir The target directory full path.
+     */
     function setDestinationDir(dir) {
         _dirPath = dir;
         var name = FileUtils.getBaseName(_dirPath);
@@ -45,20 +54,35 @@ define(function (require, exports, module) {
         $dest.attr("title", _dirPath);
     }
 
+    /**
+     * Returns the current destination directory.
+     * @returns {string} The current directory full path.
+     */
     function getDestinationPath() {
         return _dirPath;
     }
 
+    /**
+     * Appends the drop area to Brackets sidebar.
+     */
     function show() {
         $("#sidebar").append($dropArea);
         Resizer.makeResizable($dropArea, "vert", "top", 80);
         setDestinationDir(ProjectManager.getProjectRoot().fullPath);
     }
 
+    /**
+     * Removes the drop area from Brackets sidebar.
+     */
+    function hide() {
+        $($dropArea).remove();
+    }
+
     module.exports = {
         initListeners: initListeners,
         getDestinationPath: getDestinationPath,
+        setDestinationDir: setDestinationDir,
         show: show,
-        setDestinationDir: setDestinationDir
+        hide: hide
     };
 });

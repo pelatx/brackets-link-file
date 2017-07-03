@@ -8,25 +8,29 @@ define(function (require, exports, module) {
     'use strict';
 
     /* Modules */
-    var AppInit         = brackets.getModule("utils/AppInit"),
-        CommandManager  = brackets.getModule("command/CommandManager"),
-        ProjectManager  = brackets.getModule("project/ProjectManager"),
-        EditorManager   = brackets.getModule("editor/EditorManager"),
-        LanguageManager = brackets.getModule("language/LanguageManager"),
-        MainViewManager = brackets.getModule("view/MainViewManager"),
-        Menus           = brackets.getModule("command/Menus"),
-        Commands        = brackets.getModule("command/Commands"),
-        FileSystem      = brackets.getModule("filesystem/FileSystem"),
-        FileUtils       = brackets.getModule("file/FileUtils"),
-        File            = require("src/pFileUtils"),
-        Dialog          = require("src/pFSD/pFileSelectionDialog"),
-        DropArea        = require("src/dropArea");
+    var AppInit             = brackets.getModule("utils/AppInit"),
+        CommandManager      = brackets.getModule("command/CommandManager"),
+        ProjectManager      = brackets.getModule("project/ProjectManager"),
+        EditorManager       = brackets.getModule("editor/EditorManager"),
+        LanguageManager     = brackets.getModule("language/LanguageManager"),
+        MainViewManager     = brackets.getModule("view/MainViewManager"),
+        PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
+        Menus               = brackets.getModule("command/Menus"),
+        Commands            = brackets.getModule("command/Commands"),
+        FileSystem          = brackets.getModule("filesystem/FileSystem"),
+        FileUtils           = brackets.getModule("file/FileUtils"),
+        File                = require("src/pFileUtils"),
+        Dialog              = require("src/pFSD/pFileSelectionDialog"),
+        DropArea            = require("src/dropArea");
 
     /* Constants */
     var CMD_LINK  = "bracketslf.link",
         CMD_SET_DROP_DEST = "bracketslf.dropdest",
+        CMD_TOGGLE_DROP = "bracketslf.toggledrop",
         MENU_ITEM_LINK   = "Link File (Insert tags)",
         MENU_ITEM_DROP_DEST = "Link File (Set As DropArea Destination)",
+        MENU_ITEM_DROP_VIEW = "Link File Drop Area",
+        DROPAREA_PREF ="droparea",
         DOC_LANGUAGES = ['html', 'php', 'css'],
         LINK_TEMPLATES   = {
             'javascript' : '<script type="text/javascript" src="{RELPATH}"></script>',
@@ -38,11 +42,14 @@ define(function (require, exports, module) {
             }
         };
 
+    /* Preferences */
+    var prefs = PreferencesManager.getExtensionPrefs("brackets.linkfile");
+
+
     /* Functions */
 
     /**
      * Find the relative path between two absolute paths.
-     * @author pelatx
      * @param   {string} filePath Target file path.
      * @param   {string} docPath  Path of the file that is focused in the editor.
      * @returns {string} Relative path.
@@ -101,7 +108,6 @@ define(function (require, exports, module) {
     /**
      * Configures and creates the tag with the relative path,
      * depending on the file types.
-     * @author pelatx
      * @param   {string} relPath  Relative path.
      * @param   {string} fileLang Type/Language of the target file.
      * @param   {string} docLang  Type/Language of the focused document.
@@ -140,32 +146,10 @@ define(function (require, exports, module) {
         return link;
     }
 
-    function copyFiles(files) {
-        if (files.length > 0) {
-            // Copies every selected file to project directory
-            // and adds a file object to files array for each.
-            files.forEach(function (file) {
-                fileName = FileUtils.getBaseName(file);
-                File.copy(file, selectedItem.fullPath, fileName).done(function (newFile) {
-                    fileLang = LanguageManager.getLanguageForPath(newFile).getId();
-                    files.push({
-                        path: newFile,
-                        lang: fileLang
-                    });
-                    // Don't resolve until all entries are in the files array.
-                    counter++;
-                    if (counter === entries.length) {
-                        deferred.resolve(files);
-                    }
-                });
-            });
-        }
-    }
-
     /**
      * Recognizes the three different ways to use the extension
      * and performs the necessary actions.
-     * @author pelatx
+     * @param   {Array}  filesFromDrop Array of file paths comming from a drag&drop operation.
      * @returns {object} Promise with an array of file objects.
      */
     function selectModeAndRun(filesFromDrop) {
@@ -242,7 +226,7 @@ define(function (require, exports, module) {
 
     /**
      * Puts it all together and writes in fact the links in the document.
-     * @author pelatx
+     * @param {Array} droppedFiles Array of file paths comming from a drag&drop operation.
      */
     function linkFile(droppedFiles) {
         var editor,
@@ -287,9 +271,41 @@ define(function (require, exports, module) {
         });
     }
 
+    /**
+     * Enables the drop area.
+     */
+    function enableDropArea() {
+        DropArea.show();
+        DropArea.initListeners(linkFile);
+        CommandManager.get(CMD_TOGGLE_DROP).setChecked(true);
+        prefs.set(DROPAREA_PREF, true);
+        prefs.save();
+    }
+
+    /**
+     * Disables the drop area.
+     */
+    function disableDropArea() {
+        DropArea.hide();
+        CommandManager.get(CMD_TOGGLE_DROP).setChecked(false);
+        prefs.set(DROPAREA_PREF, false);
+        prefs.save();
+    }
+
+    /**
+     * Toggles enabled/disabled the drop area.
+     */
+    function toggleDropArea() {
+        if (prefs.get(DROPAREA_PREF) === true) {
+            disableDropArea();
+        } else {
+            enableDropArea();
+        }
+    }
+
     /* Initializes extension */
     AppInit.appReady(function () {
-        var menu;
+        var contextMenu, viewMenu;
 
         CommandManager.register(MENU_ITEM_LINK, CMD_LINK, linkFile);
         CommandManager.register(MENU_ITEM_DROP_DEST, CMD_SET_DROP_DEST, function () {
@@ -302,13 +318,21 @@ define(function (require, exports, module) {
                 DropArea.setDestinationDir(ProjectManager.getProjectRoot().fullPath);
             }
         });
+        CommandManager.register(MENU_ITEM_DROP_VIEW, CMD_TOGGLE_DROP, toggleDropArea);
 
-        menu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
-        menu.addMenuItem(CMD_LINK);
-        menu.addMenuItem(CMD_SET_DROP_DEST);
+        contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
+        contextMenu.addMenuItem(CMD_LINK);
+        contextMenu.addMenuItem(CMD_SET_DROP_DEST);
 
-        DropArea.show();
-        DropArea.initListeners(linkFile);
+        viewMenu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
+        viewMenu.addMenuItem(CMD_TOGGLE_DROP);
+
+        prefs.definePreference(DROPAREA_PREF, "boolean", true);
+        prefs.save();
+        if (prefs.get(DROPAREA_PREF) === true) {
+            enableDropArea();
+        } else {
+            disableDropArea();
+        }
     });
-
 });
