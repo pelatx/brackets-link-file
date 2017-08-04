@@ -17,20 +17,24 @@ define(function (require, exports, module) {
         PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
         Menus               = brackets.getModule("command/Menus"),
         Commands            = brackets.getModule("command/Commands"),
-        FileSystem          = brackets.getModule("filesystem/FileSystem"),
         FileUtils           = brackets.getModule("file/FileUtils"),
         File                = require("src/pFileUtils"),
         Dialog              = require("src/pFSD/pFileSelectionDialog"),
-        DropArea            = require("src/dropArea");
+        DropArea            = require("src/dropArea"),
+        Watcher             = require("src/watcher");
 
     /* Constants */
     var CMD_LINK  = "bracketslf.link",
         CMD_SET_DROP_DEST = "bracketslf.dropdest",
         CMD_TOGGLE_DROP = "bracketslf.toggledrop",
+        CMD_TOGGLE_WATCH = "bracketslf.togglewatch",
         MENU_ITEM_LINK   = "Link File (Insert tags)",
         MENU_ITEM_DROP_DEST = "Link File (Set As DropArea Destination)",
         MENU_ITEM_DROP_VIEW = "Link File Drop Area",
+        MENU_ITEM_WATCH = "Link File Watch Project",
         DROPAREA_PREF = "droparea",
+        WATCHER_PREF = "watchproject",
+
         DOC_LANGUAGES = ['html', 'php', 'css'],
         LINK_TEMPLATES = {
             'javascript' : '<script type="text/javascript" src="{RELPATH}"></script>',
@@ -131,7 +135,6 @@ define(function (require, exports, module) {
         var link = null, fileExt = null;
 
         // Finds lost parameters.
-        console.log("fileLang (makeLink)" + fileLang);
         if (!relPath || !fileLang || !docLang) { return null; }
         // If It is an audio file, save file extension.
         if (fileLang === "audio") {
@@ -332,7 +335,7 @@ define(function (require, exports, module) {
 
     /* Initializes extension */
     AppInit.appReady(function () {
-        var contextMenu, viewMenu;
+        var contextMenu, viewMenu, fileMenu;
 
         CommandManager.register(MENU_ITEM_LINK, CMD_LINK, linkFile);
         CommandManager.register(MENU_ITEM_DROP_DEST, CMD_SET_DROP_DEST, function () {
@@ -346,6 +349,19 @@ define(function (require, exports, module) {
             }
         });
         CommandManager.register(MENU_ITEM_DROP_VIEW, CMD_TOGGLE_DROP, toggleDropArea);
+        CommandManager.register(MENU_ITEM_WATCH, CMD_TOGGLE_WATCH, function () {
+            if (prefs.get(WATCHER_PREF) === true) {
+                Watcher.stop();
+                CommandManager.get(CMD_TOGGLE_WATCH).setChecked(false);
+                prefs.set(WATCHER_PREF, false);
+                prefs.save();
+            } else {
+                Watcher.start(findRelativePath);
+                CommandManager.get(CMD_TOGGLE_WATCH).setChecked(true);
+                prefs.set(WATCHER_PREF, true);
+                prefs.save();
+            }
+        });
 
         contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
         contextMenu.addMenuItem(CMD_LINK);
@@ -354,12 +370,23 @@ define(function (require, exports, module) {
         viewMenu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
         viewMenu.addMenuItem(CMD_TOGGLE_DROP);
 
+        fileMenu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
+        fileMenu.addMenuItem(CMD_TOGGLE_WATCH);
+
         prefs.definePreference(DROPAREA_PREF, "boolean", true);
+        prefs.definePreference(WATCHER_PREF, "boolean", false);
         prefs.save();
+
         if (prefs.get(DROPAREA_PREF) === true) {
             enableDropArea();
         } else {
             disableDropArea();
+        }
+
+        if (prefs.get(WATCHER_PREF) === true) {
+            Watcher.start(findRelativePath);
+        } else {
+            Watcher.stop();
         }
     });
 });
