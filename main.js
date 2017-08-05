@@ -31,7 +31,7 @@ define(function (require, exports, module) {
         MENU_ITEM_LINK   = "Link File (Insert tags)",
         MENU_ITEM_DROP_DEST = "Link File (Set As DropArea Destination)",
         MENU_ITEM_DROP_VIEW = "Link File Drop Area",
-        MENU_ITEM_WATCH = "Link File Watch Project",
+        MENU_ITEM_WATCH = "Link File Watcher",
         DROPAREA_PREF = "droparea",
         WATCHER_PREF = "watchproject",
 
@@ -371,7 +371,7 @@ define(function (require, exports, module) {
         viewMenu.addMenuItem(CMD_TOGGLE_DROP);
 
         fileMenu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
-        fileMenu.addMenuItem(CMD_TOGGLE_WATCH);
+        fileMenu.addMenuItem(CMD_TOGGLE_WATCH, undefined, Menus.BEFORE, Commands.FILE_QUIT);
 
         prefs.definePreference(DROPAREA_PREF, "boolean", true);
         prefs.definePreference(WATCHER_PREF, "boolean", false);
@@ -385,8 +385,10 @@ define(function (require, exports, module) {
 
         if (prefs.get(WATCHER_PREF) === true) {
             Watcher.start(findRelativePath);
+            CommandManager.get(CMD_TOGGLE_WATCH).setChecked(true);
         } else {
             Watcher.stop();
+            CommandManager.get(CMD_TOGGLE_WATCH).setChecked(false);
         }
     });
 });
