@@ -50,11 +50,13 @@ define(function (require, exports, module) {
         if (fileLang === "svg") { fileLang = "image"; }
 
         var links = docText.match(REGEXPS[fileLang]);
-        links.forEach(function (link) {
-            if (link.indexOf(relPath) !== -1) {
-                docText = docText.replace(link, "");
-            }
-        });
+        if (links && links.length > 0) {
+            links.forEach(function (link) {
+                if (link.indexOf(relPath) !== -1) {
+                    docText = docText.replace(link, "");
+                }
+            });
+        }
         return docText;
     }
 
@@ -84,7 +86,7 @@ define(function (require, exports, module) {
                     }
                     _watchedFilesCache = files.slice(0);
                 });
-            }, 3000);
+            }, 2000);
 
             _projectChangeFunc = function () {
                 ProjectManager.getAllFiles().done(function (files) {
