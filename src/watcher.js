@@ -15,9 +15,9 @@ define(function (require, exports, module) {
     // Regexps
     var REGEXPS = {
         'javascript':   /<script\b[^>]*>([\s\S]*?)<\/script>/g,
-        'image':        /<img\b[^>]*>([\s\S]*?)>{0}/g,
+        'image':        [/<img\b[^>]*>([\s\S]*?)>{0}/g, /url([\s\S]*?).*;{0}/g],
         'css':          /<link\b[^>]*>([\s\S]*?)>{0}/g,
-        'php':          /[include|include_once|require|require_once]([\s\S]*?)\);/g,
+        'php':          /[include|include_once|require|require_once]([\s\S]*?).*;{0}/g,
         'audio':        /<audio\b[^>]*>([\s\S]*?)<\/audio>/g,
         'video':        /<video\b[^>]*>([\s\S]*?)<\/video>/g
     };
@@ -49,7 +49,20 @@ define(function (require, exports, module) {
         }
         if (fileLang === "svg") { fileLang = "image"; }
 
-        var links = docText.match(REGEXPS[fileLang]);
+        var regexp;
+        if (fileLang === "image") {
+            var editor = EditorManager. getActiveEditor();
+            var docLang = editor.getLanguageForSelection().getId();
+            if (docLang === "html") {
+                regexp = REGEXPS[fileLang][0];
+            } else {
+                regexp = REGEXPS[fileLang][1];
+            }
+        } else {
+            regexp = REGEXPS[fileLang];
+        }
+
+        var links = docText.match(regexp);
         if (links && links.length > 0) {
             links.forEach(function (link) {
                 if (link.indexOf(relPath) !== -1) {
