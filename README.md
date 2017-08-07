@@ -1,6 +1,10 @@
 # Brackets Link File
 
-Easily link your files (PHP, JavaScript, CSS, images) into the focused document (HTML, PHP, CSS). You can copy several files in one time to your project folders and get them tagged automatically in the current document. 
+Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). You can copy several files in one time to your project folders and get them tagged automatically in the current document. 
+
+Supports linking of existing files in the project tree. Also, with a file selection dialog (with image previews) or directly with drag and drop from OS file browser, allows copying files to project which will be tagged automatically.
+
+It also supports bi-directionality: if you delete a project file, the tag or tags are automatically deleted in the document.
 
 ## Install from Brackets
 
@@ -43,6 +47,16 @@ You can toggle show/hide the drop area in View -> Link File Drop Area.
 
 Watch it in [this video][video-dragndrop]
 
+#### Using bi-directional linking
+
+This is a feature disabled by default. Because in projects with an extensive number of directories and files, it can greatly slow down Brackets.
+
+To enable/disable it, go to File Menu -> Link File Watcher.
+
+Once enabled, the extension will recognize when a project file is deleted. And it will automatically delete the corresponding tag in the current document, if any.
+
+Watch it in [this video][video-watcher]
+
 ## Features
 
 - Insert tags from already existing files in project tree.
@@ -50,6 +64,7 @@ Watch it in [this video][video-dragndrop]
 - Image previews in file selection dialog.
 - Drag and drop files directly from OS file browser.
 - Non taggable files are copied anyway to project.
+- Bi-directional linking: delete a project file and referred tags will be deleted in document automatically.
 
 #### Supported file types
 
@@ -79,10 +94,13 @@ v1.5.0 - Changes:
 - Added toggle show/hide Drop Area in View menu.
 - Added support for audio and video.
 
+v1.6.0 Added bi-directional linking.
+
 ## Credits
 Folder icon from [Ionicons][ionicons].
 
 [video-only-linking]: https://vimeo.com/203813633
 [video-copying-and-linking]: https://vimeo.com/203813648
 [video-dragndrop]: https://vimeo.com/223621373
+[video-watcher]: https://vimeo.com/228543196
 [ionicons]: http://ionicons.com/
