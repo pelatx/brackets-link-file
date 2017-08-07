@@ -17,7 +17,7 @@ define(function (require, exports, module) {
         'javascript':   /<script\b[^>]*>([\s\S]*?)<\/script>/g,
         'image':        /<img\b[^>]*>([\s\S]*?)>{0}/g,
         'css':          /<link\b[^>]*>([\s\S]*?)>{0}/g,
-        'php':          /include\b[^>]*>([\s\S]*?);{0}/g,
+        'php':          /[include|include_once|require|require_once]([\s\S]*?)\);/g,
         'audio':        /<audio\b[^>]*>([\s\S]*?)<\/audio>/g,
         'video':        /<video\b[^>]*>([\s\S]*?)<\/video>/g
     };
