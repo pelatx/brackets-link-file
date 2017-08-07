@@ -42,7 +42,7 @@ define(function (require, exports, module) {
             'php' : "include('{RELPATH}');",
             'image' : {
                 'html' : '<img src="{RELPATH}" alt="" height="" width="">',
-                'css' : 'url("{RELPATH}")'
+                'css' : 'url("{RELPATH}");'
             },
             'audio': '<audio controls src="{RELPATH}" type="audio/{TYPE}"></audio>',
             'video': '<video controls width="" height="" src="{RELPATH}" type="video/{TYPE}"></video>'
