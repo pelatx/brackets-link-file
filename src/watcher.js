@@ -101,18 +101,17 @@ define(function (require, exports, module) {
                 });
             }, 2000);
 
-            _projectChangeFunc = function () {
+            ProjectManager.on("projectOpen.blfwatcher", function () {
                 ProjectManager.getAllFiles().done(function (files) {
                     _watchedFilesCache = files.slice(0);
                 });
-            }
-            ProjectManager.on("projectOpen", _projectChangeFunc);
+            });
         });
     }
 
     function stop() {
         clearInterval(_intervalFunc);
-        ProjectManager.off("projectOpen", _projectChangeFunc);
+        ProjectManager.off("projectOpen.blfwatcher");
     }
 
     module.exports = {
