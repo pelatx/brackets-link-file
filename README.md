@@ -96,6 +96,8 @@ v1.5.0 - Changes:
 
 v1.6.0 Added bi-directional linking.
 
+v1.6.1 Fixed "wrong root" bug on project change.
+
 ## Credits
 Folder icon from [Ionicons][ionicons].
 

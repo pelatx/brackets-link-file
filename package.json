@@ -3,7 +3,7 @@
     "title": "Brackets Link File",
     "description": "New: bi-directionality (delete a file in project tree and referred tags will be deleted automatically). Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). You can copy several files in one time to your project folders and get them tagged automatically in the current document.",
     "homepage": "https://github.com/pelatx/brackets-link-file",
-    "version": "1.6.0",
+    "version": "1.6.1",
     "author": "José A. Martínez <https://github.com/pelatx>",
     "license": "MIT",
     "keywords": [
