@@ -17,21 +17,25 @@ define(function (require, exports, module) {
         PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
         Menus               = brackets.getModule("command/Menus"),
         Commands            = brackets.getModule("command/Commands"),
-        FileUtils           = brackets.getModule("file/FileUtils"),
-        File                = require("src/pFileUtils"),
+        FileUtils           = brackets.getModule("file/FileUtils");
+
+    var File                = require("src/pFileUtils"),
         Dialog              = require("src/pFSD/pFileSelectionDialog"),
         DropArea            = require("src/dropArea"),
-        Watcher             = require("src/watcher");
+        Watcher             = require("src/watcher"),
+        Strings             = require("strings");
 
     /* Constants */
     var CMD_LINK  = "bracketslf.link",
         CMD_SET_DROP_DEST = "bracketslf.dropdest",
         CMD_TOGGLE_DROP = "bracketslf.toggledrop",
         CMD_TOGGLE_WATCH = "bracketslf.togglewatch",
-        MENU_ITEM_LINK   = "Link File (Insert tags)",
-        MENU_ITEM_DROP_DEST = "Link File (Set As DropArea Destination)",
-        MENU_ITEM_DROP_VIEW = "Link File Drop Area",
-        MENU_ITEM_WATCH = "Link File Watcher",
+
+        MENU_ITEM_LINK   = Strings.INSERT_TAGS,
+        MENU_ITEM_DROP_DEST = Strings.DROP_AREA_DEST,
+        MENU_ITEM_DROP_VIEW = Strings.DROP_AREA,
+        MENU_ITEM_WATCH = Strings.WATCHER,
+
         DROPAREA_PREF = "droparea",
         WATCHER_PREF = "watchproject",
 

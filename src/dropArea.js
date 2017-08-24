@@ -11,7 +11,9 @@ define(function (require, exports, module) {
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
-    var $dropArea = $("<div id=\"plf-droparea\" style=\"background-color:#2a2727;border-top:1px solid black;\" align=\"center\">Link File Drop Area</br><div class=\"plf-dest-dir\" style=\"position:absolute;right:4px;left:4px;bottom:4px;padding:2px 4px 2px 4px;background-color:#3c3838;overflow:hidden;\" data-toggle=\"popover\" data-trigger=\"hover\"></div></div>");
+    var Strings         = require("strings");
+
+    var $dropArea = $("<div id=\"plf-droparea\" style=\"background-color:#2a2727;border-top:1px solid black;\" align=\"center\">" + Strings.DROP_AREA + "</br><div class=\"plf-dest-dir\" style=\"position:absolute;right:4px;left:4px;bottom:4px;padding:2px 4px 2px 4px;background-color:#3c3838;overflow:hidden;\" data-toggle=\"popover\" data-trigger=\"hover\"></div></div>");
 
     var _dirPath;
 
@@ -75,7 +77,7 @@ define(function (require, exports, module) {
      * Removes the drop area from Brackets sidebar.
      */
     function hide() {
-        $($dropArea).remove();
+        $dropArea.remove();
     }
 
     module.exports = {
