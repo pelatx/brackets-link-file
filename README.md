@@ -65,6 +65,7 @@ Watch it in [this video][video-watcher]
 - Drag and drop files directly from OS file browser.
 - Non taggable files are copied anyway to project.
 - Bi-directional linking: delete a project file and referred tags will be deleted in document automatically.
+- Internationalization.
 
 #### Supported file types
 
@@ -97,6 +98,8 @@ v1.5.0 - Changes:
 v1.6.0 Added bi-directional linking.
 
 v1.6.1 Fixed "wrong root" bug on project change.
+
+v1.7.0 Internationalization support: english, spanish, french.
 
 ## Credits
 Folder icon from [Ionicons][ionicons].
