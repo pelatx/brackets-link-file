@@ -101,6 +101,8 @@ v1.6.1 Fixed "wrong root" bug on project change.
 
 v1.7.0 Internationalization support: english, spanish, french.
 
+v1.7.1 Fixed package.json missing traductions.
+
 ## Credits
 Folder icon from [Ionicons][ionicons].
 
