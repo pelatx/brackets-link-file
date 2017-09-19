@@ -24,7 +24,7 @@ define(function (require, exports, module) {
 
     var VIDEO_EXTENSIONS = ['mp4', 'ogg', 'ogv', 'webm'];
 
-    // Project files stores
+    // Project files storages
     var _watchedFiles = [],
         _watchedFilesCache = [];
 

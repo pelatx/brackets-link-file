@@ -210,7 +210,7 @@ define(function (require, exports, module) {
     function _renderContents(paths, dir) {
         var name, linkColor, result = "<section id=\"pfsd-list\">",
             extensionDir = FileUtils.getNativeModuleDirectoryPath(module),
-            iconPath = extensionDir + "/ionicons/ionicons-folder-32x32.png";
+            iconPath = extensionDir + "/icons/ionicons-folder.png";
 
         // Choose font color for directories according to theme
         if ($('body').hasClass('dark')) {

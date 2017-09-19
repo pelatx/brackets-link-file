@@ -23,16 +23,19 @@ define(function (require, exports, module) {
         Dialog              = require("src/pFSD/pFileSelectionDialog"),
         DropArea            = require("src/dropArea"),
         Watcher             = require("src/watcher"),
+        Downloader          = require("src/downloader"),
         Strings             = require("strings");
 
     /* Constants */
     var CMD_LINK  = "bracketslf.link",
         CMD_SET_DROP_DEST = "bracketslf.dropdest",
+        CMD_DOWNLOADER = "bracketslf.downloader",
         CMD_TOGGLE_DROP = "bracketslf.toggledrop",
         CMD_TOGGLE_WATCH = "bracketslf.togglewatch",
 
         MENU_ITEM_LINK   = Strings.INSERT_TAGS,
         MENU_ITEM_DROP_DEST = Strings.DROP_AREA_DEST,
+        MENU_ITEM_DOWNLOADER = Strings.DOWNLOADER,
         MENU_ITEM_DROP_VIEW = Strings.DROP_AREA,
         MENU_ITEM_WATCH = Strings.WATCHER,
 
@@ -271,7 +274,7 @@ define(function (require, exports, module) {
             selection;
 
         // Gets the file of focused editor
-        editor = EditorManager. getActiveEditor();
+        editor = EditorManager.getActiveEditor();
         if (editor && !editor.document.isUntitled()) {
             MainViewManager.focusActivePane();
             docPath = editor.getFile().fullPath;
@@ -352,6 +355,9 @@ define(function (require, exports, module) {
                 DropArea.setDestinationDir(ProjectManager.getProjectRoot().fullPath);
             }
         });
+        CommandManager.register(MENU_ITEM_DOWNLOADER, CMD_DOWNLOADER, function () {
+            Downloader.show();
+        });
         CommandManager.register(MENU_ITEM_DROP_VIEW, CMD_TOGGLE_DROP, toggleDropArea);
         CommandManager.register(MENU_ITEM_WATCH, CMD_TOGGLE_WATCH, function () {
             if (prefs.get(WATCHER_PREF) === true) {
@@ -370,6 +376,7 @@ define(function (require, exports, module) {
         contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
         contextMenu.addMenuItem(CMD_LINK);
         contextMenu.addMenuItem(CMD_SET_DROP_DEST);
+        contextMenu.addMenuItem(CMD_DOWNLOADER);
 
         viewMenu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
         viewMenu.addMenuItem(CMD_TOGGLE_DROP);
