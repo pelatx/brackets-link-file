@@ -99,7 +99,7 @@ define(function Downloader(require, exports, module) {
         return rendered;
     }
 
-    function show(makeLinkFunc) {
+    function show() {
         var destDirPath,
             projectItem = ProjectManager.getSelectedItem();
 
@@ -178,7 +178,7 @@ define(function Downloader(require, exports, module) {
                                 console.log("Error writing file: " + err.toString());
                             } else {
                                 var tag = Linker.getTagsFromFiles([createdFile.fullPath]);
-                                Linker.insertTags([tag]);
+                                Linker.insertTags(tag);
                             }
                         });
                         ProjectManager.refreshFileTree();

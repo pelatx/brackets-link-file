@@ -12,6 +12,8 @@ define(function Watcher(require, exports, module) {
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
+    var Linker          = require("./linker");
+
     // Regexps
     var REGEXPS = {
         'javascript':   /<script\b[^>]*>([\s\S]*?)<\/script>/g,
@@ -73,7 +75,7 @@ define(function Watcher(require, exports, module) {
         return docText;
     }
 
-    function start(findRelativePathFunc) {
+    function start() {
         ProjectManager.getAllFiles().done(function (files) {
             _watchedFilesCache = files.slice(0);
 
@@ -86,7 +88,7 @@ define(function Watcher(require, exports, module) {
                             var editor = EditorManager. getActiveEditor();
                             if (editor) {
                                 var fileLang = LanguageManager.getLanguageForPath(filePath).getId();
-                                var relPath = findRelativePathFunc(filePath, editor.getFile().fullPath);
+                                var relPath = Linker.findRelativePath(filePath, editor.getFile().fullPath);
                                 var docText = editor.document.getText();
                                 var newText = _removeLinks(relPath, docText, fileLang);
                                 editor.document.replaceRange(

@@ -160,11 +160,14 @@ define(function Linker(require, exports, module) {
             tag = createTag(relPath, fileLang, docLang);
             tags.push(tag);
         }
+        /*
         if (filePaths.length === 1) {
             return tags[0];
         } else {
             return tags;
         }
+        */
+        return tags;
     }
 
     function insertTags(tags) {
