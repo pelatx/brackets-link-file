@@ -4,16 +4,19 @@
 /**
 * Link File Downloader
 */
-define(function (require, exports, module) {
+define(function Downloader(require, exports, module) {
     'use strict';
 
     var Dialogs         = brackets.getModule("widgets/Dialogs"),
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
+        EditorManager   = brackets.getModule("editor/EditorManager"),
+        LanguageManager = brackets.getModule("language/LanguageManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         Mustache        = brackets.getModule("thirdparty/mustache/mustache");
 
-    var File            = require("./pFileUtils");
+    var File            = require("./pFileUtils"),
+        Linker          = require("./linker");
 
     var LibTemplate     = require("text!templates/cdnLibsListItem.html"),
         VersionTemplate = require("text!templates/libVersionLink.html");
@@ -23,29 +26,37 @@ define(function (require, exports, module) {
 
     var moduleDirPath = FileUtils.getNativeModuleDirectoryPath(module);
 
+    var libraryList = null;
+
     function getLibraries() {
         var deferred = new $.Deferred();
         var fetchingDialog = Dialogs.showModalDialog(
             brackets.DIALOG_ID_SAVE_CLOSE,
             "Library Download",
-            "<h4>Fetching Libraries ...</h4>",
+            "<h4>Preparing Library List ...</h4>",
             [],
             false
         );
 
-        $.getJSON(apiURL).done(function (libs) {
-            libs.sort(function (a, b) {
-                var a1 = a.name.toUpperCase(),
-                    b1 = b.name.toUpperCase();
-                if (a1 == b1) return 0;
-                return a1 > b1 ? 1 : -1;
+        if (libraryList === null) {
+            $.getJSON(apiURL).done(function (libs) {
+                libs.sort(function (a, b) {
+                    var a1 = a.name.toUpperCase(),
+                        b1 = b.name.toUpperCase();
+                    if (a1 == b1) return 0;
+                    return a1 > b1 ? 1 : -1;
+                });
+                libraryList = libs;
+                fetchingDialog.close();
+                deferred.resolve();
+            }).fail(function () {
+                fetchingDialog.close();
+                deferred.reject();
             });
+        } else {
             fetchingDialog.close();
-            deferred.resolve(libs)
-        }).fail(function () {
-            fetchingDialog.close();
-            deferred.reject();
-        });
+            deferred.resolve();
+        }
         return deferred.promise();
     }
 
@@ -53,7 +64,6 @@ define(function (require, exports, module) {
         var deferred = new $.Deferred();
 
         $.get(url).done(function (data) {
-            console.log("getLibrary(): returns 'data'");
             deferred.resolve(data);
         }).fail(function (res) {
             if (res.responseText && res.status == "200") {
@@ -89,7 +99,7 @@ define(function (require, exports, module) {
         return rendered;
     }
 
-    function show() {
+    function show(makeLinkFunc) {
         var destDirPath,
             projectItem = ProjectManager.getSelectedItem();
 
@@ -99,14 +109,12 @@ define(function (require, exports, module) {
             destDirPath = ProjectManager.getProjectRoot().fullPath;
         }
 
-        // Start to fetch the libraries list.
-        getLibraries().done(function (libs) {
-            var rendered = renderLibraries(libs);
-
+        // Start to fetch the library list.
+        getLibraries().done(function () {
             var listDialog = Dialogs.showModalDialog(
                 brackets.DIALOG_ID_SAVE_CLOSE,
                 "Library Download<form class=\"blf-filterbox\" action=\"#\"><input class=\"blf-filterinput\" type=\"text\" placeholder=\"Filter ...\" style=\"position:absolute;right:26px;top:20px;\"></form>",
-                rendered,
+                renderLibraries(libraryList),
                 [{
                     className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
                     id: "blf.cancel",
@@ -120,7 +128,7 @@ define(function (require, exports, module) {
             btnCancel.click(function () {
                 listDialog.close();
             });
-            // Custom jquery contains selector.
+            // Custom jquery 'contains' selector.
             jQuery.expr[':'].Contains = function(a,i,m){
                 return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase())>=0;
             };
@@ -139,7 +147,7 @@ define(function (require, exports, module) {
                 var $libDiv = $(this).parent().parent();
                 $libDiv.next().toggle();
             });
-            // Version link handler.
+            // Version links handler.
             $(".plf-version-link").click(function (ev) {
                 ev.preventDefault();
                 var $libDiv = $(this).parent().parent().prev();
@@ -148,38 +156,30 @@ define(function (require, exports, module) {
             });
             // Download buttons handler.
             $(".plf-btn-download").click(function () {
-                var libName, mainfile, version, url, emptyFilePath, filePath,
+                var libName, mainfile, version, url, emptyFilePath,
                     $libDiv = $(this).parent().parent();
 
                 libName = $libDiv.attr("id");
                 mainfile = $libDiv.data("mainfile");
                 version = $libDiv.find("span.blf-lib-version").text().replace(/[()]/g, "");
                 url = cdnURL + libName + "/" + version + "/" + mainfile;
-                emptyFilePath = moduleDirPath + "/../templates/emptyFile";
-                filePath = destDirPath + mainfile;
 
-                /*
-                getLibrary(url).done(function (libContent) {
-                    var file = FileSystem.getFileForPath(filePath);
-                    console.log(file.fullPath);
-                    file.write(libContent, function (err, stats) {
-                        console.log("err: " + err);
-                        listDialog.close();
-                    });
-                    //listDialog.close();
-                }).fail(function () {
-                    console.log("Unable to get " + libName);
-                    listDialog.close();
-                });
-*/
+
                 listDialog.close();
+
                 getLibrary(url).done(function (libContent) {
-                    var clearMainFile = FileUtils.getBaseName(mainfile);
-                    File.copy(emptyFilePath, destDirPath, clearMainFile).done(function () {
-                        var createdFile = FileSystem.getFileForPath(destDirPath + clearMainFile);
-                        console.log(createdFile.fullPath);
+                    var cleanMainFile = FileUtils.getBaseName(mainfile),
+                        emptyFilePath = moduleDirPath + "/../templates/emptyFile";
+
+                    File.copy(emptyFilePath, destDirPath, cleanMainFile).done(function () {
+                        var createdFile = FileSystem.getFileForPath(destDirPath + cleanMainFile);
                         createdFile.write(libContent, { blind: true }, function (err, stats) {
-                            if (err) console.log("Error writing file: " + err.toString());
+                            if (err) {
+                                console.log("Error writing file: " + err.toString());
+                            } else {
+                                var tag = Linker.getTagsFromFiles([createdFile.fullPath]);
+                                Linker.insertTags([tag]);
+                            }
                         });
                         ProjectManager.refreshFileTree();
                     }).fail(function () {

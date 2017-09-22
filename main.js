@@ -4,7 +4,7 @@
 /**
 * Brackets Link File
 */
-define(function (require, exports, module) {
+define(function Main(require, exports, module) {
     'use strict';
 
     /* Modules */
@@ -20,6 +20,7 @@ define(function (require, exports, module) {
         FileUtils           = brackets.getModule("file/FileUtils");
 
     var File                = require("src/pFileUtils"),
+        Linker              = require("src/linker"),
         Dialog              = require("src/pFSD/pFileSelectionDialog"),
         DropArea            = require("src/dropArea"),
         Watcher             = require("src/watcher"),
@@ -313,7 +314,6 @@ define(function (require, exports, module) {
      */
     function enableDropArea() {
         DropArea.show();
-        DropArea.initListeners(linkFile);
         CommandManager.get(CMD_TOGGLE_DROP).setChecked(true);
         prefs.set(DROPAREA_PREF, true);
         prefs.save();
@@ -356,7 +356,7 @@ define(function (require, exports, module) {
             }
         });
         CommandManager.register(MENU_ITEM_DOWNLOADER, CMD_DOWNLOADER, function () {
-            Downloader.show();
+            Downloader.show(makeLink);
         });
         CommandManager.register(MENU_ITEM_DROP_VIEW, CMD_TOGGLE_DROP, toggleDropArea);
         CommandManager.register(MENU_ITEM_WATCH, CMD_TOGGLE_WATCH, function () {

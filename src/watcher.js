@@ -4,7 +4,7 @@
 /**
 * Brackets Link File Watcher.
 */
-define(function (require, exports, module) {
+define(function Watcher(require, exports, module) {
     'use strict';
 
     var EditorManager   = brackets.getModule("editor/EditorManager"),

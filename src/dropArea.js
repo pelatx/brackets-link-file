@@ -4,14 +4,16 @@
 /**
 * Brackets Link File Drop Zone.
 */
-define(function (require, exports, module) {
+define(function DropArea(require, exports, module) {
     'use strict';
 
     var Resizer         = brackets.getModule("utils/Resizer"),
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
-    var Strings         = require("strings");
+    var Strings         = require("strings"),
+        Linker          = require("./linker"),
+        File            = require("./pFileUtils");
 
     var $dropArea = $("<div id=\"plf-droparea\" style=\"background-color:#2a2727;border-top:1px solid black;\" align=\"center\">" + Strings.DROP_AREA + "</br><div class=\"plf-dest-dir\" style=\"position:absolute;right:4px;left:4px;bottom:4px;padding:2px 4px 2px 4px;background-color:#3c3838;overflow:hidden;\" data-toggle=\"popover\" data-trigger=\"hover\"></div></div>");
 
@@ -21,7 +23,7 @@ define(function (require, exports, module) {
      * Initializes listeners for drops and project change.
      * @param {function} callback The function to call for a drop event.
      */
-    function initListeners(callback) {
+    function _initListeners() {
         $dropArea.on("drop", function (event) {
             event.stopPropagation();
             event.preventDefault();
@@ -31,7 +33,11 @@ define(function (require, exports, module) {
             if (files && files.length > 0) {
                 brackets.app.getDroppedFiles(function(err, paths) {
                     if (!err) {
-                        callback(paths);
+                        File.batchCopy(paths, _dirPath).done(function (copiedFiles) {
+                            var tags = Linker.getTagsFromFiles(copiedFiles);
+                            Linker.insertTags(tags);
+                            ProjectManager.refreshFileTree();
+                        });
                     }
                 });
             }
@@ -71,6 +77,7 @@ define(function (require, exports, module) {
         $("#sidebar").append($dropArea);
         Resizer.makeResizable($dropArea, "vert", "top", 80);
         setDestinationDir(ProjectManager.getProjectRoot().fullPath);
+        _initListeners();
     }
 
     /**
@@ -81,7 +88,6 @@ define(function (require, exports, module) {
     }
 
     module.exports = {
-        initListeners: initListeners,
         getDestinationPath: getDestinationPath,
         setDestinationDir: setDestinationDir,
         show: show,

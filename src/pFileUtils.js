@@ -4,7 +4,7 @@
 /**
 * pelatx File Utilities
 */
-define(function (require, exports, module) {
+define(function PFileUtils(require, exports, module) {
     'use strict';
 
     /* Modules */
@@ -73,24 +73,24 @@ define(function (require, exports, module) {
         //Creates the new directory if not exists.
         mkdir(newDir)
             .fail(function () {
-                deferred.reject();
-            })
+            deferred.reject();
+        })
             .done(function () {
-                scrDir = FileSystem.getDirectoryForPath(scrPath);
-                scrDir.getContents(function (err, entries) {
-                    var fullPath, baseName;
-                    for (i = 0; i < entries.length; i++) {
-                        fullPath = entries[i].fullPath;
-                        baseName = FileUtils.getBaseName(fullPath);
-                        if (entries[i].isDirectory) {
-                            copyFolder(fullPath, newDir, baseName);
-                        } else {
-                            copyFile(fullPath, newDir, baseName)
-                                .fail(pushUnsaved(fullPath));
-                        }
+            scrDir = FileSystem.getDirectoryForPath(scrPath);
+            scrDir.getContents(function (err, entries) {
+                var fullPath, baseName;
+                for (i = 0; i < entries.length; i++) {
+                    fullPath = entries[i].fullPath;
+                    baseName = FileUtils.getBaseName(fullPath);
+                    if (entries[i].isDirectory) {
+                        copyFolder(fullPath, newDir, baseName);
+                    } else {
+                        copyFile(fullPath, newDir, baseName)
+                            .fail(pushUnsaved(fullPath));
                     }
-                });
+                }
             });
+        });
         return deferred.promise(unsavedFiles);
     }
 
@@ -126,7 +126,25 @@ define(function (require, exports, module) {
         return deferred.promise();
     }
 
+    function batchCopy(scrPaths, destPath) {
+        var deferred = new $.Deferred(),
+            baseName, counter = 0, copiedFiles = [];
+
+        scrPaths.forEach(function (scrPath) {
+            baseName = FileUtils.getBaseName(scrPath);
+            copy(scrPath, destPath, baseName).done(function (newFilePath) {
+                copiedFiles.push(newFilePath);
+                counter++;
+                if (counter === scrPaths.length) {
+                    deferred.resolve(copiedFiles);
+                }
+            });
+        });
+        return deferred.promise();
+    }
+
     /* Exports */
     exports.mkdir = mkdir;
     exports.copy = copy;
+    exports.batchCopy = batchCopy;
 });
