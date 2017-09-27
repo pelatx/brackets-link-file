@@ -10,16 +10,17 @@ define(function Downloader(require, exports, module) {
     var Dialogs         = brackets.getModule("widgets/Dialogs"),
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
-        EditorManager   = brackets.getModule("editor/EditorManager"),
-        LanguageManager = brackets.getModule("language/LanguageManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         Mustache        = brackets.getModule("thirdparty/mustache/mustache");
 
     var File            = require("./pFileUtils"),
-        Linker          = require("./linker");
+        Linker          = require("./linker"),
+        Strings         = require("strings");
 
-    var LibTemplate     = require("text!templates/cdnLibsListItem.html"),
-        VersionTemplate = require("text!templates/libVersionLink.html");
+    var HeaderTemplate  = require("text!templates/cdnLibsHeader.html"),
+        LibsTemplate    = require("text!templates/cdnLibsList.html"),
+        LibTemplate     = require("text!templates/cdnLibsListItem.html"),
+        VersionTemplate = require("text!templates/cdnLibVersionLink.html");
 
     var apiURL = "https://api.jsdelivr.com/v1/jsdelivr/libraries?fields=name,mainfile,versions",
         cdnURL = "https://cdn.jsdelivr.net/";
@@ -28,12 +29,12 @@ define(function Downloader(require, exports, module) {
 
     var libraryList = null;
 
-    function getLibraries() {
+    function _getLibraries() {
         var deferred = new $.Deferred();
         var fetchingDialog = Dialogs.showModalDialog(
             brackets.DIALOG_ID_SAVE_CLOSE,
-            "Library Download",
-            "<h4>Preparing Library List ...</h4>",
+            Strings.CDN_HEADER_TITLE,
+            "<h4>" + Strings.CDN_PREPARING + "</h4>",
             [],
             false
         );
@@ -60,7 +61,7 @@ define(function Downloader(require, exports, module) {
         return deferred.promise();
     }
 
-    function getLibrary(url) {
+    function _getLibrary(url) {
         var deferred = new $.Deferred();
 
         $.get(url).done(function (data) {
@@ -75,28 +76,34 @@ define(function Downloader(require, exports, module) {
         return deferred.promise();
     }
 
-    function renderLibraries(libs) {
+    function _renderLibraries(libs) {
         var iconsDir = moduleDirPath + "/../styles/icons/",
             downloadIconPath = iconsDir + "ionicons-download.png",
             navIconPath = iconsDir + "ionicons-navicon-round.png";
 
-        var rendered = "<ul id=\"blf-libs\" style=\"list-style:none;\">";
+        var listItems = "";
         for (var i = 0; i < libs.length; i++) {
             var versions = "";
             for (var j = 0; j < libs[i].versions.length; j++) {
                 versions += Mustache.render(VersionTemplate, { version: libs[i].versions[j] });
             }
-            rendered += Mustache.render(LibTemplate, {
+            var libLang = FileUtils.getFileExtension(libs[i].mainfile);
+            if (libLang === "js") {
+                libLang = "JavaScript";
+            } else if ( libLang === "css") {
+                libLang = "CSS";
+            }
+            listItems += Mustache.render(LibTemplate, {
                 libName: libs[i].name,
                 mainFile: libs[i].mainfile,
                 lastVersion: libs[i].versions[0],
+                libLang: libLang,
                 downloadIconPath: downloadIconPath,
                 navIconPath: navIconPath,
                 versions: versions
             });
         }
-        rendered += "<ul>";
-        return rendered;
+        return Mustache.render(LibsTemplate, { listItems: listItems });
     }
 
     function show() {
@@ -110,15 +117,18 @@ define(function Downloader(require, exports, module) {
         }
 
         // Start to fetch the library list.
-        getLibraries().done(function () {
+        _getLibraries().done(function () {
             var listDialog = Dialogs.showModalDialog(
                 brackets.DIALOG_ID_SAVE_CLOSE,
-                "Library Download<form class=\"blf-filterbox\" action=\"#\"><input class=\"blf-filterinput\" type=\"text\" placeholder=\"Filter ...\" style=\"position:absolute;right:26px;top:20px;\"></form>",
-                renderLibraries(libraryList),
+                Mustache.render(HeaderTemplate, {
+                    title: Strings.CDN_HEADER_TITLE,
+                    placeholder: Strings.CDN_HEADER_PLACEHOLDER
+                }),
+                _renderLibraries(libraryList),
                 [{
                     className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
                     id: "blf.cancel",
-                    text: "Cancel"
+                    text: Strings.CANCEL_BUTTON
                 }],
                 false
             );
@@ -156,7 +166,7 @@ define(function Downloader(require, exports, module) {
             });
             // Download buttons handler.
             $(".plf-btn-download").click(function () {
-                var libName, mainfile, version, url, emptyFilePath,
+                var libName, mainfile, version, url,
                     $libDiv = $(this).parent().parent();
 
                 libName = $libDiv.attr("id");
@@ -167,7 +177,7 @@ define(function Downloader(require, exports, module) {
 
                 listDialog.close();
 
-                getLibrary(url).done(function (libContent) {
+                _getLibrary(url).done(function (libContent) {
                     var cleanMainFile = FileUtils.getBaseName(mainfile),
                         emptyFilePath = moduleDirPath + "/../templates/emptyFile";
 

@@ -2,7 +2,7 @@
 /*global define, $, brackets */
 
 /**
-* Link File Linker
+* Brackets Link File Linker.
 */
 define(function Linker(require, exports, module) {
     'use strict';
@@ -160,13 +160,6 @@ define(function Linker(require, exports, module) {
             tag = createTag(relPath, fileLang, docLang);
             tags.push(tag);
         }
-        /*
-        if (filePaths.length === 1) {
-            return tags[0];
-        } else {
-            return tags;
-        }
-        */
         return tags;
     }
 

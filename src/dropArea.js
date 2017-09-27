@@ -2,20 +2,25 @@
 /*global define, $, brackets */
 
 /**
-* Brackets Link File Drop Zone.
+* Brackets Link File Drop Area.
 */
 define(function DropArea(require, exports, module) {
     'use strict';
 
     var Resizer         = brackets.getModule("utils/Resizer"),
         FileUtils       = brackets.getModule("file/FileUtils"),
-        ProjectManager  = brackets.getModule("project/ProjectManager");
+        ProjectManager  = brackets.getModule("project/ProjectManager"),
+        Mustache        = brackets.getModule("thirdparty/mustache/mustache");
 
     var Strings         = require("strings"),
         Linker          = require("./linker"),
         File            = require("./pFileUtils");
 
-    var $dropArea = $("<div id=\"plf-droparea\" style=\"background-color:#2a2727;border-top:1px solid black;\" align=\"center\">" + Strings.DROP_AREA + "</br><div class=\"plf-dest-dir\" style=\"position:absolute;right:4px;left:4px;bottom:4px;padding:2px 4px 2px 4px;background-color:#3c3838;overflow:hidden;\" data-toggle=\"popover\" data-trigger=\"hover\"></div></div>");
+    var dropAreaTemplate  = require("text!templates/dropArea.html");
+
+    var $dropArea = $(Mustache.render(dropAreaTemplate, {
+        title: Strings.DROP_AREA
+    }));
 
     var _dirPath;
 
@@ -63,14 +68,6 @@ define(function DropArea(require, exports, module) {
     }
 
     /**
-     * Returns the current destination directory.
-     * @returns {string} The current directory full path.
-     */
-    function getDestinationPath() {
-        return _dirPath;
-    }
-
-    /**
      * Appends the drop area to Brackets sidebar.
      */
     function show() {
@@ -88,7 +85,6 @@ define(function DropArea(require, exports, module) {
     }
 
     module.exports = {
-        getDestinationPath: getDestinationPath,
         setDestinationDir: setDestinationDir,
         show: show,
         hide: hide
