@@ -7,7 +7,8 @@ define({
 
     CDN_HEADER_TITLE: "Library Download",
     CDN_HEADER_PLACEHOLDER: "Filter ...",
-    CDN_PREPARING: "Preparing Library List ...",
+    CDN_LOADING: "Loading Library List ...",
+    CDN_LAST_VERSION: "Last Version: ",
 
     CANCEL_BUTTON: "Cancel"
 });

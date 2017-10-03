@@ -150,15 +150,43 @@ define(function Linker(require, exports, module) {
             tag,
             relPath,
             fileLang,
-            editor = EditorManager. getActiveEditor(),
-            docPath = editor.getFile().fullPath,
-            docLang = editor.getLanguageForSelection().getId();
+            editor = EditorManager. getActiveEditor();
 
-        for (var i = 0; i < filePaths.length; i++) {
-            relPath = findRelativePath(filePaths[i], docPath);
-            fileLang = LanguageManager.getLanguageForPath(filePaths[i]).getId();
-            tag = createTag(relPath, fileLang, docLang);
-            tags.push(tag);
+        if (filePaths && editor && !editor.document.isUntitled()) {
+            var docPath = editor.getFile().fullPath,
+                docLang = editor.getLanguageForSelection().getId();
+
+            for (var i = 0; i < filePaths.length; i++) {
+                relPath = findRelativePath(filePaths[i], docPath);
+                fileLang = LanguageManager.getLanguageForPath(filePaths[i]).getId();
+                tag = createTag(relPath, fileLang, docLang);
+                if (tag) { tags.push(tag); }
+            }
+        }
+        return tags;
+    }
+
+    function getTagsFromUrls(urls) {
+        var tags = [],
+            tag,
+            fileExt, fileLang,
+            editor = EditorManager. getActiveEditor();
+
+
+        if (urls && editor && !editor.document.isUntitled()) {
+            var docPath = editor.getFile().fullPath,
+                docLang = editor.getLanguageForSelection().getId();
+
+            for (var i = 0; i < urls.length; i++) {
+                fileExt = FileUtils.getFileExtension(urls[i]).toLowerCase();
+                if (fileExt === "js") {
+                    fileLang = "javascript"
+                } else {
+                    fileLang = fileExt;
+                }
+                tag = createTag(urls[i], fileLang, docLang);
+                if (tag) { tags.push(tag); }
+            }
         }
         return tags;
     }
@@ -166,16 +194,18 @@ define(function Linker(require, exports, module) {
     function insertTags(tags) {
         var editor = EditorManager. getActiveEditor();
 
-        for (var i = 0; i < tags.length; i++) {
-            if (i < tags.length - 1) {
-                tags[i] += "\n";
+        if (tags && editor && !editor.document.isUntitled()) {
+            for (var i = 0; i < tags.length; i++) {
+                if (i < tags.length - 1) {
+                    tags[i] += "\n";
+                }
+                var selection = editor.getSelection();
+                editor.document.replaceRange(
+                    tags[i],
+                    selection.start,
+                    selection.end
+                );
             }
-            var selection = editor.getSelection();
-            editor.document.replaceRange(
-                tags[i],
-                selection.start,
-                selection.end
-            );
         }
     }
 
@@ -183,6 +213,7 @@ define(function Linker(require, exports, module) {
         findRelativePath: findRelativePath,
         createTag: createTag,
         getTagsFromFiles: getTagsFromFiles,
+        getTagsFromUrls: getTagsFromUrls,
         insertTags: insertTags
     }
 });

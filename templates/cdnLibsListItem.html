@@ -1,15 +1,15 @@
-<li style="border-bottom: 1px solid grey;">
-    <div id="{{libName}}" data-mainfile="{{mainFile}}" style="position:relative;height:30px;">
-        <div style="display:inline-block;">
-            <span class="blf-lib-name" style="font-size:16px;margin-top:7px;">{{libName}} </span>
-            <span class="blf-lib-lang" style="font-size:10px;margin-top:13px;">({{libLang}})</span>
-            <span class="blf-lib-version" style="font-size:14px;margin-top:9px;color:#a83838;">({{lastVersion}}) </span>
+<li id="{{libName}}" data-mainfile="{{mainFile}}">
+    <div class="blf-lib-container">
+        <div class="blf-lib-info">
+            <span class="blf-lib-name">{{libName}} </span>
+            <span class="blf-lib-lang">({{libLang}})</span>
+            <span class="blf-lib-version">({{version}})</span>
+            <span class="blf-lib-last-version">{{lastVersionLabel}}{{version}}</span>
         </div>
-        <div class="blf-lib-buttons" style="display:inline-block;position:absolute;right:20px;">
-            <button type="button" class="btn plf-btn-download" style="height:20px;width:20px;margin-top:6px;background:url({{downloadIconPath}}) no-repeat center;background-size:16px 16px;">
-            </button>
-            <button type="button" class="btn plf-btn-versions" style="height:20px;width:20px;margin-top:6px;background:url({{navIconPath}}) no-repeat center;background-size:16px 16px;">
-            </button>
+        <div class="blf-lib-buttons">
+            <button type="button" class="btn blf-btn blf-btn-download" style="background:url({{downloadIconPath}}) no-repeat center;background-size:16px 16px;"></button>
+            <button type="button" class="btn blf-btn blf-btn-link" style="background:url({{linkIconPath}}) no-repeat center;background-size:18px 18px;"></button>
+            <button type="button" class="btn blf-btn blf-btn-versions" style="background:url({{navIconPath}}) no-repeat center;background-size:16px 16px;"></button>
         </div>
     </div>
     <div class="blf-lib-versions">

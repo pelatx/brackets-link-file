@@ -61,7 +61,7 @@ define(function DropArea(require, exports, module) {
     function setDestinationDir(dir) {
         _dirPath = dir;
         var name = FileUtils.getBaseName(_dirPath);
-        var $dest = $(".plf-dest-dir");
+        var $dest = $(".blf-dest-dir");
         $dest.empty();
         $dest.append(name);
         $dest.attr("title", _dirPath);
@@ -71,8 +71,8 @@ define(function DropArea(require, exports, module) {
      * Appends the drop area to Brackets sidebar.
      */
     function show() {
-        $("#sidebar").append($dropArea);
         Resizer.makeResizable($dropArea, "vert", "top", 80);
+        $("#sidebar").append($dropArea);
         setDestinationDir(ProjectManager.getProjectRoot().fullPath);
         _initListeners();
     }

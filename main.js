@@ -11,13 +11,11 @@ define(function Main(require, exports, module) {
     var AppInit             = brackets.getModule("utils/AppInit"),
         CommandManager      = brackets.getModule("command/CommandManager"),
         ProjectManager      = brackets.getModule("project/ProjectManager"),
-        EditorManager       = brackets.getModule("editor/EditorManager"),
         LanguageManager     = brackets.getModule("language/LanguageManager"),
-        MainViewManager     = brackets.getModule("view/MainViewManager"),
         PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
+        ExtensionUtils     = brackets.getModule("utils/ExtensionUtils"),
         Menus               = brackets.getModule("command/Menus"),
-        Commands            = brackets.getModule("command/Commands"),
-        FileUtils           = brackets.getModule("file/FileUtils");
+        Commands            = brackets.getModule("command/Commands");
 
     var File                = require("src/pFileUtils"),
         Linker              = require("src/linker"),
@@ -46,6 +44,8 @@ define(function Main(require, exports, module) {
     /* Preferences */
     var prefs = PreferencesManager.getExtensionPrefs("brackets.linkfile");
 
+    // Styles
+    ExtensionUtils.loadStyleSheet(module, "styles/styles.css");
 
     /* Functions */
 

@@ -7,7 +7,8 @@ define({
 
     CDN_HEADER_TITLE: "Descargar Librería",
     CDN_HEADER_PLACEHOLDER: "Filtrar ...",
-    CDN_PREPARING: "Preparando Lista de Librerías ...",
+    CDN_LOADING: "Cargando Lista de Librerías ...",
+    CDN_LAST_VERSION: "Última Versión: ",
 
     CANCEL_BUTTON: "Cancelar"
 });

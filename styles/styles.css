@@ -1,0 +1,71 @@
+.blf-filterinput {
+    position:absolute;
+    right:26px;
+    top:20px;
+}
+
+#blf-libs {
+    list-style:none;
+}
+
+#blf-libs li {
+    border-bottom: 1px solid grey;
+}
+
+.blf-lib-container {
+    position:relative;
+    height:30px;
+}
+.blf-lib-info {
+    display: inline-block;
+}
+
+.blf-lib-name {
+    font-size:16px;
+    margin-top:7px;
+}
+
+.blf-lib-lang {
+    font-size:12px;
+    margin-top:11px;
+}
+
+.blf-lib-version {
+    font-size:14px;
+    margin-top:9px;
+    color:#a83838;
+}
+
+.blf-lib-last-version {
+    font-size:12px;
+    margin-top:11px;
+    display:none;
+}
+
+.blf-lib-buttons {
+    display:inline-block;
+    position:absolute;
+    right:20px;
+}
+
+.blf-btn {
+    height:20px;
+    width:20px;
+    margin-top:6px;
+}
+
+
+#blf-droparea {
+    background-color:#2a2727;
+    border-top:1px solid black;
+}
+
+.blf-dest-dir {
+    position:absolute;
+    right:4px;
+    left:4px;
+    bottom:4px;
+    padding:2px 4px 2px 4px;
+    background-color:#3c3838;
+    overflow:hidden;
+}
