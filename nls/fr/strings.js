@@ -9,5 +9,10 @@ define({
     CDN LOADING: "Chargement de la liste des bibliothèques ...",
     CDN_LAST_VERSION: "Dernière version: ",
 
-    CANCEL_BUTTON: "Annuler"
+    PROCEED_BUTTON: "Procédez",
+    CANCEL_BUTTON: "Annuler",
+    CHECK_ALL_BUTTON: "Sélectionnez Tout",
+    UNCHECK_ALL_BUTTON: "Désélectionnez Tout",
+
+    PFSD_TITLE: "Ajout de fichiers au Projet"
 });

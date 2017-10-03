@@ -10,5 +10,10 @@ define({
     CDN_LOADING: "Cargando Lista de Librerías ...",
     CDN_LAST_VERSION: "Última Versión: ",
 
-    CANCEL_BUTTON: "Cancelar"
+    PROCEED_BUTTON: "Proceder",
+    CANCEL_BUTTON: "Cancelar",
+    CHECK_ALL_BUTTON: "Marcar Todo",
+    UNCHECK_ALL_BUTTON: "Desmarcar Todo",
+
+    PFSD_TITLE: "Añade Archivos al Proyecto"
 });

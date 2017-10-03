@@ -59,7 +59,14 @@ define(function Main(require, exports, module) {
                 var tag = Linker.getTagsFromFiles([selectedItem.fullPath]);
                 Linker.insertTags(tag)
             } else {
-                Dialog.show("Add files to project").done(function (paths) {
+                var labels = {
+                    title: Strings.PFSD_TITLE,
+                    proceed: Strings.PROCEED_BUTTON,
+                    cancel: Strings.CANCEL_BUTTON,
+                    checkAll: Strings.CHECK_ALL_BUTTON,
+                    uncheckAll: Strings.UNCHECK_ALL_BUTTON
+                };
+                Dialog.show(labels).done(function (paths) {
                     if (paths.length > 0) {
                         File.batchCopy(paths, selectedItem.fullPath).done(function (copiedFiles) {
                             var tags = Linker.getTagsFromFiles(copiedFiles);

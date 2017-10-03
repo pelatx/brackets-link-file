@@ -297,14 +297,31 @@ define(function (require, exports, module) {
      * @param   {boolean} update If it is a list update only.
      * @returns {object}  Promise with an array of selected items full path strings.
      */
-    function show(title, scrDir, update) {
-        var dir, i, name, path, paths = [], render, selected = [],
+    function show(labels, scrDir, update) {
+        var dir, i, name, path, paths = [], render, selected = [], defaultLabels,
             btnProceed, btnCancel, btnCheckAll, btnUncheckAll,
             btnProceedHandler, btnCancelHandler, btnCheckAllHandler, btnUncheckAllHandler,
             deferred = new $.Deferred();
 
-        // Default title
-        if (!title) { title = "Select Files"; }
+        // Default labels
+        defaultLabels = {
+            title: "Select Files",
+            proceed: "Proceed",
+            cancel: "Cancel",
+            checkAll: "Check All",
+            uncheckAll: "Uncheck All"
+        };
+        // If no labels object
+        if (!labels) {
+            labels = defaultLabels;
+        // Check for missing labels in passed object
+        } else {
+            $.each(defaultLabels, function (key, label) {
+                if (!labels.hasOwnProperty(key)) {
+                    labels[key] = label;
+                }
+            });
+        }
 
         // We always need a valid directory to show first.
         _setValidDir(scrDir).done(function (validDir) {
@@ -329,24 +346,24 @@ define(function (require, exports, module) {
                 if (!update) {
                     dialog = Dialogs.showModalDialog(
                         brackets.DIALOG_ID_SAVE_CLOSE,
-                        title,
+                        labels.title,
                         render,
                         [{
                             className: Dialogs.DIALOG_BTN_CLASS_NORMAL,
                             id: "bod.checkall",
-                            text: "Check All"
+                            text: labels.checkAll
                         }, {
                             className: Dialogs.DIALOG_BTN_CLASS_NORMAL,
                             id: "bod.uncheckall",
-                            text: "Uncheck All"
+                            text: labels.uncheckAll
                         }, {
                             className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
                             id: "bod.cancel",
-                            text: "Cancel"
+                            text: labels.cancel
                         }, {
                             className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
                             id: "bod.proceed",
-                            text: "Proceed"
+                            text: labels.proceed
                         }],
                         false
                     );

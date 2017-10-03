@@ -3,7 +3,7 @@
     "title": "Brackets Link File",
     "description": "New: internationalization (en, es, fr). Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). It allows to copy several files in one time to any project folder and get them tagged automatically.",
     "homepage": "https://github.com/pelatx/brackets-link-file",
-    "version": "1.7.1",
+    "version": "1.8.0-alpha0",
     "author": "José A. Martínez <https://github.com/pelatx>",
     "license": "MIT",
     "keywords": [
