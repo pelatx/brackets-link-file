@@ -29,7 +29,7 @@ define(function Downloader(require, exports, module) {
 
     var _libraryList = null;
 
-    function _getLibraries() {
+    function _getLibraryList() {
         var deferred = new $.Deferred();
 
         if (_libraryList === null) {
@@ -46,7 +46,7 @@ define(function Downloader(require, exports, module) {
                 deferred.reject();
             });
         } else {
-            // To let de loading message appear in the dialog.
+            // To let the loading message appear in the dialog.
             setTimeout(function () {
                 deferred.resolve();
             }, 300);
@@ -54,7 +54,7 @@ define(function Downloader(require, exports, module) {
         return deferred.promise();
     }
 
-    function _getLibrary(url) {
+    function _getLibraryContent(url) {
         var deferred = new $.Deferred();
 
         $.get(url).done(function (data) {
@@ -77,16 +77,13 @@ define(function Downloader(require, exports, module) {
 
         var listItems = "";
         for (var i = 0; i < libs.length; i++) {
-            var versions = "";
-            for (var j = 0; j < libs[i].versions.length; j++) {
-                versions += Mustache.render(VersionTemplate, { version: libs[i].versions[j] });
-            }
             var libLang = FileUtils.getFileExtension(libs[i].mainfile);
             if (libLang === "js") {
                 libLang = "JavaScript";
             } else if ( libLang === "css") {
                 libLang = "CSS";
             }
+
             listItems += Mustache.render(LibTemplate, {
                 libName: libs[i].name,
                 mainFile: libs[i].mainfile,
@@ -95,24 +92,31 @@ define(function Downloader(require, exports, module) {
                 libLang: libLang,
                 downloadIconPath: downloadIconPath,
                 linkIconPath: linkIconPath,
-                navIconPath: navIconPath,
-                versions: versions
+                navIconPath: navIconPath
             });
         }
         return Mustache.render(LibsTemplate, { listItems: listItems });
     }
 
-    function show() {
-        var destDirPath,
-            projectItem = ProjectManager.getSelectedItem();
+    function _renderVersions($lib) {
+        var libName = $lib.attr("id"),
+            lib, versions = "";
 
-        if (projectItem.isDirectory) {
-            destDirPath = projectItem.fullPath;
-        } else {
-            destDirPath = ProjectManager.getProjectRoot().fullPath;
+        for (var i = 0; i < _libraryList.length; i++) {
+            if (_libraryList[i].name === libName) {
+                for (var j = 0; j < _libraryList[i].versions.length; j++) {
+                    versions += Mustache.render(VersionTemplate, { version: _libraryList[i].versions[j] });
+                }
+            }
         }
+        return versions;
+    }
 
-        var listDialog = Dialogs.showModalDialog(
+    function _showDialog() {
+        var listDialog, libObject, btnCancel,
+            deferred = new $.Deferred();
+
+        listDialog = Dialogs.showModalDialog(
             brackets.DIALOG_ID_SAVE_CLOSE,
             Mustache.render(HeaderTemplate, {
                 title: Strings.CDN_HEADER_TITLE,
@@ -129,15 +133,16 @@ define(function Downloader(require, exports, module) {
         // Ensure that the dialog height is always the same.
         $(".modal-body").css("height", "400px");
 
-        // Start to fetch the library list.
-        _getLibraries().done(function () {
-            $(".modal-body").html(_renderLibraries(_libraryList));
+        // Cancel button handler.
+        btnCancel = $('.dialog-button').filter('[data-button-id="blf.cancel"]');
+        btnCancel.click(function () {
+            listDialog.close();
+            deferred.reject();
+        });
 
-            // Cancel button handler.
-            var btnCancel = $('.dialog-button').filter('[data-button-id="blf.cancel"]');
-            btnCancel.click(function () {
-                listDialog.close();
-            });
+        // Fetch the library list.
+        _getLibraryList().done(function () {
+            $(".modal-body").html(_renderLibraries(_libraryList));
 
             // Filter box handler.
             $(".blf-filterinput").keyup(function () {
@@ -158,86 +163,117 @@ define(function Downloader(require, exports, module) {
 
             // Version buttons handler.
             $(".blf-btn-versions").click(function () {
-                var $libDiv = $(this).parent().parent();
-                $libDiv.next().toggle();
-            });
+                var $li = $(this).parent().parent().parent(),
+                    $versionsDiv = $li.find(".blf-lib-versions");
 
-            // Version links handler.
-            $(".blf-version-link").click(function (ev) {
-                var $libDiv, $lastVersionEl,
-                    lastVersion, version = $(this).text();
-
-                ev.preventDefault();
-
-                $libDiv = $(this).parent().parent().prev();
-                $lastVersionEl = $libDiv.find("span.blf-lib-last-version");
-                lastVersion = $lastVersionEl.text().replace(Strings.CDN_LAST_VERSION, "");
-                if (version === lastVersion) {
-                    $lastVersionEl.hide();
+                if ($versionsDiv.is(":visible")) {
+                    $versionsDiv.empty();
+                    $versionsDiv.hide();
                 } else {
-                    $lastVersionEl.show();
+                    $versionsDiv.html(_renderVersions($li));
+                    $versionsDiv.show();
+
+                    // Version links handler.
+                    $(".blf-version-link").click(function (ev) {
+                        var $libDiv, $lastVersionEl,
+                            lastVersion, version = $(this).text();
+
+                        ev.preventDefault();
+
+                        $libDiv = $(this).parent().parent().prev();
+                        $lastVersionEl = $libDiv.find("span.blf-lib-last-version");
+                        lastVersion = $lastVersionEl.text().replace(Strings.CDN_LAST_VERSION, "");
+                        if (version === lastVersion) {
+                            $lastVersionEl.hide();
+                        } else {
+                            $lastVersionEl.show();
+                        }
+                        $libDiv.find("span.blf-lib-version").text("(" + $(this).text() + ")");
+                        $libDiv.next().hide();
+                    });
                 }
-                $libDiv.find("span.blf-lib-version").text("(" + $(this).text() + ")");
-                $libDiv.next().hide();
             });
 
             // Download buttons handler.
             $(".blf-btn-download").click(function () {
-                var libName, mainfile, version, url,
+                var libName, mainFile, version, url,
                     $li = $(this).parent().parent().parent();
 
                 libName = $li.attr("id");
-                mainfile = $li.data("mainfile");
+                mainFile = $li.data("mainfile");
                 version = $li.find("span.blf-lib-version").text().replace(/[()]/g, "");
-                url = cdnURL + libName + "/" + version + "/" + mainfile;
-
+                url = cdnURL + libName + "/" + version + "/" + mainFile;
+                libObject = {
+                    action: "download",
+                    url: url,
+                    mainFile: mainFile
+                };
 
                 listDialog.close();
-
-                _getLibrary(url).done(function (libContent) {
-                    var cleanMainFile = FileUtils.getBaseName(mainfile),
-                        emptyFilePath = moduleDirPath + "/../templates/emptyFile";
-
-                    File.copy(emptyFilePath, destDirPath, cleanMainFile).done(function () {
-                        var createdFile = FileSystem.getFileForPath(destDirPath + cleanMainFile);
-                        createdFile.write(libContent, { blind: true }, function (err, stats) {
-                            if (err) {
-                                console.log("Error writing file: " + err.toString());
-                            } else {
-                                var tag = Linker.getTagsFromFiles([createdFile.fullPath]);
-                                Linker.insertTags(tag);
-                            }
-                        });
-                        ProjectManager.refreshFileTree();
-                    }).fail(function () {
-                        console.log("Error creating file.");
-                    });
-                });
+                deferred.resolve(libObject);
             });
 
             // CDN link buttons handler.
             $(".blf-btn-link").click(function () {
-                var libName, mainfile, version, url, tag,
+                var libName, mainFile, version, url, tag,
                     $li = $(this).parent().parent().parent();
 
                 libName = $li.attr("id");
-                mainfile = $li.data("mainfile");
+                mainFile = $li.data("mainfile");
                 version = $li.find("span.blf-lib-version").text().replace(/[()]/g, "");
+                url = cdnURL + libName + "/" + version + "/" + mainFile;
+                libObject = { action: "link", url: url };
+
                 listDialog.close();
-                url = cdnURL + libName + "/" + version + "/" + mainfile;
-                tag = Linker.getTagsFromUrls([url]);
-                Linker.insertTags([tag]);
+                deferred.resolve(libObject);
             });
 
             // Ensure that versions are hide when open the dialog.
             $("#blf-libs").find(".blf-lib-versions").hide();
+
+            // Bootstrap and JQuery downloads causes a Brackets crash, because of some
+            // kind of colision. I could not find a solution for now, so I have opted to cancel the download.
+            $("#blf-libs").find("#jquery").find(".blf-btn-download").remove();
+            $("#blf-libs").find("#bootstrap").find(".blf-btn-download").remove();
         }).fail(function () {
-            //fetchingDialog.close();
-            console.log("Unable to feth library list")
+            $(".modal-body").html("<h4>" + Strings.CDN_ERROR_FETCHING_LIST + "</h4>");
+            deferred.reject();
+        });
+
+        return deferred.promise();
+    }
+
+    function init() {
+        var destDirPath,
+            projectItem = ProjectManager.getSelectedItem();
+
+        if (projectItem.isDirectory) {
+            destDirPath = projectItem.fullPath;
+        } else {
+            destDirPath = ProjectManager.getProjectRoot().fullPath;
+        }
+
+        _showDialog().done(function (libObject) {
+            if (libObject.action === "download") {
+                _getLibraryContent(libObject.url).done(function (libContent) {
+                    var cleanMainFile = FileUtils.getBaseName(libObject.mainFile),
+                        libFile = FileSystem.getFileForPath(destDirPath + cleanMainFile);
+
+                    FileUtils.writeText(libFile, libContent, true).done(function () {
+                        var tag = Linker.getTagsFromFiles([libFile.fullPath]);
+                        Linker.insertTags(tag);
+                    }).fail(function () {
+                        console.log("Error writing file: " + libFile);
+                    });
+                });
+            } else if (libObject.action === "link") {
+                var tag = Linker.getTagsFromUrls([libObject.url]);
+                Linker.insertTags([tag]);
+            }
         });
     }
 
     module.exports = {
-        show: show
+        init: init
     }
 });

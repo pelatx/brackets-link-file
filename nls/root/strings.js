@@ -9,6 +9,7 @@ define({
     CDN_HEADER_PLACEHOLDER: "Filter ...",
     CDN_LOADING: "Loading Library List ...",
     CDN_LAST_VERSION: "Last Version: ",
+    CDN_ERROR_FETCHING_LIST: "Unable to fetch the library list. Try again later.",
 
     PROCEED_BUTTON: "Proceed",
     CANCEL_BUTTON: "Cancel",

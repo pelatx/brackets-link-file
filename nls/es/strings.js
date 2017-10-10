@@ -9,6 +9,7 @@ define({
     CDN_HEADER_PLACEHOLDER: "Filtrar ...",
     CDN_LOADING: "Cargando Lista de Librerías ...",
     CDN_LAST_VERSION: "Última Versión: ",
+    CDN_ERROR_FETCHING_LIST: "No se puede obtener la lista de bibliotecas. Vuelva a intentarlo más tarde.",
 
     PROCEED_BUTTON: "Proceder",
     CANCEL_BUTTON: "Cancelar",

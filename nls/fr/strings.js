@@ -8,6 +8,7 @@ define({
     CDN HEADER PLACEHOLDER: "Filtre ...",
     CDN LOADING: "Chargement de la liste des bibliothèques ...",
     CDN_LAST_VERSION: "Dernière version: ",
+    CDN_ERROR_FETCHING_LIST: "Impossible d'extraire la liste de bibliothèque. Réessayez plus tard.",
 
     PROCEED_BUTTON: "Procédez",
     CANCEL_BUTTON: "Annuler",
