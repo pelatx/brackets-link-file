@@ -144,8 +144,8 @@ define(function Main(require, exports, module) {
 
         contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
         contextMenu.addMenuItem(CMD_LINK);
-        contextMenu.addMenuItem(CMD_SET_DROP_DEST);
         contextMenu.addMenuItem(CMD_DOWNLOADER);
+        contextMenu.addMenuItem(CMD_SET_DROP_DEST);
 
         viewMenu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
         viewMenu.addMenuItem(CMD_TOGGLE_DROP);

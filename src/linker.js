@@ -145,6 +145,11 @@ define(function Linker(require, exports, module) {
         return tag;
     }
 
+    /**
+     * Creates tags from file full paths.
+     * @param   {Array} filePaths File full path strings.
+     * @returns {Array} Tag strings.
+     */
     function getTagsFromFiles(filePaths) {
         var tags = [],
             tag,
@@ -166,6 +171,11 @@ define(function Linker(require, exports, module) {
         return tags;
     }
 
+    /**
+     * Creates tags from URLs.
+     * @param   {Array} urls URL strings.
+     * @returns {Array} Tag strings.
+     */
     function getTagsFromUrls(urls) {
         var tags = [],
             tag,
@@ -191,6 +201,10 @@ define(function Linker(require, exports, module) {
         return tags;
     }
 
+    /**
+     * Place tags in active document.
+     * @param {Array} tags Tag strings.
+     */
     function insertTags(tags) {
         var editor = EditorManager. getActiveEditor();
 

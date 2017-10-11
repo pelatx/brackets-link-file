@@ -6,6 +6,8 @@ Supports linking of existing files in the project tree. Also, with a file select
 
 It also supports bi-directionality: if you delete a project file, the tag or tags are automatically deleted in the document.
 
+Supports direct download of libraries from CDN. You can download and link the library automatically in the document. Or just get a tag with the URL of the library for remote use.
+
 ## Install from Brackets
 
 1. Open the Extension Manager from the File menu
@@ -57,6 +59,18 @@ Once enabled, the extension will recognize when a project file is deleted. And i
 
 Watch it in [this video][video-watcher]
 
+#### Downloading libraries from CDN.
+
+Right click on the destination directory in the Project tree -> Link File (Download Library). You will be prompted with a dialog where you can see the library list. 
+
+Every library item has three buttons on right side. The one starting from right, lets you choose the version to use. 
+
+Second one inserts a tag with the library URL for remore usage. 
+
+And the third button downloads the library to the selected folder and insert the corresponding tag in the active document with the correct relative path.
+
+Watch it in [this video][video-downloader] 
+
 ## Features
 
 - Insert tags from already existing files in project tree.
@@ -103,11 +117,21 @@ v1.7.0 Internationalization support: english, spanish, french.
 
 v1.7.1 Fixed package.json missing traductions.
 
+v1.8.0 - Changes:
+- CDN library downloader (or only tag for remote usage).
+- Code modularization and refactoring.
+- Some little fixes.
+- Complete internationalization.
+
 ## Credits
-Folder icon from [Ionicons][ionicons].
+Icons from [Ionicons][ionicons].
+
+CDN downloads from [jsDelivr][jsdelivr].
 
 [video-only-linking]: https://vimeo.com/203813633
 [video-copying-and-linking]: https://vimeo.com/203813648
 [video-dragndrop]: https://vimeo.com/223621373
 [video-watcher]: https://vimeo.com/228543196
+[video-downloader]: https://vimeo.com/237735327
 [ionicons]: http://ionicons.com/
+[jsdelivr]: https://www.jsdelivr.com/

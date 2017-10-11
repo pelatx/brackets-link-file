@@ -1,9 +1,9 @@
 {
     "name": "pelatx.brackets-link-file",
     "title": "Brackets Link File",
-    "description": "New: internationalization (en, es, fr). Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). It allows to copy several files in one time to any project folder and get them tagged automatically.",
+    "description": "New: CDN library downloader. Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). It allows to copy several files in one time to any project folder and get them tagged automatically.",
     "homepage": "https://github.com/pelatx/brackets-link-file",
-    "version": "1.8.0-alpha1",
+    "version": "1.8.0-beta",
     "author": "José A. Martínez <https://github.com/pelatx>",
     "license": "MIT",
     "keywords": [
@@ -31,10 +31,10 @@
     ],
     "package-i18n": {
         "es": {
-            "description": "Nuevo: internacionalización (en, es, fr). Enlaza fácilmente tus archivos (PHP, JavaScript, CSS, imágenes, audio, video) al documento activo (HTML, PHP, CSS). Permite copiar varios archivos de una sola vez a qualquier directorio del proyecto y los tags serán insertados automáticamente."
+            "description": "Nuevo: Descarga y enlaza bibliotecas de CDN. Enlaza fácilmente tus archivos (PHP, JavaScript, CSS, imágenes, audio, video) al documento activo (HTML, PHP, CSS). Permite copiar varios archivos de una sola vez a qualquier directorio del proyecto y los tags serán insertados automáticamente."
         },
         "fr": {
-            "description": "Nouveau: internationalisation (fr, es, fr). Reliez facilement vos fichiers (PHP, JavaScript, CSS, images, audio, vidéo) au document actif (HTML, PHP, CSS). Vous pouvez copier plusieurs fichiers à la fois sur n'importe quel répertoire de projet et les tags seront insérés automatiquement."
+            "description": "Nouveau: Télécharger et lier bibliothèques de CDN. Reliez facilement vos fichiers (PHP, JavaScript, CSS, images, audio, vidéo) au document actif (HTML, PHP, CSS). Vous pouvez copier plusieurs fichiers à la fois sur n'importe quel répertoire de projet et les tags seront insérés automatiquement."
         }
     }
 }

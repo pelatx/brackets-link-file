@@ -13,8 +13,7 @@ define(function Downloader(require, exports, module) {
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
         Mustache        = brackets.getModule("thirdparty/mustache/mustache");
 
-    var File            = require("./pFileUtils"),
-        Linker          = require("./linker"),
+    var Linker          = require("./linker"),
         Strings         = require("strings");
 
     var HeaderTemplate  = require("text!templates/cdnLibsHeader.html"),
@@ -29,6 +28,11 @@ define(function Downloader(require, exports, module) {
 
     var _libraryList = null;
 
+    /**
+     * Returns the list of available libraries.
+     * @private
+     * @returns {object} A promise with an array of lib objects on success.
+     */
     function _getLibraryList() {
         var deferred = new $.Deferred();
 
@@ -54,6 +58,12 @@ define(function Downloader(require, exports, module) {
         return deferred.promise();
     }
 
+    /**
+     * Gets the library text content from CDN.
+     * @private
+     * @param   {string} url Library CDN URL .
+     * @returns {string} Library text content.
+     */
     function _getLibraryContent(url) {
         var deferred = new $.Deferred();
 
@@ -69,6 +79,12 @@ define(function Downloader(require, exports, module) {
         return deferred.promise();
     }
 
+    /**
+     * Creates the library list HTML to be displayed in a dialog.
+     * @private
+     * @param   {Array}  libs Array of library objects.
+     * @returns {string} Library list HTML.
+     */
     function _renderLibraries(libs) {
         var iconsDir = moduleDirPath + "/../styles/icons/",
             downloadIconPath = iconsDir + "ionicons-download.png",
@@ -98,6 +114,12 @@ define(function Downloader(require, exports, module) {
         return Mustache.render(LibsTemplate, { listItems: listItems });
     }
 
+    /**
+     * Creates the versions list HTML to be displayed for every library.
+     * @private
+     * @param   {object} $lib JQuery object containing the 'li' of the library.
+     * @returns {string} Versions HTML.
+     */
     function _renderVersions($lib) {
         var libName = $lib.attr("id"),
             lib, versions = "";
@@ -112,6 +134,11 @@ define(function Downloader(require, exports, module) {
         return versions;
     }
 
+    /**
+     * Shows the library selection dialog.
+     * @private
+     * @returns {object} A promise with a custom library object on success.
+     */
     function _showDialog() {
         var listDialog, libObject, btnCancel,
             deferred = new $.Deferred();
@@ -215,7 +242,7 @@ define(function Downloader(require, exports, module) {
 
             // CDN link buttons handler.
             $(".blf-btn-link").click(function () {
-                var libName, mainFile, version, url, tag,
+                var libName, mainFile, version, url,
                     $li = $(this).parent().parent().parent();
 
                 libName = $li.attr("id");
@@ -243,6 +270,9 @@ define(function Downloader(require, exports, module) {
         return deferred.promise();
     }
 
+    /**
+     * Initializes the CDN library downloader.
+     */
     function init() {
         var destDirPath,
             projectItem = ProjectManager.getSelectedItem();
@@ -262,6 +292,7 @@ define(function Downloader(require, exports, module) {
                     FileUtils.writeText(libFile, libContent, true).done(function () {
                         var tag = Linker.getTagsFromFiles([libFile.fullPath]);
                         Linker.insertTags(tag);
+                        ProjectManager.refreshFileTree();
                     }).fail(function () {
                         console.log("Error writing file: " + libFile);
                     });

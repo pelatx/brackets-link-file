@@ -34,6 +34,11 @@ define(function Watcher(require, exports, module) {
     var _intervalFunc,
         _projectChangeFunc;
 
+    /**
+     * Compares cached project files with current.
+     * @private
+     * @returns {Array} Full path strings of removed files.
+     */
     function _compareFiles() {
         var removedFiles = [];
         _watchedFilesCache.forEach(function (file) {
@@ -44,6 +49,14 @@ define(function Watcher(require, exports, module) {
         return removedFiles;
     }
 
+    /**
+     * Removes matched links/tags from text.
+     * @private
+     * @param   {string} relPath  Relative path.
+     * @param   {string} docText  Text of a document to be changed.
+     * @param   {string} fileLang Language of the file link to be removed.
+     * @returns {string} Text with links/tags removed.
+     */
     function _removeLinks(relPath, docText, fileLang) {
         if (fileLang === "unknown" || fileLang === "binary") {
             var fileExt = FileUtils.getFileExtension(relPath);
@@ -75,6 +88,11 @@ define(function Watcher(require, exports, module) {
         return docText;
     }
 
+    /**
+     * Starts the project files watcher.
+     * Sets the scanning every two seconds for removed files and
+     * remove links/tags, if any.
+     */
     function start() {
         ProjectManager.getAllFiles().done(function (files) {
             _watchedFilesCache = files.slice(0);
@@ -111,6 +129,9 @@ define(function Watcher(require, exports, module) {
         });
     }
 
+    /**
+     * Stops the project files watcher.
+     */
     function stop() {
         clearInterval(_intervalFunc);
         ProjectManager.off("projectOpen.blfwatcher");
