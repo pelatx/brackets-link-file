@@ -57,20 +57,21 @@ define(function Main(require, exports, module) {
         if (selectedItem) {
             if (!selectedItem.isDirectory) {
                 var tag = Linker.getTagsFromFiles([selectedItem.fullPath]);
-                Linker.insertTags(tag)
+                Linker.insertTags(tag);
             } else {
-                var labels = {
+                var options = {
                     title: Strings.PFSD_TITLE,
                     proceed: Strings.PROCEED_BUTTON,
                     cancel: Strings.CANCEL_BUTTON,
                     checkAll: Strings.CHECK_ALL_BUTTON,
                     uncheckAll: Strings.UNCHECK_ALL_BUTTON
                 };
-                Dialog.show(labels).done(function (paths) {
+                Dialog.show(options).done(function (paths) {
                     if (paths.length > 0) {
                         File.batchCopy(paths, selectedItem.fullPath).done(function (copiedFiles) {
                             var tags = Linker.getTagsFromFiles(copiedFiles);
-                            Linker.insertTags(tags)
+                            Linker.insertTags(tags);
+                            ProjectManager.refreshFileTree();
                         });
                     }
                 });
