@@ -15,6 +15,7 @@ define({
     CANCEL_BUTTON: "Cancel",
     CHECK_ALL_BUTTON: "Check All",
     UNCHECK_ALL_BUTTON: "Uncheck All",
+    HIDDEN_TOGGLE_LABEL: "Show hidden",
 
     PFSD_TITLE: "Add Files to Project"
 });

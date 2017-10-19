@@ -64,7 +64,8 @@ define(function Main(require, exports, module) {
                     proceed: Strings.PROCEED_BUTTON,
                     cancel: Strings.CANCEL_BUTTON,
                     checkAll: Strings.CHECK_ALL_BUTTON,
-                    uncheckAll: Strings.UNCHECK_ALL_BUTTON
+                    uncheckAll: Strings.UNCHECK_ALL_BUTTON,
+                    hiddenToggleLabel: Strings.HIDDEN_TOGGLE_LABEL
                 };
                 Dialog.show(options).done(function (paths) {
                     if (paths.length > 0) {

@@ -54,9 +54,12 @@ define(function (require, exports, module) {
         cancel: "Cancel",
         checkAll: "Check All",
         uncheckAll: "Uncheck All",
+        hiddenToggleLabel: "Show Hidden",
         showHidden: false,
+        enableHiddenToggle: true,
         sort: true,
-        foldersFirst: true
+        foldersFirst: true,
+        notHiddenFirst: false
     };
 
     /* Module Variables */
@@ -336,6 +339,11 @@ define(function (require, exports, module) {
         });
     }
 
+    /**
+     * Prevents the directory navigation bar to not fit into
+     * the dialog.
+     * @private
+     */
     function _arrangeNavBar() {
         var widthCounter = 0,
             $button,
@@ -362,6 +370,43 @@ define(function (require, exports, module) {
         });
     }
 
+    function _enableHiddenToggle() {
+        if (_options.enableHiddenToggle) {
+            var $modalFooter = $(".modal-footer"),
+                $hiddenToggle = $('<input type="checkbox" name="pfsd-hidden-toggle" value="hidden-toggle">'),
+                $hiddenToggleLabel = $('<span>' + _options.hiddenToggleLabel + '</span>');
+
+            if (_options.showHidden) {
+                $hiddenToggle.prop('checked', true);
+            } else {
+                $hiddenToggle.prop('checked', false);
+            }
+
+            $hiddenToggle.css({
+                "position": "absolute",
+                "left": "10px",
+                "bottom": "30px"
+            });
+            $hiddenToggleLabel.css({
+                "position": "absolute",
+                "left": "30px"
+            });
+            $modalFooter.prepend($hiddenToggleLabel);
+            $modalFooter.prepend($hiddenToggle);
+
+            // State change handler.
+            $hiddenToggle.change(function () {
+                if ($(this).is(':checked')) {
+                    _options.showHidden = true;
+                    show(_options, _currentDir, true);
+                } else {
+                    _options.showHidden = false;
+                    show(_options, _currentDir, true);
+                }
+            });
+        }
+    }
+
     /**
      * Shows open files dialog.
      * @param   {string}  scrDir Folder to show first.
@@ -369,7 +414,7 @@ define(function (require, exports, module) {
      * @returns {object}  Promise with an array of selected items full path strings.
      */
     function show(options, scrDir, update) {
-        var dir, i, j, name, path, paths = [], render, selected = [],
+        var dir, i, j, k, name, path, paths = [], render, selected = [],
             btnProceed, btnCancel, btnCheckAll, btnUncheckAll,
             btnProceedHandler, btnCancelHandler, btnCheckAllHandler, btnUncheckAllHandler,
             deferred = new $.Deferred();
@@ -433,6 +478,21 @@ define(function (require, exports, module) {
                     }
                     paths = dirPaths.concat(filePaths);
                 }
+                // Not hidden first, according to options.
+                if (_options.notHiddenFirst && _options.showHidden) {
+                    var shown = [], hidden = [];
+
+                    for (k = 0; k < paths.length; k++) {
+                        name = FileUtils.getBaseName(paths[k]);
+                        if (name.substr(0, 1) === ".") {
+                            hidden.push(paths[k]);
+                        } else {
+                            shown.push(paths[k]);
+                        }
+                    }
+                    paths = shown.concat(hidden);
+                }
+
                 // Renders full paths array.
                 render = _renderContents(paths, _currentDir);
                 // If it is a new instance, show the custom dialog
@@ -526,6 +586,8 @@ define(function (require, exports, module) {
                 _enableImagePreviews();
                 // Controls navbar width.
                 _arrangeNavBar();
+                // Enable/disable hidden toggle.
+                _enableHiddenToggle();
             });
         });
         return deferred.promise();
