@@ -297,7 +297,7 @@ define(function (require, exports, module) {
         $(".image").each(function () {
             var path = $(this).data("path"),
                 name = FileUtils.getBaseName(path),
-                previewId = name.replace(/[ .,:&%$#@]/g, ""),
+                previewId = name.replace(/[ .,:&%$#@~]/g, ""),
                 bgColor = $(".modal-body").css("background-color"),
                 previewHtml = Mustache.render(ImagePreview, {
                     previewId: previewId,
