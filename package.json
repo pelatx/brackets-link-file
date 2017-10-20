@@ -27,7 +27,8 @@
     "i18n": [
         "en",
         "es",
-        "fr"
+        "fr",
+        "de"
     ],
     "package-i18n": {
         "es": {
@@ -35,6 +36,9 @@
         },
         "fr": {
             "description": "Nouveau: Télécharger et lier bibliothèques de CDN. Reliez facilement vos fichiers (PHP, JavaScript, CSS, images, audio, vidéo) au document actif (HTML, PHP, CSS). Vous pouvez copier plusieurs fichiers à la fois sur n'importe quel répertoire de projet et les tags seront insérés automatiquement."
+        },
+        "de": {
+            "Neu: CDN Librarys herunterladen. Verlinke schnell und einfach deine Dateien (PHP, JavaScript, CSS, Grafiken, Audio, Video) in dem fokussierten Dokument (HTML, PHP, CSS). Außerdem kannst du mehrere Dateien gleichzeitig in jeden Projektordner kopieren und sie werden automatisch getaggt."
         }
     }
 }
