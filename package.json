@@ -38,7 +38,7 @@
             "description": "Nouveau: traduction allemande. Reliez facilement vos fichiers (PHP, JavaScript, CSS, images, audio, vidéo) au document actif (HTML, PHP, CSS). Vous pouvez copier plusieurs fichiers à la fois sur n'importe quel répertoire de projet ou les télécharger à partir de CDN et les tags seront insérés automatiquement."
         },
         "de": {
-            "description": "Neu: Deutsch-Übersetzung. Verlinke schnell und einfach deine Dateien (PHP, JavaScript, CSS, Grafiken, Audio, Video) in dem fokussierten Dokument (HTML, PHP, CSS). Außerdem kannst du mehrere Dateien gleichzeitig in jeden Projektordner kopieren oder herunterladen von CDN und sie werden automatisch getaggt."
+            "description": "Neu: Deutsche Übersetzung. Verlinke schnell und einfach deine Dateien (PHP, JavaScript, CSS, Grafiken, Audio, Video) in dem fokussierten Dokument (HTML, PHP, CSS). Außerdem kannst du mehrere Dateien gleichzeitig in jeden Projektordner kopieren oder von einem CDN herunterladen und sie werden automatisch getaggt."
         }
     }
 }
