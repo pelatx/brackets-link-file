@@ -41,6 +41,9 @@ define(function (require, exports, module) {
             ImagePreview        = textIP;
         });
 
+    // Styles
+    ExtensionUtils.loadStyleSheet(module, "styles/styles.css");
+
     // Initialize the Node domain.
     var domain = new NodeDomain("pelatxFSD", ExtensionUtils.getModulePath(module, "pFSDDomain"));
     // Saves the last directory where files were copied.
@@ -370,6 +373,10 @@ define(function (require, exports, module) {
         });
     }
 
+    /**
+     * Enables the show hidden items toggle.
+     * @private
+     */
     function _enableHiddenToggle() {
         if (_options.enableHiddenToggle) {
             var $modalFooter = $(".modal-footer"),
@@ -409,8 +416,9 @@ define(function (require, exports, module) {
 
     /**
      * Shows open files dialog.
-     * @param   {string}  scrDir Folder to show first.
-     * @param   {boolean} update If it is a list update only.
+     * @param   {object}  options Options that the file selection dialog must run.
+     * @param   {string}  scrDir  Folder to show first.
+     * @param   {boolean} update  If it is a list update only.
      * @returns {object}  Promise with an array of selected items full path strings.
      */
     function show(options, scrDir, update) {
@@ -586,7 +594,7 @@ define(function (require, exports, module) {
                 _enableImagePreviews();
                 // Controls navbar width.
                 _arrangeNavBar();
-                // Enable/disable hidden toggle.
+                // Enables hidden toggle if specified in options.
                 _enableHiddenToggle();
             });
         });
