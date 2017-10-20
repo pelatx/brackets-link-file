@@ -1,9 +1,9 @@
 {
     "name": "pelatx.brackets-link-file",
     "title": "Brackets Link File",
-    "description": "New: CDN library downloader. Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). It allows to copy several files in one time to any project folder and get them tagged automatically.",
+    "description": "New: German translation. Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). It allows to copy several files in one time to any project folder or download from CDN and get them tagged automatically.",
     "homepage": "https://github.com/pelatx/brackets-link-file",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "author": "José A. Martínez <https://github.com/pelatx>",
     "license": "MIT",
     "keywords": [
@@ -26,15 +26,16 @@
     },
     "i18n": [
         "en",
+        "de",
         "es",
         "fr"
     ],
     "package-i18n": {
         "es": {
-            "description": "Nuevo: Descarga y enlaza bibliotecas de CDN. Enlaza fácilmente tus archivos (PHP, JavaScript, CSS, imágenes, audio, video) al documento activo (HTML, PHP, CSS). Permite copiar varios archivos de una sola vez a qualquier directorio del proyecto y los tags serán insertados automáticamente."
+            "description": "Nuevo: traducción al alemán. Enlaza fácilmente tus archivos (PHP, JavaScript, CSS, imágenes, audio, video) al documento activo (HTML, PHP, CSS). Permite copiar varios archivos de una sola vez a qualquier directorio del proyecto o descárgalos de CDN y los tags serán insertados automáticamente."
         },
         "fr": {
-            "description": "Nouveau: Télécharger et lier bibliothèques de CDN. Reliez facilement vos fichiers (PHP, JavaScript, CSS, images, audio, vidéo) au document actif (HTML, PHP, CSS). Vous pouvez copier plusieurs fichiers à la fois sur n'importe quel répertoire de projet et les tags seront insérés automatiquement."
+            "description": "Nouveau: traduction allemande. Reliez facilement vos fichiers (PHP, JavaScript, CSS, images, audio, vidéo) au document actif (HTML, PHP, CSS). Vous pouvez copier plusieurs fichiers à la fois sur n'importe quel répertoire de projet ou les télécharger à partir de CDN et les tags seront insérés automatiquement."
         }
     }
 }
