@@ -80,6 +80,8 @@ Watch it in [this video][video-downloader]
 - Non taggable files are copied anyway to project.
 - Bi-directional linking: delete a project file and referred tags will be deleted in document automatically.
 - Internationalization.
+- CDN library download and automatic tag in active document.
+- CDN library direct tag for remote usage.
 
 #### Supported file types
 
@@ -115,13 +117,15 @@ v1.6.1 Fixed "wrong root" bug on project change.
 
 v1.7.0 Internationalization support: english, spanish, french.
 
-v1.7.1 Fixed package.json missing traductions.
+v1.7.1 Fixed package.json missing translations.
 
 v1.8.0 - Changes:
 - CDN library downloader (or only tag for remote usage).
 - Code modularization and refactoring.
 - Some little fixes.
 - Complete internationalization.
+
+v1.9.0 German translations.
 
 ## Credits
 Icons from [Ionicons][ionicons].
