@@ -30,9 +30,8 @@ define(function Watcher(require, exports, module) {
     var _watchedFiles = [],
         _watchedFilesCache = [];
 
-    // Watcher functions
-    var _intervalFunc,
-        _projectChangeFunc;
+    // Watcher function
+    var _intervalFunc;
 
     /**
      * Compares cached project files with current.
@@ -98,6 +97,7 @@ define(function Watcher(require, exports, module) {
             _watchedFilesCache = files.slice(0);
 
             _intervalFunc = setInterval(function () {
+                ProjectManager.refreshFileTree();
                 ProjectManager.getAllFiles().done(function (files) {
                     _watchedFiles = files.slice(0);
                     var removedFiles = _compareFiles();
