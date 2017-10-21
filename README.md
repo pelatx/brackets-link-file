@@ -8,6 +8,10 @@ It also supports bi-directionality: if you delete a project file, the tag or tag
 
 Supports direct download of libraries from CDN. You can download and link the library automatically in the document. Or just get a tag with the URL of the library for remote use.
 
+#### <span style="color:red">Important!</span>
+
+Linux users can't drag & drop files from OS file browser in Brackets 1.11, because It has completely lost this functionality on this operating system. 
+
 ## Install from Brackets
 
 1. Open the Extension Manager from the File menu
