@@ -25,11 +25,12 @@ define(function (require, exports, module) {
         Contents            = "text!" + templatesDirPath + "contents.html",
         DirectoryItem       = "text!" + templatesDirPath + "directoryItem.html",
         FileItem            = "text!" + templatesDirPath + "fileItem.html",
-        ImagePreview        = "text!" + templatesDirPath + "imagePreview.html";
+        ImagePreview        = "text!" + templatesDirPath + "imagePreview.html",
+        FilterBox           = "text!" + templatesDirPath + "filterBox.html";
 
     require(
-        [UnixRootButton, WinVolumesButton, WinVolumesItem, NavBar, NavBarButton, Contents, DirectoryItem, FileItem, ImagePreview],
-        function (textUB, textVB, textVI, textNB, textNBB, textC, textDI, textFI, textIP) {
+        [UnixRootButton, WinVolumesButton, WinVolumesItem, NavBar, NavBarButton, Contents, DirectoryItem, FileItem, ImagePreview, FilterBox],
+        function (textUB, textVB, textVI, textNB, textNBB, textC, textDI, textFI, textIP,textFB) {
             UnixRootButton      = textUB;
             WinVolumesButton    = textVB;
             WinVolumesItem      = textVI;
@@ -39,6 +40,7 @@ define(function (require, exports, module) {
             DirectoryItem       = textDI;
             FileItem            = textFI;
             ImagePreview        = textIP;
+            FilterBox           = textFB;
         });
 
     // Styles
@@ -60,6 +62,7 @@ define(function (require, exports, module) {
         hiddenToggleLabel: "Show Hidden",
         showHidden: false,
         enableHiddenToggle: true,
+        enableFilterBox: true,
         sort: true,
         foldersFirst: true,
         notHiddenFirst: false
@@ -352,8 +355,10 @@ define(function (require, exports, module) {
             $button,
             $nextButtons,
             nextButtonsWidth,
-            $navbar = $("#pfsd-navbar"),
+            $navbar = $("#pfsd-navbar").detach(),
             $navbarButtons = $navbar.children();
+
+        $navbar.insertBefore($(".modal-body"));
 
         $navbarButtons.each(function (index) {
             var width = $(this).css("width").replace("px", "") * 1;
@@ -411,6 +416,14 @@ define(function (require, exports, module) {
                     show(_options, _currentDir, true);
                 }
             });
+        }
+    }
+
+    function _enableFilterBox() {
+        if (_options.enableFilterBox) {
+            var $modalHeader = $(".modal-header"),
+                $filterBox = Mustache.render(FilterBox, { placeholder: "Filter ..."});
+            $modalHeader.append($filterBox);
         }
     }
 
@@ -567,6 +580,7 @@ define(function (require, exports, module) {
                     // If it is an update of the existing dialog, update list only.
                 } else {
                     $("#pfsd-list").empty();
+                    $("#pfsd-navbar").remove();
                     $("#pfsd-list").append(render);
                     // Ensure that the dialog height is always the same.
                     $(".modal-body").css("height", "400px");
@@ -596,6 +610,8 @@ define(function (require, exports, module) {
                 _arrangeNavBar();
                 // Enables hidden toggle if specified in options.
                 _enableHiddenToggle();
+                // Enables the filter box if specified in options.
+                _enableFilterBox();
             });
         });
         return deferred.promise();
