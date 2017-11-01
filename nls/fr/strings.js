@@ -16,5 +16,6 @@ define({
     UNCHECK_ALL_BUTTON: "Désélectionnez Tout",
     HIDDEN_TOGGLE_LABEL: "Montrer Caché",
 
-    PFSD_TITLE: "Ajout de fichiers au Projet"
+    PFSD_TITLE: "Ajout de fichiers au Projet",
+    PFD_FILTER_PLACEHOLDER: "Filtre ..."
 });

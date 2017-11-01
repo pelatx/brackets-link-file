@@ -16,5 +16,6 @@ define({
     CHECK_ALL_BUTTON: "Alle auswählen",
     UNCHECK_ALL_BUTTON: "Alle abwählen",
 
-    PFSD_TITLE: "Dateien zum Projekt hinzufügen"
+    PFSD_TITLE: "Dateien zum Projekt hinzufügen",
+    PFD_FILTER_PLACEHOLDER: "Filtern ..."
 });

@@ -17,5 +17,6 @@ define({
     UNCHECK_ALL_BUTTON: "Uncheck All",
     HIDDEN_TOGGLE_LABEL: "Show hidden",
 
-    PFSD_TITLE: "Add Files to Project"
+    PFSD_TITLE: "Add Files to Project",
+    PFD_FILTER_PLACEHOLDER: "Filter ..."
 });

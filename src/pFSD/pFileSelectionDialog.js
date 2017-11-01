@@ -16,31 +16,35 @@ define(function (require, exports, module) {
         Mustache            = brackets.getModule("thirdparty/mustache/mustache");
 
     /* Templates */
-    var templatesDirPath    = FileUtils.getNativeModuleDirectoryPath(module) + "/templates/",
-        WinVolumesButton    = "text!" + templatesDirPath + "winVolumesButton.html",
-        WinVolumesItem      = "text!" + templatesDirPath + "winVolumesItem.html",
-        UnixRootButton      = "text!" + templatesDirPath + "unixRootButton.html",
-        NavBar              = "text!" + templatesDirPath + "navBar.html",
-        NavBarButton        = "text!" + templatesDirPath + "navBarButton.html",
-        Contents            = "text!" + templatesDirPath + "contents.html",
-        DirectoryItem       = "text!" + templatesDirPath + "directoryItem.html",
-        FileItem            = "text!" + templatesDirPath + "fileItem.html",
-        ImagePreview        = "text!" + templatesDirPath + "imagePreview.html",
-        FilterBox           = "text!" + templatesDirPath + "filterBox.html";
+    var templatesDirPath            = FileUtils.getNativeModuleDirectoryPath(module) + "/templates/",
+        WinVolumesButton            = "text!" + templatesDirPath + "winVolumesButton.html",
+        WinVolumesItem              = "text!" + templatesDirPath + "winVolumesItem.html",
+        UnixRootButton              = "text!" + templatesDirPath + "unixRootButton.html",
+        NavBar                      = "text!" + templatesDirPath + "navBar.html",
+        NavBarButton                = "text!" + templatesDirPath + "navBarButton.html",
+        Contents                    = "text!" + templatesDirPath + "contents.html",
+        DirectoryItem               = "text!" + templatesDirPath + "directoryItem.html",
+        FileItem                    = "text!" + templatesDirPath + "fileItem.html",
+        ImagePreview                = "text!" + templatesDirPath + "imagePreview.html",
+        FilterBox                   = "text!" + templatesDirPath + "filterBox.html",
+        FilterBoxContextMenu        = "text!" + templatesDirPath + "filterBoxContextMenu.html",
+        FilterBoxContextMenuItem    = "text!" + templatesDirPath + "filterBoxContextMenuItem.html";
 
     require(
-        [UnixRootButton, WinVolumesButton, WinVolumesItem, NavBar, NavBarButton, Contents, DirectoryItem, FileItem, ImagePreview, FilterBox],
-        function (textUB, textVB, textVI, textNB, textNBB, textC, textDI, textFI, textIP,textFB) {
-            UnixRootButton      = textUB;
-            WinVolumesButton    = textVB;
-            WinVolumesItem      = textVI;
-            NavBar              = textNB;
-            NavBarButton        = textNBB;
-            Contents            = textC;
-            DirectoryItem       = textDI;
-            FileItem            = textFI;
-            ImagePreview        = textIP;
-            FilterBox           = textFB;
+        [UnixRootButton, WinVolumesButton, WinVolumesItem, NavBar, NavBarButton, Contents, DirectoryItem, FileItem, ImagePreview, FilterBox, FilterBoxContextMenu, FilterBoxContextMenuItem],
+        function (textUB, textVB, textVI, textNB, textNBB, textC, textDI, textFI, textIP, textFB, textFBCM, textFBCMI) {
+            UnixRootButton              = textUB;
+            WinVolumesButton            = textVB;
+            WinVolumesItem              = textVI;
+            NavBar                      = textNB;
+            NavBarButton                = textNBB;
+            Contents                    = textC;
+            DirectoryItem               = textDI;
+            FileItem                    = textFI;
+            ImagePreview                = textIP;
+            FilterBox                   = textFB;
+            FilterBoxContextMenu        = textFBCM;
+            FilterBoxContextMenuItem    = textFBCMI;
         });
 
     // Styles
@@ -60,16 +64,21 @@ define(function (require, exports, module) {
         checkAll: "Check All",
         uncheckAll: "Uncheck All",
         hiddenToggleLabel: "Show Hidden",
+        filterBoxPlaceholder: "Filter ...",
         showHidden: false,
         enableHiddenToggle: true,
         enableFilterBox: true,
+        enableNavBar: true,
+        enableImagePreviews: true,
         sort: true,
         foldersFirst: true,
-        notHiddenFirst: false
+        notHiddenFirst: false,
+        filterSets: {}
     };
 
     /* Module Variables */
     var _currentDir = "", // Directory been shown.
+        _currentFilter = "", // Saves filter.
         _dialog, // Dialog instance.
         _options, // Dialog options
         _platform, // Platform identifier.
@@ -289,7 +298,7 @@ define(function (require, exports, module) {
             }
         });
         return Mustache.render(Contents, {
-            navBar: _renderDirNavbar(dir),
+            //navBar: _renderDirNavbar(dir),
             dirUp: dirUp,
             contents: contents
         });
@@ -300,49 +309,51 @@ define(function (require, exports, module) {
      * @private
      */
     function _enableImagePreviews() {
-        $(".image").each(function () {
-            var path = $(this).data("path"),
-                name = FileUtils.getBaseName(path),
-                previewId = name.replace(/[ .,:&%$#@~]/g, ""),
-                bgColor = $(".modal-body").css("background-color"),
-                previewHtml = Mustache.render(ImagePreview, {
-                    previewId: previewId,
-                    path: path
-                });
-
-            $(this).hover(
-                function (ev) {
-                    var $modal = $(".modal-body"),
-                        modalRect = $modal[0].getBoundingClientRect(),
-                        modalTop = modalRect.top,
-                        modalBottom = modalRect.bottom,
-                        modalLeft = modalRect.left,
-                        modalRight = modalRect.right,
-                        itemTop = $(this).offset().top,
-                        imageLeft = ((modalRight - modalLeft) / 2) - 100,
-                        $preview = $(previewHtml),
-                        imageTop;
-
-                    $modal.append($preview);
-
-                    if (itemTop - modalTop > 170) {
-                        imageTop = ev.offsetY - 160;
-                    } else {
-                        imageTop = ev.offsetY + 30;
-                    }
-
-                    $preview.css({
-                        "left": imageLeft + "px",
-                        "top": imageTop + "px"
+        if (_options.enableImagePreviews) {
+            $(".image").each(function () {
+                var path = $(this).data("path"),
+                    name = FileUtils.getBaseName(path),
+                    previewId = name.replace(/[ .,:&%$#@~]/g, ""),
+                    bgColor = $(".modal-body").css("background-color"),
+                    previewHtml = Mustache.render(ImagePreview, {
+                        previewId: previewId,
+                        path: path
                     });
-                    $(this).css("background-color", "#9a823b");
-                },
-                function () {
-                    $("#" + previewId).remove();
-                    $(this).css("background-color", bgColor);
-                }
-            );
-        });
+
+                $(this).hover(
+                    function (ev) {
+                        var $modal = $(".modal-body"),
+                            modalRect = $modal[0].getBoundingClientRect(),
+                            modalTop = modalRect.top,
+                            modalBottom = modalRect.bottom,
+                            modalLeft = modalRect.left,
+                            modalRight = modalRect.right,
+                            itemTop = $(this).offset().top,
+                            imageLeft = ((modalRight - modalLeft) / 2) - 100,
+                            $preview = $(previewHtml),
+                            imageTop;
+
+                        $modal.append($preview);
+
+                        if (itemTop - modalTop > 170) {
+                            imageTop = ev.offsetY - 160;
+                        } else {
+                            imageTop = ev.offsetY + 30;
+                        }
+
+                        $preview.css({
+                            "left": imageLeft + "px",
+                            "top": imageTop + "px"
+                        });
+                        $(this).css("background-color", "#9a823b");
+                    },
+                    function () {
+                        $("#" + previewId).remove();
+                        $(this).css("background-color", bgColor);
+                    }
+                );
+            });
+        }
     }
 
     /**
@@ -352,30 +363,45 @@ define(function (require, exports, module) {
      */
     function _arrangeNavBar() {
         var widthCounter = 0,
+            paddingOffset = 26,
             $button,
             $nextButtons,
-            nextButtonsWidth,
-            $navbar = $("#pfsd-navbar").detach(),
-            $navbarButtons = $navbar.children();
+            $navbar = $("#pfsd-navbar"),
+            $navbarButtons = $navbar.children(),
+            containerWidth = $("#pfsd-navbar-container").css("width").replace("px", "") * 1;
 
-        $navbar.insertBefore($(".modal-body"));
+        var breakButton = Mustache.render(NavBarButton, {
+            currentPath: _currentDir,
+            buttonLabel: ">"
+        });
 
-        $navbarButtons.each(function (index) {
-            var width = $(this).css("width").replace("px", "") * 1;
-            if (widthCounter + width > 380) {
+        $navbarButtons.each(function () {
+            var width = ($(this).css("width").replace("px", "") * 1) + paddingOffset;
+            widthCounter += width;
+            if (widthCounter > containerWidth - 40) {
                 $nextButtons = $(this).nextAll().detach();
                 $button = $(this).detach();
-                $navbar.append("</br>").append($button).append($nextButtons);
-                if ($nextButtons.length > 0) {
-                    nextButtonsWidth = $nextButtons.css("width").replace("px", "") * 1;
-                } else {
-                    nextButtonsWidth = 0;
-                }
-                widthCounter = width + nextButtonsWidth;
-            } else {
-                widthCounter += width;
+                $navbar.append(breakButton).append("</br>").append($button).append($nextButtons);
+                widthCounter = width;
             }
         });
+    }
+
+    /**
+     * Enables the navigation bar if specified in options.
+     * @private
+     */
+    function _enableNavBar() {
+        if (_options.enableNavBar) {
+            var $navBar = $(_renderDirNavbar(_currentDir));
+
+            if ($("#pfsd-navbar-container").length === 0) {
+                $('<div id="pfsd-navbar-container"></div>').insertBefore(".modal-body");
+            }
+            $("#pfsd-navbar-container").empty();
+            $("#pfsd-navbar-container").append($navBar);
+            _arrangeNavBar();
+        }
     }
 
     /**
@@ -419,11 +445,114 @@ define(function (require, exports, module) {
         }
     }
 
+    function _enableFiltersContextMenu() {
+        if ($.isPlainObject(_options.filterSets) && !$.isEmptyObject(_options.filterSets)) {
+            $(".pfsd-filterinput").contextmenu(function() {
+                if ($("#pfsd-filter-box-context-menu").length === 0) {
+                    var $contextMenu, tableBody = "",
+                        inputHeight = $(".pfsd-filterinput").css("height").replace("px", "") * 1,
+                        inputRight = $(".pfsd-filterinput").css("right").replace("px", "") * 1,
+                        inputTop = $(".pfsd-filterinput").css("top").replace("px", "") * 1,
+                        contextMenuBgColor = $(".modal-header").css("background-color"),
+                        itemHightlight = $(".modal-body").css("background-color");
+
+                    $.each(_options.filterSets, function (filterSetName, filterSet) {
+                        tableBody += Mustache.render(FilterBoxContextMenuItem, {
+                            filterSet: filterSet,
+                            filterSetName: filterSetName
+                        });
+                    });
+
+                    $contextMenu = $(Mustache.render(FilterBoxContextMenu, {
+                        tableBody: tableBody
+                    }));
+
+                    $contextMenu.css({
+                        "position": "absolute",
+                        "display": "inline",
+                        "right": inputRight,
+                        "top": inputTop + inputHeight + 10,
+                        "background-color": contextMenuBgColor
+                    });
+
+                    $(".modal-header").append($contextMenu);
+
+                    $contextMenu.on("mouseleave.pfsd", function () {
+                        if ($contextMenu.length > 0) {
+                            $contextMenu.remove();
+                        }
+                    });
+
+                    $(".pfsd-filter-item").hover(
+                        function () {
+                            $(this).css("background-color", itemHightlight);
+                        },
+                        function () {
+                            $(this).css("background-color", contextMenuBgColor);
+                        }
+                    );
+
+                    $(".pfsd-filter-item").click(function () {
+                        var filterSetString = $(this).data("filterset");
+                        $(".pfsd-filterinput").val(filterSetString);
+                        $contextMenu.remove();
+                        _enableFilterBox();
+                    });
+
+                    $(".pfsd-filterinput").one("click.pfsd", function () {
+                        if ($("#pfsd-filter-box-context-menu").length > 0) {
+                            $("#pfsd-filter-box-context-menu").remove();
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    /**
+     * Enables the filter box if specified in options.
+     * @private
+     */
     function _enableFilterBox() {
         if (_options.enableFilterBox) {
-            var $modalHeader = $(".modal-header"),
-                $filterBox = Mustache.render(FilterBox, { placeholder: "Filter ..."});
-            $modalHeader.append($filterBox);
+
+            var filterFunc = function (filter) {
+                if (filter) {
+                    var toShow = [];
+                    $("#pfsd-list").find(".file-item").each(function (i, item) {
+                        var baseName = $(item).data("basename").toLowerCase();
+                        var filters = filter.split(" ");
+                        $(item).hide();
+                        filters.forEach(function (f) {
+                            if (f !== "" && baseName.search(f.toLowerCase()) !== -1) {
+                                toShow.push($(item));
+                            }
+                        });
+                    });
+                    toShow.forEach(function ($item) {
+                        $item.show();
+                    });
+                } else {
+                    $("#pfsd-list").find(".file-item").show();
+                }
+            };
+
+            if ($(".pfsd-filterinput").length === 0) {
+                var $filterBox = Mustache.render(FilterBox, { placeholder: _options.filterBoxPlaceholder });
+
+                $(".modal-header").append($filterBox);
+
+                // Filter box handler.
+                $(".pfsd-filterinput").keyup(function () {
+                    var filter = $(this).val();
+                    _currentFilter = filter;
+                    filterFunc(filter);
+                });
+                // Enable filter box context menu.
+                _enableFiltersContextMenu();
+            } else {
+                filterFunc($(".pfsd-filterinput").val());
+            }
         }
     }
 
@@ -447,12 +576,14 @@ define(function (require, exports, module) {
                 _options = DEFAULT_OPTIONS;
                 // Check for missing options in passed object
             } else {
-                _options = options;
-                $.each(DEFAULT_OPTIONS, function (key, option) {
-                    if (!_options.hasOwnProperty(key)) {
-                        _options[key] = option;
-                    }
-                });
+                if (typeof options === "object") {
+                    _options = options;
+                    $.each(DEFAULT_OPTIONS, function (key, option) {
+                        if (!_options.hasOwnProperty(key)) {
+                            _options[key] = option;
+                        }
+                    });
+                }
             }
         }
 
@@ -499,7 +630,7 @@ define(function (require, exports, module) {
                     }
                     paths = dirPaths.concat(filePaths);
                 }
-                // Not hidden first, according to options.
+                // Not hidden first or not, according to options.
                 if (_options.notHiddenFirst && _options.showHidden) {
                     var shown = [], hidden = [];
 
@@ -574,16 +705,15 @@ define(function (require, exports, module) {
                         $("input:checkbox[name=pfsd-file-checkbox]").prop('checked', false);
                     });
 
-                    // Ensure that the dialog height is always the same.
-                    $(".modal-body").css("height", "400px");
+                    // Enables or not navbar if specified in options.
+                    _enableNavBar();
 
                     // If it is an update of the existing dialog, update list only.
                 } else {
-                    $("#pfsd-list").empty();
-                    $("#pfsd-navbar").remove();
-                    $("#pfsd-list").append(render);
-                    // Ensure that the dialog height is always the same.
-                    $(".modal-body").css("height", "400px");
+                    // Enables navbar if specified in options.
+                    _enableNavBar();
+                    $(".dialog-message").empty();
+                    $(".dialog-message").append(render);
                 }
 
                 // If a directory item is clicked ...
@@ -606,12 +736,12 @@ define(function (require, exports, module) {
                 });
                 // Enable image previews.
                 _enableImagePreviews();
-                // Controls navbar width.
-                _arrangeNavBar();
                 // Enables hidden toggle if specified in options.
                 _enableHiddenToggle();
                 // Enables the filter box if specified in options.
                 _enableFilterBox();
+                // Ensure that the dialog body height is always the same.
+                $(".modal-body").css("height", "400px");
             });
         });
         return deferred.promise();

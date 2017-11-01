@@ -65,7 +65,14 @@ define(function Main(require, exports, module) {
                     cancel: Strings.CANCEL_BUTTON,
                     checkAll: Strings.CHECK_ALL_BUTTON,
                     uncheckAll: Strings.UNCHECK_ALL_BUTTON,
-                    hiddenToggleLabel: Strings.HIDDEN_TOGGLE_LABEL
+                    hiddenToggleLabel: Strings.HIDDEN_TOGGLE_LABEL,
+                    filterBoxPlaceholder: Strings.PFD_FILTER_PLACEHOLDER,
+                    filterSets: {
+                        Images: ".jpg .png .svg .gif",
+                        Audio: ".ogg .mp3 .wav",
+                        Video: ".ogv .ogg .mp4 .webm",
+                        Development: ".js .css .html .php"
+                    }
                 };
                 Dialog.show(options).done(function (paths) {
                     if (paths.length > 0) {

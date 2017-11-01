@@ -31,6 +31,16 @@
 
 .pfsd-filterinput {
     position:absolute;
-    right:26px;
+    right: 26px;
     top:20px;
+    width: 150px;
+}
+
+#pfsd-filter-box-context-menu {
+    border: solid 1px black;
+    z-index: 1100;
+}
+
+.pfsd-filter-item span {
+    margin-left: 4px;
 }
