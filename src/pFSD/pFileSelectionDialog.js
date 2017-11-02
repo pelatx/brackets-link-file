@@ -376,7 +376,10 @@ define(function (require, exports, module) {
         });
 
         $navbarButtons.each(function () {
-            var width = ($(this).css("width").replace("px", "") * 1) + paddingOffset;
+            var width = 0;
+            if (!$(this).hasClass("dropdown-menu")) { // Prevents wrong width on Windows due to dropdown menu.
+                width = ($(this).css("width").replace("px", "") * 1) + paddingOffset;
+            }
             widthCounter += width;
             if (widthCounter > containerWidth - 40) {
                 $nextButtons = $(this).nextAll().detach();
