@@ -334,6 +334,7 @@ define(function (require, exports, module) {
                             $preview = $(previewHtml);
 
                         if (itemTop < modalBodyMiddle) imageTop += 186;
+                        if (_platform === "win32") imageTop += 60;
 
                         $modalBody.append($preview);
                         $preview.hide();
