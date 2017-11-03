@@ -250,7 +250,7 @@ define(function (require, exports, module) {
         var html = "";
         var lang = LanguageManager.getLanguageForPath(path).getId();
         if (lang === "image" || lang === "svg") {
-            html = " class=\"image\" data-path=\"" + path + "\"";
+            html = " class=\"pfsd-image\" data-path=\"" + path + "\"";
         }
         return html;
     }
@@ -261,7 +261,7 @@ define(function (require, exports, module) {
      * @param   {Array}  paths Array of full path strings.
      * @returns {string} HTML formated string.
      */
-    function _renderContents(paths, dir) {
+    function _renderContents(paths) {
         var baseName, linkColor, dirUp, contents = "",
             pFSDDir = FileUtils.getNativeModuleDirectoryPath(module),
             iconPath = pFSDDir + "/styles/icons/ionicons-folder.png";
@@ -298,7 +298,6 @@ define(function (require, exports, module) {
             }
         });
         return Mustache.render(Contents, {
-            //navBar: _renderDirNavbar(dir),
             dirUp: dirUp,
             contents: contents
         });
@@ -310,7 +309,7 @@ define(function (require, exports, module) {
      */
     function _enableImagePreviews() {
         if (_options.enableImagePreviews) {
-            $(".image").each(function () {
+            $(".pfsd-image").each(function () {
                 var path = $(this).data("path"),
                     name = FileUtils.getBaseName(path),
                     previewId = name.replace(/[ .,:&%$#@~]/g, ""),
@@ -322,30 +321,28 @@ define(function (require, exports, module) {
 
                 $(this).hover(
                     function (ev) {
-                        var $modal = $(".modal-body"),
-                            modalRect = $modal[0].getBoundingClientRect(),
-                            modalTop = modalRect.top,
-                            modalBottom = modalRect.bottom,
-                            modalLeft = modalRect.left,
-                            modalRight = modalRect.right,
+                        var $modalBody = $(".modal-body"),
+                            modalBodyRect = $modalBody[0].getBoundingClientRect(),
+                            modalBodyTop = modalBodyRect.top,
+                            modalBodyBottom = modalBodyRect.bottom,
+                            modalBodyLeft = modalBodyRect.left,
+                            modalBodyRight = modalBodyRect.right,
                             itemTop = $(this).offset().top,
-                            imageLeft = ((modalRight - modalLeft) / 2) - 100,
-                            $preview = $(previewHtml),
-                            imageTop;
+                            imageLeft = ((modalBodyRight - modalBodyLeft) / 2) - 100,
+                            modalBodyMiddle = (modalBodyBottom - modalBodyTop / 2) - 20,
+                            imageTop = itemTop - 486 + $modalBody.scrollTop(),
+                            $preview = $(previewHtml);
 
-                        $modal.append($preview);
+                        if (itemTop < modalBodyMiddle) imageTop += 186;
 
-                        if (itemTop - modalTop > 170) {
-                            imageTop = ev.offsetY - 160;
-                        } else {
-                            imageTop = ev.offsetY + 30;
-                        }
-
+                        $modalBody.append($preview);
+                        $preview.hide();
                         $preview.css({
                             "left": imageLeft + "px",
                             "top": imageTop + "px"
                         });
                         $(this).css("background-color", "#9a823b");
+                        $preview.fadeIn();
                     },
                     function () {
                         $("#" + previewId).remove();
