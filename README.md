@@ -37,7 +37,7 @@ Watch it in [this video][video-only-linking].
 
 Right click on the destination directory in the Project tree -> Link File (Insert Tags). You will be prompted with a dialog where you can select one or more files anywhere on your hard disk or any other volume. These files will be automatically copied to this directory and the correct tags will be added in the focused document. 
 
-The custom file selection dialog is also capable of displaying preview thumbnails of image files.
+The custom file selection dialog is capable of displaying preview thumbnails of image files, filter the file list via filter input box (rigth click it to get a dropdown menu with pre-defined filter sets) and toggle showing hidden files.
 
 Watch it in [this video][video-copying-and-linking].
 
@@ -130,6 +130,13 @@ v1.8.0 - Changes:
 - Complete internationalization.
 
 v1.9.0 German translations.
+
+v2.0.0 - Improved file selection dialog:
+- Filter box with four pre-defined filter sets (Images, Audio, Video, Development).
+- Improved the directory navigation bar functioning.
+- Shows hidden files.
+- Hidden files toggle to show/hide them.
+- Refactoring and modularization.
 
 ## Credits
 Icons from [Ionicons][ionicons].

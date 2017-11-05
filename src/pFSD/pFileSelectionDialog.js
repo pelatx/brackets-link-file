@@ -6,7 +6,6 @@ define(function (require, exports, module) {
 
     /* Modules */
     var Dialogs             = brackets.getModule("widgets/Dialogs"),
-        StringUtils         = brackets.getModule("utils/StringUtils"),
         FileSystem          = brackets.getModule("filesystem/FileSystem"),
         FileUtils           = brackets.getModule("file/FileUtils"),
         ExtensionUtils      = brackets.getModule("utils/ExtensionUtils"),
@@ -406,7 +405,7 @@ define(function (require, exports, module) {
     }
 
     /**
-     * Enables the show hidden items toggle.
+     * Enables the show hidden items toggle if specified in options.
      * @private
      */
     function _enableHiddenToggle() {
@@ -446,6 +445,10 @@ define(function (require, exports, module) {
         }
     }
 
+    /**
+     * Enables the dropdown with filter sets if specified in options.
+     * @private
+     */
     function _enableFiltersContextMenu() {
         if ($.isPlainObject(_options.filterSets) && !$.isEmptyObject(_options.filterSets)) {
             $(".pfsd-filterinput").contextmenu(function() {

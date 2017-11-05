@@ -16,9 +16,11 @@ Why do we want to replace the native dialog?
 
 - Windows OS filesystem volumes support.
 
+- Remembers the last directory where a file was copied from.
+
 - Directory navigation bar (optional).
 
-- Image files preview on hover (optional).
+- Image file previews on hover (optional).
 
 - Show hidden files and folders (optional).
 

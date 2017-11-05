@@ -1,7 +1,7 @@
 {
     "name": "pelatx.brackets-link-file",
     "title": "Brackets Link File",
-    "description": "New: improved file browser. Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). It allows to copy several files in one time to any project folder or download from CDN and get them tagged automatically.",
+    "description": "New: improved file selection dialog. Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). It allows to copy several files in one time to any project folder or download from CDN and get them tagged automatically.",
     "homepage": "https://github.com/pelatx/brackets-link-file",
     "version": "2.0.0",
     "author": "José A. Martínez <https://github.com/pelatx>",
@@ -32,13 +32,13 @@
     ],
     "package-i18n": {
         "es": {
-            "description": "Nuevo: navegador de archivos mejorado. Enlaza fácilmente tus archivos (PHP, JavaScript, CSS, imágenes, audio, video) al documento activo (HTML, PHP, CSS). Permite copiar varios archivos de una sola vez a qualquier directorio del proyecto o descárgalos de CDN y los tags serán insertados automáticamente."
+            "description": "Nuevo: diálogo de selección de archivos mejorado. Enlaza fácilmente tus archivos (PHP, JavaScript, CSS, imágenes, audio, video) al documento activo (HTML, PHP, CSS). Permite copiar varios archivos de una sola vez a qualquier directorio del proyecto o descárgalos de CDN y los tags serán insertados automáticamente."
         },
         "fr": {
-            "description": "Nouveau: navigateur de fichiers amélioré. Reliez facilement vos fichiers (PHP, JavaScript, CSS, images, audio, vidéo) au document actif (HTML, PHP, CSS). Vous pouvez copier plusieurs fichiers à la fois sur n'importe quel répertoire de projet ou les télécharger à partir de CDN et les tags seront insérés automatiquement."
+            "description": "Nouveau: dialogue de sélection de fichier amélioré. Reliez facilement vos fichiers (PHP, JavaScript, CSS, images, audio, vidéo) au document actif (HTML, PHP, CSS). Vous pouvez copier plusieurs fichiers à la fois sur n'importe quel répertoire de projet ou les télécharger à partir de CDN et les tags seront insérés automatiquement."
         },
         "de": {
-            "description": "Neu: verbesserter Dateibrowser. Verlinke schnell und einfach deine Dateien (PHP, JavaScript, CSS, Grafiken, Audio, Video) in dem fokussierten Dokument (HTML, PHP, CSS). Außerdem kannst du mehrere Dateien gleichzeitig in jeden Projektordner kopieren oder von einem CDN herunterladen und sie werden automatisch getaggt."
+            "description": "Neu: verbesserter Dateiauswahldialog. Verlinke schnell und einfach deine Dateien (PHP, JavaScript, CSS, Grafiken, Audio, Video) in dem fokussierten Dokument (HTML, PHP, CSS). Außerdem kannst du mehrere Dateien gleichzeitig in jeden Projektordner kopieren oder von einem CDN herunterladen und sie werden automatisch getaggt."
         }
     }
 }
