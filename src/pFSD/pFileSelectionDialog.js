@@ -328,7 +328,7 @@ define(function (require, exports, module) {
                             modalBodyRight = modalBodyRect.right,
                             itemTop = $(this).offset().top,
                             imageLeft = ((modalBodyRight - modalBodyLeft) / 2) - 100,
-                            modalBodyMiddle = (modalBodyBottom - modalBodyTop / 2) - 20,
+                            modalBodyMiddle = (modalBodyBottom - modalBodyTop / 2) - 40,
                             imageTop = itemTop - 486 + $modalBody.scrollTop(),
                             $preview = $(previewHtml);
 

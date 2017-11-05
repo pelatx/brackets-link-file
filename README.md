@@ -26,7 +26,7 @@ Linux users can't drag & drop files from OS file browser in Brackets 1.11, becau
 
 ## Usage
 
-(Note that the extension only works if the focused editor file is saved).
+(Note that the extension only works if the focused doument is saved).
 #### Files already in the project tree
 
 Just right click on a file in the Project tree -> Link File (Insert Tags), and the link with the correct relative path will be inserted into the document.  
@@ -133,9 +133,10 @@ v1.9.0 German translations.
 
 v2.0.0 - Improved file selection dialog:
 - Filter box with four pre-defined filter sets (Images, Audio, Video, Development).
-- Improved the directory navigation bar functioning.
+- Improved directory navigation bar.
 - Shows hidden files.
 - Hidden files toggle to show/hide them.
+- Fade in for image file previews.
 - Refactoring and modularization.
 
 ## Credits
