@@ -10,7 +10,7 @@ Supports direct download of libraries from CDN. You can download and link the li
 
 #### <span style="color:red">Important!</span>
 
-Linux users can't drag & drop files from OS file browser in Brackets 1.11, because It has completely lost this functionality on this operating system. 
+GNU/Linux users can't drag & drop files from OS file browser in Brackets 1.11, because It has completely lost this functionality on this operating system. 
 
 ## Install from Brackets
 
@@ -26,7 +26,7 @@ Linux users can't drag & drop files from OS file browser in Brackets 1.11, becau
 
 ## Usage
 
-(Note that the extension only works if the focused document is saved).
+(Note that the extension only works if the focused document was saved previously).
 #### Files already in the project tree
 
 Just right click on a file in the Project tree -> Link File (Insert Tags), and the link with the correct relative path will be inserted into the document.  
