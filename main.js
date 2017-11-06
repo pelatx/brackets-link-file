@@ -118,6 +118,20 @@ define(function Main(require, exports, module) {
         }
     }
 
+    function toggleWatcher() {
+        if (prefs.get(WATCHER_PREF) === true) {
+            Watcher.stop();
+            CommandManager.get(CMD_TOGGLE_WATCH).setChecked(false);
+            prefs.set(WATCHER_PREF, false);
+            prefs.save();
+        } else {
+            Watcher.start();
+            CommandManager.get(CMD_TOGGLE_WATCH).setChecked(true);
+            prefs.set(WATCHER_PREF, true);
+            prefs.save();
+        }
+    }
+
     /* Initializes extension */
     AppInit.appReady(function () {
         var contextMenu, viewMenu, fileMenu;
@@ -133,23 +147,9 @@ define(function Main(require, exports, module) {
                 DropArea.setDestinationDir(ProjectManager.getProjectRoot().fullPath);
             }
         });
-        CommandManager.register(MENU_ITEM_DOWNLOADER, CMD_DOWNLOADER, function () {
-            Downloader.init();
-        });
+        CommandManager.register(MENU_ITEM_DOWNLOADER, CMD_DOWNLOADER, Downloader.init);
         CommandManager.register(MENU_ITEM_DROP_VIEW, CMD_TOGGLE_DROP, toggleDropArea);
-        CommandManager.register(MENU_ITEM_WATCH, CMD_TOGGLE_WATCH, function () {
-            if (prefs.get(WATCHER_PREF) === true) {
-                Watcher.stop();
-                CommandManager.get(CMD_TOGGLE_WATCH).setChecked(false);
-                prefs.set(WATCHER_PREF, false);
-                prefs.save();
-            } else {
-                Watcher.start();
-                CommandManager.get(CMD_TOGGLE_WATCH).setChecked(true);
-                prefs.set(WATCHER_PREF, true);
-                prefs.save();
-            }
-        });
+        CommandManager.register(MENU_ITEM_WATCH, CMD_TOGGLE_WATCH, toggleWatcher);
 
         contextMenu = Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU);
         contextMenu.addMenuItem(CMD_LINK);
