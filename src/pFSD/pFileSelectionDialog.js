@@ -536,15 +536,16 @@ define(function (require, exports, module) {
                     toShow.forEach(function ($item) {
                         $item.show();
                     });
+                    $("input:checkbox[name=pfsd-file-checkbox]:not(:visible)").prop('checked', false);
                 } else {
                     $("#pfsd-list").find(".file-item").show();
                 }
             };
 
             if ($(".pfsd-filterinput").length === 0) {
-                var $filterBox = Mustache.render(FilterBox, { placeholder: _options.filterBoxPlaceholder });
+                var filterBox = Mustache.render(FilterBox, { placeholder: _options.filterBoxPlaceholder });
 
-                $(".modal-header").append($filterBox);
+                $(".modal-header").append(filterBox);
 
                 // Filter box handler.
                 $(".pfsd-filterinput").keyup(function () {
@@ -702,7 +703,7 @@ define(function (require, exports, module) {
                     });
                     btnCheckAll = $('.dialog-button').filter('[data-button-id="pfsd.checkall"]');
                     btnCheckAll.click(function () {
-                        $("input:checkbox[name=pfsd-file-checkbox]").prop('checked', true);
+                        $("input:checkbox[name=pfsd-file-checkbox]:visible").prop('checked', true);
                     });
                     btnUncheckAll = $('.dialog-button').filter('[data-button-id="pfsd.uncheckall"]');
                     btnUncheckAll.click(function () {
