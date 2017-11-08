@@ -122,8 +122,8 @@ define(function Linker(require, exports, module) {
         // and configure fileLang properly.
         if (fileLang === "audio" || fileLang === "unknown" || fileLang === "binary") {
             fileExt = FileUtils.getFileExtension(relPath);
-            if (fileExt in VIDEO_EXTENSIONS) { fileLang = "video"; }
-            if (fileExt in FONT_EXTENSIONS) { fileLang = "font"; }
+            if (VIDEO_EXTENSIONS.hasOwnProperty(fileExt)) { fileLang = "video"; }
+            if (FONT_EXTENSIONS.hasOwnProperty(fileExt)) { fileLang = "font"; }
         }
         // If It is SVG file, treats it like an image.
         if (fileLang === "svg") { fileLang = "image"; }
@@ -135,16 +135,21 @@ define(function Linker(require, exports, module) {
         if ($.inArray(fileLang, DOC_LANGUAGES[docLang]) < 0) { return null; }
 
         // Tag creation logic.
-        if (fileLang === 'image') {
-            tag = TAG_TEMPLATES[fileLang][docLang].replace('{RELPATH}', relPath);
-        } else if (fileLang === 'audio') {
-            tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{TYPE}', AUDIO_EXTENSIONS[fileExt]);
-        } else if (fileLang === 'video') {
-            tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{TYPE}', VIDEO_EXTENSIONS[fileExt]);
-        } else if (fileLang === 'font') {
-            tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{FORMAT}', FONT_EXTENSIONS[fileExt]);
-        } else {
-            tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath);
+        switch (fileLang) {
+            case 'image':
+                tag = TAG_TEMPLATES[fileLang][docLang].replace('{RELPATH}', relPath);
+                break;
+            case 'audio':
+                tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{TYPE}', AUDIO_EXTENSIONS[fileExt]);
+                break;
+            case 'video':
+                tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{TYPE}', VIDEO_EXTENSIONS[fileExt]);
+                break;
+            case 'font':
+                tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{FORMAT}', FONT_EXTENSIONS[fileExt]);
+                break;
+            default:
+                tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath);
         }
 
         return tag;
