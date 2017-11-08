@@ -11,7 +11,11 @@ define(function Linker(require, exports, module) {
         EditorManager   = brackets.getModule("editor/EditorManager"),
         FileUtils       = brackets.getModule("file/FileUtils");
 
-    var DOC_LANGUAGES = ['html', 'php', 'css'],
+    var DOC_LANGUAGES = {
+        'html': ['javascript', 'css', 'image', 'audio', 'video'],
+        'php': ['php'],
+        'css': ['image', 'font']
+    },
         TAG_TEMPLATES = {
             'javascript' : '<script type="text/javascript" src="{RELPATH}"></script>',
             'css' : '<link type="text/css" href="{RELPATH}" rel="stylesheet">',
@@ -21,7 +25,8 @@ define(function Linker(require, exports, module) {
                 'css' : 'url("{RELPATH}");'
             },
             'audio': '<audio controls src="{RELPATH}" type="audio/{TYPE}"></audio>',
-            'video': '<video controls width="" height="" src="{RELPATH}" type="video/{TYPE}"></video>'
+            'video': '<video controls width="" height="" src="{RELPATH}" type="video/{TYPE}"></video>',
+            'font': 'url("{RELPATH}"){FORMAT}'
         },
         AUDIO_EXTENSIONS = {
             'ogg': 'ogg',
@@ -33,6 +38,13 @@ define(function Linker(require, exports, module) {
             'ogg': 'ogg',
             'ogv': 'ogg',
             'webm': 'webm'
+        },
+        FONT_EXTENSIONS = {
+            'eot': ';',
+            'otf': ';',
+            'woff': ' format("woff");',
+            'woff2': ' format("woff2");',
+            'ttf': ' format("truetype");',
         };
 
     /**
@@ -105,43 +117,36 @@ define(function Linker(require, exports, module) {
 
         // Finds lost parameters.
         if (!relPath || !fileLang || !docLang) { return null; }
-        // If It is an audio file, save file extension.
-        if (fileLang === "audio") {
-            fileExt = FileUtils.getFileExtension(relPath);
-        }
-        // If Brackets don't know the file language, looks if It is video.
-        if (fileLang === "unknown" || fileLang === "binary") {
+
+        // If It is an audio/unknown/binary file, save file extension
+        // and configure fileLang properly.
+        if (fileLang === "audio" || fileLang === "unknown" || fileLang === "binary") {
             fileExt = FileUtils.getFileExtension(relPath);
             if (fileExt in VIDEO_EXTENSIONS) { fileLang = "video"; }
+            if (fileExt in FONT_EXTENSIONS) { fileLang = "font"; }
         }
         // If It is SVG file, treats it like an image.
         if (fileLang === "svg") { fileLang = "image"; }
-        // Finds if document language is supported.
-        if ($.inArray(docLang, DOC_LANGUAGES) < 0) { return null; }
 
-        // Finds if file language is supported.
-        if (fileLang in TAG_TEMPLATES) {
-            // Only links php 'include()' in php documents.
-            if (fileLang !== 'php' && docLang === 'php') {
-                return null;
-            } else if (fileLang === 'php' && docLang === 'html') {
-                return null;
-            } else if (fileLang !== 'image' && docLang === 'css') {
-                return null;
-            } else {
-                if (fileLang === 'image') {
-                    tag = TAG_TEMPLATES[fileLang][docLang].replace('{RELPATH}', relPath);
-                } else if (fileLang === 'audio') {
-                    tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{TYPE}', AUDIO_EXTENSIONS[fileExt]);
-                } else if (fileLang === 'video') {
-                    tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{TYPE}', VIDEO_EXTENSIONS[fileExt]);
-                } else {
-                    tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath);
-                }
-            }
+        // Finds if document language is supported.
+        if (!DOC_LANGUAGES.hasOwnProperty(docLang)) { return null; }
+
+        // Finds if file language is supported in this document.
+        if ($.inArray(fileLang, DOC_LANGUAGES[docLang]) < 0) { return null; }
+
+        // Tag creation logic.
+        if (fileLang === 'image') {
+            tag = TAG_TEMPLATES[fileLang][docLang].replace('{RELPATH}', relPath);
+        } else if (fileLang === 'audio') {
+            tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{TYPE}', AUDIO_EXTENSIONS[fileExt]);
+        } else if (fileLang === 'video') {
+            tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{TYPE}', VIDEO_EXTENSIONS[fileExt]);
+        } else if (fileLang === 'font') {
+            tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath).replace('{FORMAT}', FONT_EXTENSIONS[fileExt]);
         } else {
-            return null;
+            tag = TAG_TEMPLATES[fileLang].replace('{RELPATH}', relPath);
         }
+
         return tag;
     }
 
