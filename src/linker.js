@@ -14,15 +14,18 @@ define(function Linker(require, exports, module) {
     var DOC_LANGUAGES = {
         'html': ['javascript', 'css', 'image', 'audio', 'video'],
         'php': ['php'],
-        'css': ['image', 'font']
+        'css': ['image', 'font', 'css']
     },
         TAG_TEMPLATES = {
             'javascript' : '<script type="text/javascript" src="{RELPATH}"></script>',
-            'css' : '<link type="text/css" href="{RELPATH}" rel="stylesheet">',
+            'css' : {
+                html: '<link type="text/css" href="{RELPATH}" rel="stylesheet">',
+                css: '@import url("{RELPATH}");'
+            },
             'php' : "include('{RELPATH}');",
             'image' : {
                 'html' : '<img src="{RELPATH}" alt="" height="" width="">',
-                'css' : 'url("{RELPATH}");'
+                'css' : 'url("{RELPATH}")'
             },
             'audio': '<audio controls src="{RELPATH}" type="audio/{TYPE}"></audio>',
             'video': '<video controls width="" height="" src="{RELPATH}" type="video/{TYPE}"></video>',
@@ -40,11 +43,11 @@ define(function Linker(require, exports, module) {
             'webm': 'webm'
         },
         FONT_EXTENSIONS = {
-            'eot': ';',
-            'otf': ';',
-            'woff': ' format("woff");',
-            'woff2': ' format("woff2");',
-            'ttf': ' format("truetype");',
+            'eot': ' format("embedded-opentype")',
+            'otf': '',
+            'woff': ' format("woff")',
+            'woff2': ' format("woff2")',
+            'ttf': ' format("truetype")',
         };
 
     /**
@@ -137,6 +140,7 @@ define(function Linker(require, exports, module) {
         // Tag creation logic.
         switch (fileLang) {
             case 'image':
+            case 'css':
                 tag = TAG_TEMPLATES[fileLang][docLang].replace('{RELPATH}', relPath);
                 break;
             case 'audio':

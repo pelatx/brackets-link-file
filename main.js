@@ -69,6 +69,7 @@ define(function Main(require, exports, module) {
                     filterBoxPlaceholder: Strings.PFD_FILTER_PLACEHOLDER,
                     filterSets: {
                         Images: ".jpg .png .svg .gif",
+                        Fonts: ".eot .otf .woff .woff2 .ttf .svg",
                         Audio: ".ogg .mp3 .wav",
                         Video: ".ogv .ogg .mp4 .webm",
                         Development: ".js .css .html .php"

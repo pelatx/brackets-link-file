@@ -17,14 +17,16 @@ define(function Watcher(require, exports, module) {
     // Regexps
     var REGEXPS = {
         'javascript':   /<script\b[^>]*>([\s\S]*?)<\/script>/g,
-        'image':        [/<img\b[^>]*>([\s\S]*?)>{0}/g, /url([\s\S]*?).*;{0}/g],
-        'css':          /<link\b[^>]*>([\s\S]*?)>{0}/g,
+        'image':        [/<img\b[^>]*>([\s\S]*?)>{0}/g, /url([\s\S]*?)\).*/g],
+        'css':          [/<link\b[^>]*>([\s\S]*?)>{0}/g, /@import([\s\S]*?)\).*;{0}/g],
         'php':          /[include|include_once|require|require_once]([\s\S]*?).*;{0}/g,
         'audio':        /<audio\b[^>]*>([\s\S]*?)<\/audio>/g,
-        'video':        /<video\b[^>]*>([\s\S]*?)<\/video>/g
+        'video':        /<video\b[^>]*>([\s\S]*?)<\/video>/g,
+        'font':         /url([\s\S]*?)\).*/g
     };
 
-    var VIDEO_EXTENSIONS = ['mp4', 'ogg', 'ogv', 'webm'];
+    var VIDEO_EXTENSIONS = ['mp4', 'ogg', 'ogv', 'webm'],
+        FONT_EXTENSIONS = ['eot', 'otf', 'woff', 'woff2', 'ttf', 'svg'];
 
     // Project files storages
     var _watchedFiles = [],
@@ -60,11 +62,12 @@ define(function Watcher(require, exports, module) {
         if (fileLang === "unknown" || fileLang === "binary") {
             var fileExt = FileUtils.getFileExtension(relPath);
             if ($.inArray(fileExt, VIDEO_EXTENSIONS) > -1) { fileLang = "video"; }
+            if ($.inArray(fileExt, FONT_EXTENSIONS) > -1) { fileLang = "font"; }
         }
         if (fileLang === "svg") { fileLang = "image"; }
 
         var regexp;
-        if (fileLang === "image") {
+        if (fileLang === "image" || fileLang === "css") {
             var editor = EditorManager. getActiveEditor();
             var docLang = editor.getLanguageForSelection().getId();
             if (docLang === "html") {
