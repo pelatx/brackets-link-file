@@ -14,14 +14,16 @@
 
 .blf-lib-container {
     position:relative;
-    height:30px;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
+
 .blf-lib-info {
     display: inline-block;
 }
 
 .blf-lib-name {
-    font-size:16px;
+    font-size:20px;
     margin-top:7px;
 }
 
@@ -51,9 +53,7 @@
 .blf-btn {
     height:20px;
     width:20px;
-    margin-top:6px;
 }
-
 
 #blf-droparea {
     background-color:#2a2727;
@@ -69,3 +69,13 @@
     background-color:#3c3838;
     overflow:hidden;
 }
+
+.blf-lib-description {
+    margin-top: 6px;
+}
+
+.blf-lib-versions {
+    margin-top: 4px;
+}
+
+

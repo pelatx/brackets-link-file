@@ -21,7 +21,7 @@ define(function Downloader(require, exports, module) {
         LibTemplate     = require("text!templates/cdnLibsListItem.html"),
         VersionTemplate = require("text!templates/cdnLibVersionLink.html");
 
-    var apiURL = "https://api.jsdelivr.com/v1/jsdelivr/libraries?fields=name,mainfile,versions",
+    var apiURL = "https://api.jsdelivr.com/v1/jsdelivr/libraries",
         cdnURL = "https://cdn.jsdelivr.net/";
 
     var moduleDirPath = FileUtils.getNativeModuleDirectoryPath(module);
@@ -34,10 +34,11 @@ define(function Downloader(require, exports, module) {
      * @returns {object} A promise with an array of lib objects on success.
      */
     function _getLibraryList() {
-        var deferred = new $.Deferred();
+        var deferred = new $.Deferred(),
+            requestURL = apiURL + "?fields=name,mainfile,versions,description,author,github,homepage";
 
         if (_libraryList === null) {
-            $.getJSON(apiURL).done(function (libs) {
+            $.getJSON(requestURL).done(function (libs) {
                 libs.sort(function (a, b) {
                     var a1 = a.name.toUpperCase(),
                         b1 = b.name.toUpperCase();
@@ -56,6 +57,14 @@ define(function Downloader(require, exports, module) {
             }, 300);
         }
         return deferred.promise();
+    }
+
+    function _getLibraryFiles(libName,version) {
+        var requestURL = apiURL + "/" + libName + "/" + version;
+
+        $.getJSON(requestURL).done(function (files) {
+            console.log(files);
+        });
     }
 
     /**
@@ -105,6 +114,10 @@ define(function Downloader(require, exports, module) {
                 mainFile: libs[i].mainfile,
                 version: libs[i].versions[0],
                 lastVersionLabel: Strings.CDN_LAST_VERSION,
+                libDescription: libs[i].description,
+                libAuthor: libs[i].author,
+                libHomepage: libs[i].homepage,
+                libGithub: libs[i].github,
                 libLang: libLang,
                 downloadIconPath: downloadIconPath,
                 linkIconPath: linkIconPath,
@@ -250,6 +263,8 @@ define(function Downloader(require, exports, module) {
                 version = $li.find("span.blf-lib-version").text().replace(/[()]/g, "");
                 url = cdnURL + libName + "/" + version + "/" + mainFile;
                 libObject = { action: "link", url: url };
+
+                _getLibraryFiles(libName, version);
 
                 listDialog.close();
                 deferred.resolve(libObject);
