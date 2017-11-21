@@ -1,7 +1,7 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
 /*global define, $, brackets */
 
-define(function (require, exports, module) {
+define(function pFileSelectionDialog (require, exports, module) {
     'use strict';
 
     /* Modules */
@@ -319,7 +319,7 @@ define(function (require, exports, module) {
                     });
 
                 $(this).hover(
-                    function (ev) {
+                    function () {
                         var $modalBody = $(".modal-body"),
                             modalBodyRect = $modalBody[0].getBoundingClientRect(),
                             modalBodyTop = modalBodyRect.top,
@@ -571,7 +571,6 @@ define(function (require, exports, module) {
     function show(options, scrDir, update) {
         var dir, i, j, k, name, path, paths = [], render, selected = [],
             btnProceed, btnCancel, btnCheckAll, btnUncheckAll,
-            btnProceedHandler, btnCancelHandler, btnCheckAllHandler, btnUncheckAllHandler,
             deferred = new $.Deferred();
 
         //Set options only if we are not only updating the dialog.

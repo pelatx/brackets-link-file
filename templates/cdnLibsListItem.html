@@ -1,14 +1,15 @@
-<li id="{{libName}}" data-mainfile="{{mainFile}}">
+<li id="{{libName}}" data-qfile="{{qLibFile}}" data-mainfile="{{mainFile}}">
     <div class="blf-lib-container">
         <div class="blf-lib-info">
-            <span class="blf-lib-name">{{libName}} </span>
-            <span class="blf-lib-lang">({{libLang}})</span>
-            <span class="blf-lib-version">({{version}})</span>
-            <span class="blf-lib-last-version">{{lastVersionLabel}}{{version}}</span>
+            <span class="blf-lib-name">{{libName}} </span></br>
+            <span class="blf-lib-file">({{libFile}})</span>
+            <span class="blf-lib-version">({{libVersion}})</span>
+            <span class="blf-lib-last-version">{{lastVersionLabel}}{{libVersion}}</span>
         </div>
         <div class="blf-lib-buttons">
             <button type="button" class="btn blf-btn blf-btn-download" style="background:url({{downloadIconPath}}) no-repeat center;background-size:16px 16px;"></button>
             <button type="button" class="btn blf-btn blf-btn-link" style="background:url({{linkIconPath}}) no-repeat center;background-size:18px 18px;"></button>
+            <button type="button" class="btn blf-btn blf-btn-files" style="background:url({{filesIconPath}}) no-repeat center;background-size:16px 16px;"></button>
             <button type="button" class="btn blf-btn blf-btn-versions" style="background:url({{navIconPath}}) no-repeat center;background-size:16px 16px;"></button>
         </div>
         <div class="blf-lib-description">
@@ -19,4 +20,5 @@
         </div>
     </div>
     <div class="blf-lib-versions"></div>
+    <div class="blf-lib-files"></div>
 </li>

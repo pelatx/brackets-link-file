@@ -11,6 +11,7 @@ define(function Downloader(require, exports, module) {
         FileUtils       = brackets.getModule("file/FileUtils"),
         ProjectManager  = brackets.getModule("project/ProjectManager"),
         FileSystem      = brackets.getModule("filesystem/FileSystem"),
+        LanguageManager = brackets.getModule("language/LanguageManager"),
         Mustache        = brackets.getModule("thirdparty/mustache/mustache");
 
     var Linker          = require("./linker"),
@@ -19,7 +20,8 @@ define(function Downloader(require, exports, module) {
     var HeaderTemplate  = require("text!templates/cdnLibsHeader.html"),
         LibsTemplate    = require("text!templates/cdnLibsList.html"),
         LibTemplate     = require("text!templates/cdnLibsListItem.html"),
-        VersionTemplate = require("text!templates/cdnLibVersionLink.html");
+        VersionTemplate = require("text!templates/cdnLibVersionLink.html"),
+        FileTemplate    = require("text!templates/cdnLibFileLink.html");
 
     var apiURL = "https://api.jsdelivr.com/v1/jsdelivr/libraries",
         cdnURL = "https://cdn.jsdelivr.net/";
@@ -59,12 +61,23 @@ define(function Downloader(require, exports, module) {
         return deferred.promise();
     }
 
-    function _getLibraryFiles(libName,version) {
-        var requestURL = apiURL + "/" + libName + "/" + version;
+    /**
+     * Retrieves the file list of the specified library and version.
+     * @private
+     * @param   {string} libName Library name.
+     * @param   {string} version Library version.
+     * @returns {object} Promise with the file list array on succes.
+     */
+    function _getLibraryFiles(libName, version) {
+        var deferred = new $.Deferred(),
+            requestURL = apiURL + "/" + libName + "/" + version;
 
         $.getJSON(requestURL).done(function (files) {
-            console.log(files);
+            deferred.resolve(files);
+        }).fail(function () {
+            deferred.reject();
         });
+        return deferred.promise();
     }
 
     /**
@@ -74,7 +87,8 @@ define(function Downloader(require, exports, module) {
      * @returns {string} Library text content.
      */
     function _getLibraryContent(url) {
-        var deferred = new $.Deferred();
+        var deferred = new $.Deferred(),
+            fileExt = FileUtils.getFileExtension(url);
 
         $.get(url).done(function (data) {
             deferred.resolve(data);
@@ -98,44 +112,42 @@ define(function Downloader(require, exports, module) {
         var iconsDir = moduleDirPath + "/../styles/icons/",
             downloadIconPath = iconsDir + "ionicons-download.png",
             linkIconPath = iconsDir + "ionicons-link.png",
-            navIconPath = iconsDir + "ionicons-navicon-round.png";
+            navIconPath = iconsDir + "ionicons-navicon-round.png",
+            filesIconPath = iconsDir + "ionicons-document-text.png";
 
         var listItems = "";
         for (var i = 0; i < libs.length; i++) {
-            var libLang = FileUtils.getFileExtension(libs[i].mainfile);
-            if (libLang === "js") {
-                libLang = "JavaScript";
-            } else if ( libLang === "css") {
-                libLang = "CSS";
-            }
+            var cleanMainFile = FileUtils.getBaseName(libs[i].mainfile);
 
             listItems += Mustache.render(LibTemplate, {
                 libName: libs[i].name,
+                qLibFile: libs[i].mainfile,
                 mainFile: libs[i].mainfile,
-                version: libs[i].versions[0],
+                libFile: cleanMainFile,
+                libVersion: libs[i].versions[0],
                 lastVersionLabel: Strings.CDN_LAST_VERSION,
                 libDescription: libs[i].description,
                 libAuthor: libs[i].author,
                 libHomepage: libs[i].homepage,
                 libGithub: libs[i].github,
-                libLang: libLang,
                 downloadIconPath: downloadIconPath,
                 linkIconPath: linkIconPath,
-                navIconPath: navIconPath
+                navIconPath: navIconPath,
+                filesIconPath: filesIconPath
             });
         }
         return Mustache.render(LibsTemplate, { listItems: listItems });
     }
 
     /**
-     * Creates the versions list HTML to be displayed for every library.
+     * Creates the versions list HTML to be displayed for a library.
      * @private
      * @param   {object} $lib JQuery object containing the 'li' of the library.
      * @returns {string} Versions HTML.
      */
     function _renderVersions($lib) {
         var libName = $lib.attr("id"),
-            lib, versions = "";
+            versions = "";
 
         for (var i = 0; i < _libraryList.length; i++) {
             if (_libraryList[i].name === libName) {
@@ -145,6 +157,34 @@ define(function Downloader(require, exports, module) {
             }
         }
         return versions;
+    }
+
+    /**
+     * Creates the files list HTML to be displayed for a library.
+     * @private
+     * @param   {object} $lib JQuery object containing the library 'li' element.
+     * @returns {object} Promise with the files HTML string on success.
+     */
+    function _renderFiles($lib) {
+        var libName = $lib.attr("id"),
+            version = $lib.find("span.blf-lib-version").text().replace(/[()]/g, ""),
+            rendered = "", deferred = new $.Deferred();
+
+        _getLibraryFiles(libName, version).done(function (files) {
+            for (var i = 0; i < files.length; i++) {
+                rendered += Mustache.render(
+                    FileTemplate,
+                    {
+                        qfile: files[i],
+                        file: FileUtils.getBaseName(files[i])
+                    }
+                );
+            }
+            deferred.resolve(rendered);
+        }).fail(function () {
+            deferred.reject();
+        });
+        return deferred.promise();
     }
 
     /**
@@ -215,8 +255,8 @@ define(function Downloader(require, exports, module) {
 
                     // Version links handler.
                     $(".blf-version-link").click(function (ev) {
-                        var $libDiv, $lastVersionEl,
-                            lastVersion, version = $(this).text();
+                        var $libDiv, $lastVersionEl, $filesDiv, mainFile, $libLi,
+                            lastVersion, fileExt, version = $(this).text();
 
                         ev.preventDefault();
 
@@ -230,23 +270,40 @@ define(function Downloader(require, exports, module) {
                         }
                         $libDiv.find("span.blf-lib-version").text("(" + $(this).text() + ")");
                         $libDiv.next().hide();
+
+                        // Reset files.
+                        $libLi = $libDiv.parent();
+                        mainFile = $libLi.data("mainfile");
+                        $libLi.data("qfile", mainFile);
+                        $libDiv.find("span.blf-lib-file").text("(" + mainFile + ")");
+                        $filesDiv = $libDiv.next().next();
+                        if ($filesDiv.is(":visible")) {
+                            $filesDiv.empty();
+                            $filesDiv.hide();
+                        }
+                        fileExt = FileUtils.getFileExtension(mainFile.toLowerCase());
+                        if (fileExt === "js" || fileExt === "css") {
+                            $libDiv.find(".blf-btn-download").show();
+                        } else {
+                            $libDiv.find(".blf-btn-download").hide();
+                        }
                     });
                 }
             });
 
             // Download buttons handler.
             $(".blf-btn-download").click(function () {
-                var libName, mainFile, version, url,
+                var libName, libFile, version, url,
                     $li = $(this).parent().parent().parent();
 
                 libName = $li.attr("id");
-                mainFile = $li.data("mainfile");
+                libFile = $li.data("qfile");
                 version = $li.find("span.blf-lib-version").text().replace(/[()]/g, "");
-                url = cdnURL + libName + "/" + version + "/" + mainFile;
+                url = cdnURL + libName + "/" + version + "/" + libFile;
                 libObject = {
                     action: "download",
                     url: url,
-                    mainFile: mainFile
+                    file: FileUtils.getBaseName(libFile)
                 };
 
                 listDialog.close();
@@ -255,23 +312,58 @@ define(function Downloader(require, exports, module) {
 
             // CDN link buttons handler.
             $(".blf-btn-link").click(function () {
-                var libName, mainFile, version, url,
+                var libName, libFile, version, url,
                     $li = $(this).parent().parent().parent();
 
                 libName = $li.attr("id");
-                mainFile = $li.data("mainfile");
+                libFile = $li.data("qfile");
                 version = $li.find("span.blf-lib-version").text().replace(/[()]/g, "");
-                url = cdnURL + libName + "/" + version + "/" + mainFile;
+                url = cdnURL + libName + "/" + version + "/" + libFile;
                 libObject = { action: "link", url: url };
-
-                _getLibraryFiles(libName, version);
 
                 listDialog.close();
                 deferred.resolve(libObject);
             });
 
-            // Ensure that versions are hide when open the dialog.
+            // Library files buttons handler.
+            $(".blf-btn-files").click(function () {
+                var $li = $(this).parent().parent().parent(),
+                    $filesDiv = $li.find(".blf-lib-files");
+
+                if ($filesDiv.is(":visible")) {
+                    $filesDiv.empty();
+                    $filesDiv.hide();
+                } else {
+                    _renderFiles($li).done(function (filesHtml) {
+                        $filesDiv.html(filesHtml);
+                        $filesDiv.show();
+
+                        // Files links handler.
+                        $(".blf-file-link").click(function (ev) {
+                            var $libDiv, qLibFile, fileExt;
+
+                            ev.preventDefault();
+
+                            $libDiv = $(this).parent().parent().prev().prev();
+                            qLibFile = $(this).data("qfile");
+                            $libDiv.parent().data("qfile", qLibFile);
+                            $libDiv.find("span.blf-lib-file").text("(" + $(this).text() + ")");
+                            $libDiv.next().next().hide();
+
+                            fileExt = FileUtils.getFileExtension(qLibFile.toLowerCase());
+                            if (fileExt === "js" || fileExt === "css") {
+                                $libDiv.find(".blf-btn-download").show();
+                            } else {
+                                $libDiv.find(".blf-btn-download").hide();
+                            }
+                        });
+                    });
+                }
+            });
+
+            // Ensure that versions and files are hide when open the dialog.
             $("#blf-libs").find(".blf-lib-versions").hide();
+            $("#blf-libs").find(".blf-lib-files").hide();
 
             // Bootstrap and JQuery downloads causes a Brackets crash, because of some
             // kind of colision. I could not find a solution for now, so I have opted to cancel the download.
@@ -301,20 +393,19 @@ define(function Downloader(require, exports, module) {
         _showDialog().done(function (libObject) {
             if (libObject.action === "download") {
                 _getLibraryContent(libObject.url).done(function (libContent) {
-                    var cleanMainFile = FileUtils.getBaseName(libObject.mainFile),
-                        libFile = FileSystem.getFileForPath(destDirPath + cleanMainFile);
+                    var libFile = FileSystem.getFileForPath(destDirPath + libObject.file);
 
                     FileUtils.writeText(libFile, libContent, true).done(function () {
                         var tag = Linker.getTagsFromFiles([libFile.fullPath]);
                         Linker.insertTags(tag);
                         ProjectManager.refreshFileTree();
                     }).fail(function () {
-                        console.log("Error writing file: " + libFile);
+                        console.log("Error writing file: " + libFile.fullPath);
                     });
                 });
             } else if (libObject.action === "link") {
                 var tag = Linker.getTagsFromUrls([libObject.url]);
-                Linker.insertTags([tag]);
+                Linker.insertTags(tag);
             }
         });
     }

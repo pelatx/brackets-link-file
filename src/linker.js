@@ -194,7 +194,7 @@ define(function Linker(require, exports, module) {
         var tags = [],
             tag,
             fileExt, fileLang,
-            editor = EditorManager. getActiveEditor();
+            editor = EditorManager.getActiveEditor();
 
 
         if (urls && editor && !editor.document.isUntitled()) {
@@ -203,10 +203,11 @@ define(function Linker(require, exports, module) {
 
             for (var i = 0; i < urls.length; i++) {
                 fileExt = FileUtils.getFileExtension(urls[i]).toLowerCase();
-                if (fileExt === "js") {
-                    fileLang = "javascript"
+                fileLang = LanguageManager.getLanguageForExtension(fileExt);
+                if (fileLang) {
+                    fileLang = fileLang.getId();
                 } else {
-                    fileLang = fileExt;
+                    fileLang = "unknown";
                 }
                 tag = createTag(urls[i], fileLang, docLang);
                 if (tag) { tags.push(tag); }
