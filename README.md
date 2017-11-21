@@ -1,6 +1,6 @@
 # Brackets Link File
 
-Easily link your files (PHP, JavaScript, CSS, images, audio, video) into the focused document (HTML, PHP, CSS). You can copy several files in one time to your project folders and get them tagged automatically in the current document. 
+Easily link your files (PHP, JavaScript, CSS, images, audio, video, fonts) into the focused document (HTML, PHP, CSS). You can copy several files in one time to your project folders and get them tagged automatically in the current document. 
 
 Supports linking of existing files in the project tree. Also, with a file selection dialog (with image previews) or directly with drag and drop from OS file browser, allows copying files to project which will be tagged automatically.
 
@@ -8,7 +8,7 @@ It also supports bi-directionality: if you delete a project file, the tag or tag
 
 Supports direct download of libraries from CDN. You can download and link the library automatically in the document. Or just get a tag with the URL of the library for remote use.
 
-#### <span style="color:red">Important!</span>
+#### Important!
 
 GNU/Linux users can't drag & drop files from OS file browser in Brackets 1.11, because It has completely lost this functionality on this operating system. 
 
@@ -63,17 +63,22 @@ Once enabled, the extension will recognize when a project file is deleted. And i
 
 Watch it in [this video][video-watcher]
 
-#### Downloading libraries from CDN.
+#### Downloading or getting tags from JSDelivr CDN libraries.
 
 Right click on the destination directory in the Project tree -> Link File (Download Library). You will be prompted with a dialog where you can see the library list. 
 
-Every library item has three buttons on right side. The one starting from right, lets you choose the version to use. 
+Every library item has four buttons on right side. The one starting from right, lets you choose the library version* to use.
 
-Second one inserts a tag with the library URL for remore usage. 
+Second one let you choose the target file to download or get tagged.
 
-And the third button downloads the library to the selected folder and insert the corresponding tag in the active document with the correct relative path.
+Third one inserts a tag with the library file URL for remore usage. 
+
+And the fourth button downloads the library file to the selected folder and insert the corresponding tag in the active document with the correct relative path.
 
 Watch it in [this video][video-downloader] 
+
+\* *For now, this downloader relies on the old JSDelivr API. Because the new API don't let me get a file list (or I have not found the way).
+That means some libraries have newer versions than the exposed in this downloader. The Homepage and Github links in the library description can help on this.*
 
 ## Features
 
@@ -91,9 +96,10 @@ Watch it in [this video][video-downloader]
 
 - PHP files on PHP documents.
 - JavaScript files on HTML documents.
-- CSS files on HTML documents.
+- CSS files on HTML and CSS documents.
 - Image files on HTML and CSS documents.
 - Audio and Video files on HTML documents.
+- Font files on CSS documents.
 
 ## Changelog
 
@@ -138,6 +144,14 @@ v2.0.0 - Improved file selection dialog:
 - Hidden files toggle to show/hide them.
 - Fade in for image file previews.
 - Refactoring and modularization.
+
+v2.1.0 - Changes:
+- Improved CDN downloader:
+    - Library description and author.
+    - Library homepage and/or Github repository links.
+    - Library files are now browsable and selectable. It's possible to download only Javascript and CSS files. But to get the CDN url tag of any file type.
+- Support for CSS on CSS documents (@import).
+- Support for Font files (.eot, .ttf, .woff, .woff2, .otf) on CSS documents.
 
 ## Credits
 Icons from [Ionicons][ionicons].
