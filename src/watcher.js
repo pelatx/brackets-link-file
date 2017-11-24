@@ -10,6 +10,7 @@ define(function Watcher(require, exports, module) {
     var EditorManager   = brackets.getModule("editor/EditorManager"),
         LanguageManager = brackets.getModule("language/LanguageManager"),
         FileUtils       = brackets.getModule("file/FileUtils"),
+        FileSystem      = brackets.getModule("filesystem/FileSystem"),
         ProjectManager  = brackets.getModule("project/ProjectManager");
 
     var Linker          = require("./linker");
@@ -31,9 +32,6 @@ define(function Watcher(require, exports, module) {
     // Project files storages
     var _watchedFiles = [],
         _watchedFilesCache = [];
-
-    // Watcher function
-    var _intervalFunc;
 
     /**
      * Compares cached project files with current.
@@ -90,6 +88,53 @@ define(function Watcher(require, exports, module) {
         return docText;
     }
 
+    function _onChange(ev, entry) {
+        if (entry && entry.isDirectory) {
+            ProjectManager.getAllFiles().done(function (files) {
+                _watchedFiles = files.slice(0);
+                var removedFiles = _compareFiles();
+                if (removedFiles.length > 0) {
+                    removedFiles.forEach(function (filePath) {
+                        var editor = EditorManager. getActiveEditor();
+                        if (editor) {
+                            var cursorPos = editor.getCursorPos();
+                            var fileLang = LanguageManager.getLanguageForPath(filePath).getId();
+                            var relPath = Linker.findRelativePath(filePath, editor.getFile().fullPath);
+                            var docText = editor.document.getText();
+                            var newText = _removeLinks(relPath, docText, fileLang);
+                            editor.document.replaceRange(
+                                newText,
+                                {line: 0, ch: 0},
+                                {line: 9999, ch: 9999}
+                            );
+                            editor.setCursorPos(cursorPos.line, cursorPos.ch);
+                        }
+                    });
+                }
+                _watchedFilesCache = files.slice(0);
+            });
+        }
+    }
+
+    function _onRename(ev, oldPath, newPath) {
+        var editor = EditorManager. getActiveEditor();
+        if (editor) {
+            var cursorPos = editor.getCursorPos();
+            var fileLang = LanguageManager.getLanguageForPath(oldPath).getId();
+            var relPath = Linker.findRelativePath(oldPath, editor.getFile().fullPath);
+            var docText = editor.document.getText();
+            var newText = _removeLinks(relPath, docText, fileLang);
+            editor.document.replaceRange(
+                newText,
+                {line: 0, ch: 0},
+                {line: 9999, ch: 9999}
+            );
+            editor.setCursorPos(cursorPos.line, cursorPos.ch);
+            var newTag = Linker.getTagsFromFiles([newPath]);
+            Linker.insertTags(newTag);
+        }
+    }
+
     /**
      * Starts the project files watcher.
      * Sets the scanning every two seconds for removed files and
@@ -99,36 +144,14 @@ define(function Watcher(require, exports, module) {
         ProjectManager.getAllFiles().done(function (files) {
             _watchedFilesCache = files.slice(0);
 
-            _intervalFunc = setInterval(function () {
-                ProjectManager.refreshFileTree();
-                ProjectManager.getAllFiles().done(function (files) {
-                    _watchedFiles = files.slice(0);
-                    var removedFiles = _compareFiles();
-                    if (removedFiles.length > 0) {
-                        removedFiles.forEach(function (filePath) {
-                            var editor = EditorManager. getActiveEditor();
-                            if (editor) {
-                                var fileLang = LanguageManager.getLanguageForPath(filePath).getId();
-                                var relPath = Linker.findRelativePath(filePath, editor.getFile().fullPath);
-                                var docText = editor.document.getText();
-                                var newText = _removeLinks(relPath, docText, fileLang);
-                                editor.document.replaceRange(
-                                    newText,
-                                    {line: 0, ch: 0},
-                                    {line: 9999, ch: 9999}
-                                );
-                            }
-                        });
-                    }
-                    _watchedFilesCache = files.slice(0);
-                });
-            }, 2000);
-
             ProjectManager.on("projectOpen.blfwatcher", function () {
                 ProjectManager.getAllFiles().done(function (files) {
                     _watchedFilesCache = files.slice(0);
                 });
             });
+
+            FileSystem.on("change.blfwatcher", _onChange);
+            FileSystem.on("rename.blfwatcher", _onRename);
         });
     }
 
@@ -136,8 +159,11 @@ define(function Watcher(require, exports, module) {
      * Stops the project files watcher.
      */
     function stop() {
-        clearInterval(_intervalFunc);
+        FileSystem.off("change.blfwatcher");
+        FileSystem.off("rename.blfwatcher");
         ProjectManager.off("projectOpen.blfwatcher");
+        _watchedFiles = [];
+        _watchedFilesCache = [];
     }
 
     module.exports = {

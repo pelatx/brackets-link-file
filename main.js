@@ -13,7 +13,7 @@ define(function Main(require, exports, module) {
         ProjectManager      = brackets.getModule("project/ProjectManager"),
         LanguageManager     = brackets.getModule("language/LanguageManager"),
         PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
-        ExtensionUtils     = brackets.getModule("utils/ExtensionUtils"),
+        ExtensionUtils      = brackets.getModule("utils/ExtensionUtils"),
         Menus               = brackets.getModule("command/Menus"),
         Commands            = brackets.getModule("command/Commands");
 
