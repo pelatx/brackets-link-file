@@ -4,7 +4,7 @@ Easily link your files (PHP, JavaScript, CSS, images, audio, video, fonts) into 
 
 Supports linking of existing files in the project tree. Also, with a file selection dialog (with image previews) or directly with drag and drop from OS file browser, allows copying files to project which will be tagged automatically.
 
-It also supports bi-directionality: if you delete a project file, the tag or tags are automatically deleted in the document.
+It also supports bi-directionality: if you delete or rename a project file, the tag or tags are automatically deleted or updated in the document.
 
 Supports direct download of libraries from CDN. You can download and link the library automatically in the document. Or just get a tag with the URL of the library for remote use.
 
@@ -55,11 +55,11 @@ Watch it in [this video][video-dragndrop]
 
 #### Using bi-directional linking
 
-This is a feature disabled by default. Because in projects with an extensive number of directories and files, it can greatly slow down Brackets.
+This is a feature disabled by default. Because in projects with an extensive number of directories and files, it can slow down Brackets a bit.
 
 To enable/disable it, go to File Menu -> Link File Watcher.
 
-Once enabled, the extension will recognize when a project file is deleted. And it will automatically delete the corresponding tag in the current document, if any.
+Once enabled, the extension will recognize when a project file is deleted or renamed. If deleted, It will automatically delete the corresponding tags in the current document. If renamed, It will automatically update tags according the new name.
 
 Watch it in [this video][video-watcher]
 
@@ -87,7 +87,7 @@ That means some libraries have newer versions than the exposed in this downloade
 - Image previews in file selection dialog.
 - Drag and drop files directly from OS file browser.
 - Non taggable files are copied anyway to project.
-- Bi-directional linking: delete a project file and referred tags will be deleted in document automatically.
+- Bi-directional linking: delete or rename a project file and referred tags will be deleted or updated in document automatically.
 - Internationalization.
 - CDN library download and automatic tag in active document.
 - CDN library direct tag for remote usage.
@@ -152,6 +152,11 @@ v2.1.0 - Changes:
     - Library files are now browsable and selectable. It's possible to download only Javascript and CSS files. But to get the CDN url tag of any file type.
 - Support for CSS on CSS documents (@import).
 - Support for Font files (.eot, .ttf, .woff, .woff2, .otf) on CSS documents.
+
+v2.2.0 - Improved bi-directionality:
+- Changed the way in which the project is monitored. Now much more efficient. It no longer causes a considerable drop in the performance of Brackets. Even with very large projects it remains usable.
+- Support to update the tags when a project file is renamed.
+- Some fixes.
 
 ## Credits
 Icons from [Ionicons][ionicons].
