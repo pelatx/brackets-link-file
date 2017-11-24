@@ -88,6 +88,12 @@ define(function Watcher(require, exports, module) {
         return docText;
     }
 
+    /**
+     * Project files change (add, remove ...) handler.
+     * @private
+     * @param {object} ev    Event object (not used).
+     * @param {object} entry Brackets filesystem object (file or directory type).
+     */
     function _onChange(ev, entry) {
         if (entry && entry.isDirectory) {
             ProjectManager.getAllFiles().done(function (files) {
@@ -116,6 +122,13 @@ define(function Watcher(require, exports, module) {
         }
     }
 
+    /**
+     * Project file rename handler.
+     * @private
+     * @param {object} ev      Event object (not used).
+     * @param {string} oldPath Full path before file was renamed.
+     * @param {string} newPath New file full path.
+     */
     function _onRename(ev, oldPath, newPath) {
         var editor = EditorManager. getActiveEditor();
         if (editor) {
