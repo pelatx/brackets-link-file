@@ -66,7 +66,7 @@ define(function Watcher(require, exports, module) {
 
         var regexp;
         if (fileLang === "image" || fileLang === "css") {
-            var editor = EditorManager. getActiveEditor();
+            var editor = EditorManager.getActiveEditor();
             var docLang = editor.getLanguageForSelection().getId();
             if (docLang === "html") {
                 regexp = REGEXPS[fileLang][0];
@@ -101,7 +101,7 @@ define(function Watcher(require, exports, module) {
                 var removedFiles = _compareFiles();
                 if (removedFiles.length > 0) {
                     removedFiles.forEach(function (filePath) {
-                        var editor = EditorManager. getActiveEditor();
+                        var editor = EditorManager.getActiveEditor();
                         if (editor) {
                             var cursorPos = editor.getCursorPos();
                             var fileLang = LanguageManager.getLanguageForPath(filePath).getId();
@@ -130,7 +130,7 @@ define(function Watcher(require, exports, module) {
      * @param {string} newPath New file full path.
      */
     function _onRename(ev, oldPath, newPath) {
-        var editor = EditorManager. getActiveEditor();
+        var editor = EditorManager.getActiveEditor();
         if (editor) {
             var cursorPos = editor.getCursorPos();
             var fileLang = LanguageManager.getLanguageForPath(oldPath).getId();
