@@ -149,14 +149,14 @@ v2.1.0 - Changes:
 - Improved CDN downloader:
     - Library description and author.
     - Library homepage and/or Github repository links.
-    - Library files are now browsable and selectable. It's possible to download only Javascript and CSS files. But to get the CDN url tag of any file type.
+    - Library files are now browsable and selectable. It's possible to download only Javascript and CSS files. But getting the CDN url tag of any file type is supported.
 - Support for CSS on CSS documents (@import).
 - Support for Font files (.eot, .ttf, .woff, .woff2, .otf) on CSS documents.
 
 v2.2.0 - Improved bi-directionality:
 - Changed the way in which the project is monitored. Now much more efficient. It no longer causes a considerable drop in the performance of Brackets. Even with very large projects it remains usable.
 - Support to update the tags when a project file is renamed.
-- Some fixes.
+- Bug fixes.
 
 ## Credits
 Icons from [Ionicons][ionicons].
