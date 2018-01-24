@@ -149,6 +149,7 @@ define(function Main(require, exports, module) {
             }
         });
         CommandManager.register(MENU_ITEM_DOWNLOADER, CMD_DOWNLOADER, Downloader.init);
+
         CommandManager.register(MENU_ITEM_DROP_VIEW, CMD_TOGGLE_DROP, toggleDropArea);
         CommandManager.register(MENU_ITEM_WATCH, CMD_TOGGLE_WATCH, toggleWatcher);
 

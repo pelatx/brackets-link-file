@@ -1,7 +1,8 @@
-<li id="{{libName}}" data-qfile="{{qLibFile}}" data-mainfile="{{mainFile}}">
+<li id="{{libName}}">
     <div class="blf-lib-container">
         <div class="blf-lib-info">
-            <span class="blf-lib-name">{{libName}} </span></br>
+            <span class="blf-lib-name"><a class="blf-lib-desc-link" href="#">{{libName}}</a></span><br>
+            <span class="blf-lib-hits">Hits: {{hits}}</span><br>
             <span class="blf-lib-file">({{libFile}})</span>
             <span class="blf-lib-version">({{libVersion}})</span>
             <span class="blf-lib-last-version">{{lastVersionLabel}}{{libVersion}}</span>
@@ -12,12 +13,7 @@
             <button type="button" class="btn blf-btn blf-btn-files" style="background:url({{filesIconPath}}) no-repeat center;background-size:16px 16px;"></button>
             <button type="button" class="btn blf-btn blf-btn-versions" style="background:url({{navIconPath}}) no-repeat center;background-size:16px 16px;"></button>
         </div>
-        <div class="blf-lib-description">
-            {{libDescription}}</br>
-            Author: {{libAuthor}}</br>
-            <a href="{{libHomepage}}">Homepage</a>
-            <a href="{{libGithub}}">Github</a>
-        </div>
+        <div class="blf-lib-description"></div>
     </div>
     <div class="blf-lib-versions"></div>
     <div class="blf-lib-files"></div>

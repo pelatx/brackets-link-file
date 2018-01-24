@@ -225,9 +225,9 @@ define(function Linker(require, exports, module) {
 
         if (tags && editor && !editor.document.isUntitled()) {
             for (var i = 0; i < tags.length; i++) {
-                if (i < tags.length - 1) {
+                //if (i < tags.length - 1) {
                     tags[i] += "\n";
-                }
+                //}
                 var selection = editor.getSelection();
                 editor.document.replaceRange(
                     tags[i],

@@ -51,8 +51,8 @@
 }
 
 .blf-btn {
-    height:20px;
-    width:20px;
+    height: 20px;
+    width: 20px;
 }
 
 #blf-droparea {
@@ -80,4 +80,20 @@
 
 .blf-lib-files {
     margin-top: 4px;
+}
+
+.blf-dir-img {
+    width:20px;
+    height:20px;
+}
+
+.blf-btn-cdn-nav {
+    height: 30px;
+    width: 30px;
+}
+
+#blf-cdn-current-page {
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 5px;
 }
