@@ -10,13 +10,18 @@ define({
     CDN_LOADING: "Cargando Lista de Librerías ...",
     CDN_LAST_VERSION: "Última Versión: ",
     CDN_ERROR_FETCHING_LIST: "No se puede obtener la lista de bibliotecas. Vuelva a intentarlo más tarde.",
+    CDN_FILES: "Archivos",
+    CDN_VERSIONS: "Versiones",
+    CDN_SELECT_FILE: "Selecciona archivo",
+    CDN_SELECT_VERSION: "Selecciona version",
 
     PROCEED_BUTTON: "Proceder",
     CANCEL_BUTTON: "Cancelar",
     CHECK_ALL_BUTTON: "Marcar Todo",
     UNCHECK_ALL_BUTTON: "Desmarcar Todo",
+    FINISH_BUTTON: "Terminar",
     HIDDEN_TOGGLE_LABEL: "Mostrar Ocultos",
 
     PFSD_TITLE: "Añade Archivos al Proyecto",
-    PFD_FILTER_PLACEHOLDER: "Filtrar ..."
+    PFSD_FILTER_PLACEHOLDER: "Filtrar ..."
 });

@@ -66,7 +66,7 @@ define(function Main(require, exports, module) {
                     checkAll: Strings.CHECK_ALL_BUTTON,
                     uncheckAll: Strings.UNCHECK_ALL_BUTTON,
                     hiddenToggleLabel: Strings.HIDDEN_TOGGLE_LABEL,
-                    filterBoxPlaceholder: Strings.PFD_FILTER_PLACEHOLDER,
+                    filterBoxPlaceholder: Strings.PFSD_FILTER_PLACEHOLDER,
                     filterSets: {
                         Images: ".jpg .png .svg .gif",
                         Fonts: ".eot .otf .woff .woff2 .ttf .svg",

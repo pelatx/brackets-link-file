@@ -30,6 +30,8 @@ define(function Downloader(require, exports, module) {
 
     var moduleDirPath = FileUtils.getNativeModuleDirectoryPath(module);
 
+    var _$workingLib;
+
     /**
      * Returns the list of available libraries.
      * @private
@@ -45,10 +47,7 @@ define(function Downloader(require, exports, module) {
                 deferred.reject();
             });
         } else {
-            // To let the loading message appear in the dialog.
-            setTimeout(function () {
-                deferred.resolve(CdnManager.getCurrentLibs());
-            }, 300);
+            deferred.resolve(CdnManager.getCurrentLibs());
         }
         return deferred.promise();
     }
@@ -64,13 +63,19 @@ define(function Downloader(require, exports, module) {
             downloadIconPath = iconsDir + "ionicons-download.png",
             linkIconPath = iconsDir + "ionicons-link.png",
             navIconPath = iconsDir + "ionicons-navicon-round.png",
-            filesIconPath = iconsDir + "ionicons-document-text.png";
+            filesIconPath = iconsDir + "ionicons-document-text.png",
+            type;
 
         var listItems = "";
         for (var i = 0; i < libs.length; i++) {
-
+            if (libs[i].type === "gh") {
+                type = "Github";
+            } else {
+                type = libs[i].type;
+            }
             listItems += Mustache.render(LibTemplate, {
                 libName: libs[i].name,
+                libType: type,
                 hits: libs[i].hits,
                 libFile: "Select file",
                 libVersion: "Select version",
@@ -91,7 +96,7 @@ define(function Downloader(require, exports, module) {
      * @returns {string} Versions HTML.
      */
     function _renderVersions(libName, versionsObj) {
-        var rendered = "<h4><u>Versions</u></h4>";
+        var rendered = "<h4><u>" + Strings.CDN_VERSIONS + "</u></h4>";
 
         for (var i = 0; i < versionsObj.versions.length; i++) {
             rendered += Mustache.render(VersionTemplate, { version: versionsObj.versions[i] });
@@ -106,8 +111,9 @@ define(function Downloader(require, exports, module) {
      * @returns {object} Promise with the files HTML string on success.
      */
     function _renderFiles(filesObj) {
-        var rendered = "<h4><u>Files</u></h4>", depth = 0, currentPath = [], indent = "",
-            dirIconPath = moduleDirPath + "/../styles/icons/ionicons-folder.png"
+        var rendered = "<h4><u>" + Strings.CDN_FILES + "</u></h4>",
+            depth = 0, currentPath = [], indent = "",
+            dirIconPath = moduleDirPath + "/../styles/icons/ionicons-folder.png";
 
         var scan = function (files) {
             files.forEach(function (fileObj, index, array) {
@@ -180,11 +186,22 @@ define(function Downloader(require, exports, module) {
         return deferred.promise();
     }
 
-    function _updateLibList(destDirPath) {
+    function _setStartingVisibility() {
+        // Ensure that descriptions, versions and files are hidden when open the dialog.
+        $("#blf-libs").find(".blf-lib-description").hide();
+        $("#blf-libs").find(".blf-lib-versions").hide();
+        $("#blf-libs").find(".blf-lib-files").hide();
+
+        // Bootstrap and JQuery downloads causes a Brackets crash, because of some
+        // kind of colision. I could not find a solution for now, so I have opted to cancel the download.
+        $("#blf-libs").find("#jquery").find(".blf-btn-download").remove();
+        $("#blf-libs").find("#bootstrap").find(".blf-btn-download").remove();
+    }
+
+    function _updatePageView() {
         $(".modal-body").empty();
         $(".modal-body").html(_renderLibraries(CdnManager.getCurrentLibs()));
         $(".modal-footer").find("#blf-cdn-current-page").text(CdnManager.getCurrentPage());
-        _enableLibHandlers(destDirPath);
     }
 
     function _enableNavBar(destDirPath) {
@@ -208,14 +225,18 @@ define(function Downloader(require, exports, module) {
             $(".modal-body").empty();
             $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4>");
             CdnManager.fetchPreviousPage().done(function () {
-                _updateLibList(destDirPath);
+                _updatePageView();
+                _enableHandlers(destDirPath);
+                _setStartingVisibility();
             });
         });
         $navBar.find("#blf-forward").click(function () {
             $(".modal-body").empty();
             $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4>");
             CdnManager.fetchNextPage().done(function () {
-                _updateLibList(destDirPath);
+                _updatePageView();
+                _enableHandlers(destDirPath);
+                _setStartingVisibility();
             });
         });
     }
@@ -237,6 +258,43 @@ define(function Downloader(require, exports, module) {
             var tag = Linker.getTagsFromUrls([libObject.url]);
             Linker.insertTags(tag);
         }
+    }
+
+    function _isLibVisible($lib) {
+        var libOffset = $lib.offset().top;
+
+        if (libOffset < 300 || libOffset >660) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function _setWorkingLib($newLib) {
+        var workingBgColor = $(".modal-header").css("background-color"),
+            normalBgColor = $(".modal-body").css("background-color"),
+            $workingVersions, $workingFiles;
+
+        if (_$workingLib && _$workingLib.attr("id") !== $newLib.attr("id")) {
+            _$workingLib.css("background-color", normalBgColor);
+            $workingVersions = _$workingLib.find(".blf-lib-versions");
+            $workingFiles = _$workingLib.find(".blf-lib-files");
+            if ($workingVersions.is(":visible")) {
+                $workingVersions.slideUp("fast");
+                $workingVersions.empty();
+                $workingVersions.hide();
+                //document.getElementById($newLib.attr("id")).scrollIntoView();
+            }
+            if ($workingFiles.is(":visible")) {
+                $workingFiles.slideUp("fast");
+                $workingFiles.empty();
+                $workingFiles.hide();
+                //document.getElementById($newLib.attr("id")).scrollIntoView();
+            }
+        }
+        $newLib.css("background-color", workingBgColor);
+        $newLib.find(".blf-btn").css("background-color", normalBgColor);
+        _$workingLib = $newLib;
     }
 
     function _filterBoxHandler() {
@@ -266,6 +324,8 @@ define(function Downloader(require, exports, module) {
                 $decriptionDiv = $libDiv.find(".blf-lib-description"),
                 libName = $(this).text();
 
+            _setWorkingLib($libDiv.parent());
+
             if ($decriptionDiv.is(":visible")) {
                 $decriptionDiv.empty();
                 $decriptionDiv.hide();
@@ -286,21 +346,29 @@ define(function Downloader(require, exports, module) {
                 $selectedVersion = $li.find(".blf-lib-version"),
                 $filesDiv = $li.find(".blf-lib-files"),
                 $selectedFile = $li.find(".blf-lib-file"),
+                initialScroll = $(".modal-body").scrollTop(),
                 latestVersion = "";
 
+            _setWorkingLib($li);
+
             if ($versionsDiv.is(":visible")) {
+                $versionsDiv.slideUp("fast");
                 $versionsDiv.empty();
                 $versionsDiv.hide();
+
             } else {
                 // Hide files if visible.
                 if ($filesDiv.is(":visible")) {
+                    $filesDiv.slideUp("fast");
                     $filesDiv.empty();
                     $filesDiv.hide();
                 }
 
                 CdnManager.fetchLibVersions(libName).done(function (versionsObj) {
                     $versionsDiv.html(_renderVersions(libName, versionsObj));
+                    $versionsDiv.slideDown("fast");
                     $versionsDiv.show();
+
                     if ($selectedVersion.text() === "(Select version)") {
                         if (versionsObj.tags.latest) {
                             latestVersion = versionsObj.tags.latest;
@@ -351,6 +419,12 @@ define(function Downloader(require, exports, module) {
                                 $selectedFile.data("qfile", "");
                             }
                         });
+                        // Return visibility to library item if necessary.
+                        if (!_isLibVisible($li)) {
+                            $(".modal-body").animate({
+                                scrollTop: initialScroll
+                            }, 1000);
+                        }
                     });
                 }).fail(function () {
                     console.log("Unable to fetch `" + libName + "` version list");
@@ -364,18 +438,23 @@ define(function Downloader(require, exports, module) {
             var libName, libFile, version, libObject,
                 $li = $(this).parent().parent().parent();
 
+            _setWorkingLib($li);
+
             libName = $li.attr("id");
             libFile = $li.find(".blf-lib-file").data("qfile");
             version = $li.find(".blf-lib-version").text().replace(/[()]/g, "");
-            CdnManager.createUrl(libName, version, libFile).done(function (url) {
-                libObject = {
-                    url: url,
-                    file: FileUtils.getBaseName(libFile)
-                };
-                _doDownloadOrLink(libObject, destDirPath);
-            }).fail(function () {
-                console.log("Cannot create URL");
-            });
+
+            if (libFile && version !== "Select version") {
+                CdnManager.createUrl(libName, version, libFile).done(function (url) {
+                    libObject = {
+                        url: url,
+                        file: FileUtils.getBaseName(libFile)
+                    };
+                    _doDownloadOrLink(libObject, destDirPath);
+                }).fail(function () {
+                    console.log("Cannot create URL");
+                });
+            }
         });
     }
 
@@ -384,17 +463,21 @@ define(function Downloader(require, exports, module) {
             var libName, libFile, version, libObject,
                 $li = $(this).parent().parent().parent();
 
+            _setWorkingLib($li);
+
             libName = $li.attr("id");
             libFile = $li.find(".blf-lib-file").data("qfile");
             version = $li.find(".blf-lib-version").text().replace(/[()]/g, "");
-            CdnManager.createUrl(libName, version, libFile).done(function (url) {
-                libObject = {
-                    url: url
-                };
-                _doDownloadOrLink(libObject);
-            }).fail(function () {
-                console.log("Cannot create URL");
-            });
+            if (libFile && version !== "Select version") {
+                CdnManager.createUrl(libName, version, libFile).done(function (url) {
+                    libObject = {
+                        url: url
+                    };
+                    _doDownloadOrLink(libObject);
+                }).fail(function () {
+                    console.log("Cannot create URL");
+                });
+            }
         });
     }
 
@@ -405,14 +488,19 @@ define(function Downloader(require, exports, module) {
                 $versionsDiv = $li.find(".blf-lib-versions"),
                 $selectedFile = $li.find(".blf-lib-file"),
                 libName = $li.attr("id"),
-                version = $li.find("span.blf-lib-version").text().replace(/[()]/g, "");
+                version = $li.find("span.blf-lib-version").text().replace(/[()]/g, ""),
+                initialScroll = $(".modal-body").scrollTop();
+
+            _setWorkingLib($li);
 
             if ($filesDiv.is(":visible")) {
+                $filesDiv.slideUp("fast");
                 $filesDiv.empty();
                 $filesDiv.hide();
             } else {
                 // Hide versions if visible.
                 if ($versionsDiv.is(":visible")) {
+                    $versionsDiv.slideDown("fast");
                     $versionsDiv.empty();
                     $versionsDiv.hide();
                 }
@@ -420,6 +508,7 @@ define(function Downloader(require, exports, module) {
                 var _filesFunc = function () {
                     CdnManager.fetchLibFiles(libName, version).done(function (filesObj) {
                         $filesDiv.html(_renderFiles(filesObj));
+                        $filesDiv.slideDown("fast");
                         $filesDiv.show();
 
                         if ($selectedFile.text() === "(Select file)" && filesObj.default) {
@@ -429,21 +518,28 @@ define(function Downloader(require, exports, module) {
 
                         // Files links handler.
                         $(".blf-file-link").click(function (ev) {
-                            var $libDiv, qLibFile, fileExt;
+                            var $li, $filesDiv, qLibFile, fileExt;
 
                             ev.preventDefault();
 
-                            $libDiv = $(this).parent().parent().prev().prev();
-                            $libDiv.next().next().hide();
+                            $filesDiv = $(this).parent().parent();
+                            $li = $filesDiv.parent();
+                            $filesDiv.hide();
                             qLibFile = $(this).data("qfile");
                             $selectedFile.data("qfile", qLibFile);
                             $selectedFile.text("(" + $(this).text() + ")");
 
                             fileExt = FileUtils.getFileExtension(qLibFile.toLowerCase());
                             if (fileExt === "js" || fileExt === "css") {
-                                $libDiv.find(".blf-btn-download").show();
+                                $li.find(".blf-btn-download").show();
                             } else {
-                                $libDiv.find(".blf-btn-download").hide();
+                                $li.find(".blf-btn-download").hide();
+                            }
+                            // Return visibility to the library item if necessary.
+                            if (!_isLibVisible($li)) {
+                                $(".modal-body").animate({
+                                    scrollTop: initialScroll
+                                }, 1000);
                             }
                         });
                     });
@@ -467,7 +563,7 @@ define(function Downloader(require, exports, module) {
         });
     }
 
-    function _enableLibHandlers(destDirPath) {
+    function _enableHandlers(destDirPath) {
         _filterBoxHandler();
         _descriptionButtonsHandler();
         _versionsButtonsHandler();
@@ -481,7 +577,7 @@ define(function Downloader(require, exports, module) {
      * @private
      */
     function init() {
-        var listDialog, libObject, btnCancel, destDirPath,
+        var listDialog, btnCancel, destDirPath,
             projectItem = ProjectManager.getSelectedItem();
 
         if (projectItem.isDirectory) {
@@ -500,7 +596,7 @@ define(function Downloader(require, exports, module) {
             [{
                 className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
                 id: "blf.cancel",
-                text: Strings.CANCEL_BUTTON
+                text: Strings.FINISH_BUTTON
             }],
             false
         );
@@ -519,19 +615,11 @@ define(function Downloader(require, exports, module) {
 
             // Enable page navigation
             _enableNavBar(destDirPath);
-
             // Enable library handlers.
-            _enableLibHandlers(destDirPath);
+            _enableHandlers(destDirPath);
+            // Ensures that all items that must be hidden, are.
+            _setStartingVisibility();
 
-            // Ensure that descriptions, versions and files are hidden when open the dialog.
-            $("#blf-libs").find(".blf-lib-description").hide();
-            $("#blf-libs").find(".blf-lib-versions").hide();
-            $("#blf-libs").find(".blf-lib-files").hide();
-
-            // Bootstrap and JQuery downloads causes a Brackets crash, because of some
-            // kind of colision. I could not find a solution for now, so I have opted to cancel the download.
-            $("#blf-libs").find("#jquery").find(".blf-btn-download").remove();
-            $("#blf-libs").find("#bootstrap").find(".blf-btn-download").remove();
         }).fail(function () {
             $(".modal-body").html("<h4>" + Strings.CDN_ERROR_FETCHING_LIST + "</h4>");
         });

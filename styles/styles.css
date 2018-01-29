@@ -23,7 +23,7 @@
 }
 
 .blf-lib-name {
-    font-size:20px;
+    font-size:18px;
     margin-top:7px;
 }
 
@@ -34,7 +34,6 @@
 
 .blf-lib-version {
     font-size:14px;
-    margin-top:9px;
     color:#a83838;
 }
 
@@ -96,4 +95,8 @@
     font-size: 16px;
     font-weight: bold;
     margin-left: 5px;
+}
+
+.blf-lib-file {
+    font-size:14px;
 }
