@@ -32,7 +32,7 @@ define(function CdnManager(require, exports, module) {
 
     function fetchPage(pageNumber) {
         var deferred = new $.Deferred(),
-            targetPages = [];
+            startApiPage;
 
         // Reset libs
         _currentLibs = [];
@@ -40,39 +40,28 @@ define(function CdnManager(require, exports, module) {
         // A page in this manager contains 5 api pages
         pageNumber = pageNumber * 1;
         if (pageNumber < 1) deferred.resolve();
-        var endPage = pageNumber * 5,
-            startPage = endPage - 4;
+        startApiPage = (pageNumber * 5) - 4;
 
-        for (var page = startPage; page <= endPage; page++) {
-            targetPages.push(page);
-        }
-        _fetchApiPage(targetPages[0]).done(function (libs) {
+        _fetchApiPage(startApiPage).then(function (libs) {
             _currentLibs = _currentLibs.concat(libs);
-            _fetchApiPage(targetPages[1]).done(function (libs) {
-                _currentLibs = _currentLibs.concat(libs);
-                _fetchApiPage(targetPages[2]).done(function (libs) {
-                    _currentLibs = _currentLibs.concat(libs);
-                    _fetchApiPage(targetPages[3]).done(function (libs) {
-                        _currentLibs = _currentLibs.concat(libs);
-                        _fetchApiPage(targetPages[4]).done(function (libs) {
-                            _currentLibs = _currentLibs.concat(libs);
-                            _currentPage = pageNumber;
-                            deferred.resolve();
-                        }).fail(function () {
-                            deferred.reject();
-                        });
-                    }).fail(function () {
-                        deferred.reject();
-                    });
-                }).fail(function () {
-                    deferred.reject();
-                });
-            }).fail(function () {
-                deferred.reject();
-            });
+            return _fetchApiPage(startApiPage + 1);
+        }).then(function (libs) {
+            _currentLibs = _currentLibs.concat(libs);
+            return _fetchApiPage(startApiPage + 2);
+        }).then(function (libs) {
+            _currentLibs = _currentLibs.concat(libs);
+            return _fetchApiPage(startApiPage + 3);
+        }).then(function (libs) {
+            _currentLibs = _currentLibs.concat(libs);
+            return _fetchApiPage(startApiPage + 4);
+        }).then(function (libs) {
+            _currentLibs = _currentLibs.concat(libs);
+            _currentPage = pageNumber;
+            deferred.resolve();
         }).fail(function () {
             deferred.reject();
         });
+
         return deferred.promise();
     }
 
