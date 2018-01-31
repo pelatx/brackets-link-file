@@ -201,27 +201,25 @@ define(function Downloader(require, exports, module) {
     function _updatePageView() {
         $(".modal-body").empty();
         $(".modal-body").html(_renderLibraries(CdnManager.getCurrentLibs()));
-        $(".modal-footer").find("#blf-cdn-current-page").text(CdnManager.getCurrentPage());
+        $(".modal-footer").find("#blf-current-page").text(CdnManager.getCurrentPage());
     }
 
     function _enableNavBar(destDirPath) {
         var backIconPath = moduleDirPath + "/../styles/icons/ionicons-arrow-back.png",
-            forwardIconPath = moduleDirPath + "/../styles/icons/ionicons-arrow-forward.png",
-            $navBar = $(Mustache.render(NavBar, {
-                backIconPath: backIconPath,
-                currentPage: CdnManager.getCurrentPage(),
-                forwardIconPath: forwardIconPath
-            }));
+            forwardIconPath = moduleDirPath + "/../styles/icons/ionicons-arrow-forward.png";
 
-        $(".modal-footer").prepend($navBar);
-        $navBar.css({
-            "position": "absolute",
-            "left": "10px",
-            "bottom": "10px"
-        });
+        $(".modal-footer").prepend(
+            $(Mustache.render(
+                NavBar, {
+                    backIconPath: backIconPath,
+                    currentPage: CdnManager.getCurrentPage(),
+                    forwardIconPath: forwardIconPath
+                })
+             )
+        );
 
         // Navbar buttons handlers
-        $navBar.find("#blf-back").click(function () {
+        $(".modal-footer").find("#blf-back").click(function () {
             $(".modal-body").empty();
             $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4>");
             CdnManager.fetchPreviousPage().done(function () {
@@ -230,7 +228,7 @@ define(function Downloader(require, exports, module) {
                 _setStartingVisibility();
             });
         });
-        $navBar.find("#blf-forward").click(function () {
+        $(".modal-footer").find("#blf-forward").click(function () {
             $(".modal-body").empty();
             $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4>");
             CdnManager.fetchNextPage().done(function () {

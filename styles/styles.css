@@ -87,16 +87,29 @@
 }
 
 .blf-btn-cdn-nav {
+    position: absolute;
     height: 30px;
-    width: 30px;
 }
 
-#blf-cdn-current-page {
-    font-size: 16px;
-    font-weight: bold;
-    margin-left: 5px;
-}
+
 
 .blf-lib-file {
     font-size:14px;
+}
+
+
+
+#blf-back {
+    left: 10px;
+    width: 30px;
+}
+
+#blf-forward {
+    left: 110px;
+    width: 30px;
+}
+
+#blf-current-page {
+    left: 45px;
+    width: 60px;
 }
