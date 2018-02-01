@@ -86,7 +86,7 @@ define(function CdnManager(require, exports, module) {
                 deferred.reject();
             });
         } else {
-            deferred.reject();
+            deferred.resolve();
         }
         return deferred.promise();
     }

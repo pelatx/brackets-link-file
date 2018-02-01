@@ -221,7 +221,7 @@ define(function Downloader(require, exports, module) {
         // Navbar buttons handlers
         $(".modal-footer").find("#blf-back").click(function () {
             $(".modal-body").empty();
-            $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4>");
+            $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4><div class=\"blf-loader\"></div>");
             CdnManager.fetchPreviousPage().done(function () {
                 _updatePageView();
                 _enableHandlers(destDirPath);
@@ -230,7 +230,7 @@ define(function Downloader(require, exports, module) {
         });
         $(".modal-footer").find("#blf-forward").click(function () {
             $(".modal-body").empty();
-            $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4>");
+            $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4><div class=\"blf-loader\"></div>");
             CdnManager.fetchNextPage().done(function () {
                 _updatePageView();
                 _enableHandlers(destDirPath);
@@ -590,7 +590,7 @@ define(function Downloader(require, exports, module) {
                 title: Strings.CDN_HEADER_TITLE,
                 placeholder: Strings.CDN_HEADER_PLACEHOLDER
             }),
-            "<h4>" + Strings.CDN_LOADING + "</h4>",
+            "<h4>" + Strings.CDN_LOADING + "</h4><div class=\"blf-loader\"></div>",
             [{
                 className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
                 id: "blf.cancel",
@@ -599,7 +599,10 @@ define(function Downloader(require, exports, module) {
             false
         );
         // Ensure that the dialog height is always the same.
-        $(".modal-body").css("height", "400px");
+        $(".modal-body").css({
+            "height": "400px",
+            "width": "570px"
+        });
 
         // Cancel button handler.
         btnCancel = $('.dialog-button').filter('[data-button-id="blf.cancel"]');
