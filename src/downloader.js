@@ -231,7 +231,7 @@ define(function Downloader(require, exports, module) {
         $(".modal-footer").find("#blf-forward").click(function () {
             $(".modal-body").empty();
             $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4><div class=\"blf-loader\"></div>");
-            CdnManager.fetchNextPage().done(function () {
+            CdnManager.fetchNextPage().always(function () {
                 _updatePageView();
                 _enableHandlers(destDirPath);
                 _setStartingVisibility();

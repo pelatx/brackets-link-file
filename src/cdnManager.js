@@ -34,33 +34,39 @@ define(function CdnManager(require, exports, module) {
         var deferred = new $.Deferred(),
             startApiPage, tmpLibs = [];
 
+        console.log(_currentPage);
+
         // A page in this manager contains 5 api pages
         pageNumber = pageNumber * 1;
-        if (pageNumber < 1) deferred.resolve();
         startApiPage = (pageNumber * 5) - 4;
 
-        _fetchApiPage(startApiPage).then(function (libs) {
-            tmpLibs = tmpLibs.concat(libs);
-            return _fetchApiPage(startApiPage + 1);
-        }).then(function (libs) {
-            tmpLibs = tmpLibs.concat(libs);
-            return _fetchApiPage(startApiPage + 2);
-        }).then(function (libs) {
-            tmpLibs = tmpLibs.concat(libs);
-            return _fetchApiPage(startApiPage + 3);
-        }).then(function (libs) {
-            tmpLibs = tmpLibs.concat(libs);
-            return _fetchApiPage(startApiPage + 4);
-        }).then(function (libs) {
-            tmpLibs = tmpLibs.concat(libs);
-            _currentLibs = tmpLibs;
-            _currentPage = pageNumber;
-            tmpLibs = [];
-            deferred.resolve();
-        }).fail(function () {
+        if (pageNumber < 1 || pageNumber > 28) {
             deferred.reject();
-        });
-
+        } else {
+            _fetchApiPage(startApiPage).then(function (libs) {
+                tmpLibs = tmpLibs.concat(libs);
+                return _fetchApiPage(startApiPage + 1);
+            }).then(function (libs) {
+                tmpLibs = tmpLibs.concat(libs);
+                return _fetchApiPage(startApiPage + 2);
+            }).then(function (libs) {
+                tmpLibs = tmpLibs.concat(libs);
+                return _fetchApiPage(startApiPage + 3);
+            }).then(function (libs) {
+                tmpLibs = tmpLibs.concat(libs);
+                return _fetchApiPage(startApiPage + 4);
+            }).then(function (libs) {
+                tmpLibs = tmpLibs.concat(libs);
+                _currentLibs = tmpLibs;
+                _currentPage = pageNumber;
+                tmpLibs = [];
+                console.log(_currentPage);
+                deferred.resolve();
+            }).fail(function () {
+                console.log(_currentPage);
+                deferred.reject();
+            });
+        }
         return deferred.promise();
     }
 
