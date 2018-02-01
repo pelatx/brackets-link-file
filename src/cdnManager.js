@@ -32,10 +32,7 @@ define(function CdnManager(require, exports, module) {
 
     function fetchPage(pageNumber) {
         var deferred = new $.Deferred(),
-            startApiPage;
-
-        // Reset libs
-        _currentLibs = [];
+            startApiPage, tmpLibs = [];
 
         // A page in this manager contains 5 api pages
         pageNumber = pageNumber * 1;
@@ -43,20 +40,22 @@ define(function CdnManager(require, exports, module) {
         startApiPage = (pageNumber * 5) - 4;
 
         _fetchApiPage(startApiPage).then(function (libs) {
-            _currentLibs = _currentLibs.concat(libs);
+            tmpLibs = tmpLibs.concat(libs);
             return _fetchApiPage(startApiPage + 1);
         }).then(function (libs) {
-            _currentLibs = _currentLibs.concat(libs);
+            tmpLibs = tmpLibs.concat(libs);
             return _fetchApiPage(startApiPage + 2);
         }).then(function (libs) {
-            _currentLibs = _currentLibs.concat(libs);
+            tmpLibs = tmpLibs.concat(libs);
             return _fetchApiPage(startApiPage + 3);
         }).then(function (libs) {
-            _currentLibs = _currentLibs.concat(libs);
+            tmpLibs = tmpLibs.concat(libs);
             return _fetchApiPage(startApiPage + 4);
         }).then(function (libs) {
-            _currentLibs = _currentLibs.concat(libs);
+            tmpLibs = tmpLibs.concat(libs);
+            _currentLibs = tmpLibs;
             _currentPage = pageNumber;
+            tmpLibs = [];
             deferred.resolve();
         }).fail(function () {
             deferred.reject();
@@ -68,10 +67,8 @@ define(function CdnManager(require, exports, module) {
     function fetchNextPage() {
         var deferred = new $.Deferred();
 
-        fetchPage(_currentPage + 1).done(function () {
+        fetchPage(_currentPage + 1).always(function () {
             deferred.resolve();
-        }).fail(function () {
-            deferred.reject();
         });
         return deferred.promise();
     }
@@ -79,15 +76,9 @@ define(function CdnManager(require, exports, module) {
     function fetchPreviousPage() {
         var deferred = new $.Deferred();
 
-        if (_currentPage - 1 > 0) {
-            fetchPage(_currentPage - 1).done(function () {
-                deferred.resolve();
-            }).fail(function () {
-                deferred.reject();
-            });
-        } else {
+        fetchPage(_currentPage - 1).always(function () {
             deferred.resolve();
-        }
+        });
         return deferred.promise();
     }
 
