@@ -6,11 +6,11 @@ Supports linking of existing files in the project tree. Also, with a file select
 
 It also supports bi-directionality: if you delete or rename a project file, the tag or tags are automatically deleted or updated in the document.
 
-Supports direct download of libraries from CDN. You can download and link the library automatically in the document. Or just get a tag with the URL of the library for remote use.
+Supports direct download of libraries from CDN. You can download and link the library automatically in the document. Or just get a tag with the URL of the library for remote usage.
 
 #### Important!
 
-GNU/Linux users can't drag & drop files from OS file browser in Brackets 1.11, because It has completely lost this functionality on this operating system. 
+GNU/Linux users can't drag & drop files from OS file browser in Brackets 1.11 and 1.12, because It has completely lost this functionality on this operating system. 
 
 ## Install from Brackets
 
@@ -67,7 +67,9 @@ Watch it in [this video][video-watcher]
 
 Right click on the destination directory in the Project tree -> Link File (Download Library). You will be prompted with a dialog where you can see the library list. 
 
-Every library item has four buttons on right side. The one starting from right, lets you choose the library version* to use.
+You can click on library name to get description, author, homepage and Github page.* 
+
+Every library item has four buttons on right side. The one starting from right, lets you choose the library version to use.
 
 Second one let you choose the target file to download or get tagged.
 
@@ -77,8 +79,7 @@ And the fourth button downloads the library file to the selected folder and inse
 
 Watch it in [this video][video-downloader] 
 
-\* *For now, this downloader relies on the old JSDelivr API. Because the new API don't let me get a file list (or I have not found the way).
-That means some libraries have newer versions than the exposed in this downloader. The Homepage and Github links in the library description can help on this.*
+\* *New jsDelivr API don't provide this kind of information. We are using the old API for that. For this reason, many libraries that were not found in the old API will not have a description.*
 
 ## Features
 
@@ -89,8 +90,8 @@ That means some libraries have newer versions than the exposed in this downloade
 - Non taggable files are copied anyway to project.
 - Bi-directional linking: delete or rename a project file and referred tags will be deleted or updated in document automatically.
 - Internationalization.
-- CDN library download and automatic tag in active document.
-- CDN library direct tag for remote usage.
+- CDN library download and automatic tag in active document (only JavaScript and CSS files).
+- CDN library direct tag for remote usage (possibly any supported file).
 
 #### Supported file types
 
@@ -157,6 +158,11 @@ v2.2.0 - Improved bi-directionality:
 - Changed the way in which the project is monitored. Now much more efficient. It no longer causes a considerable drop in the performance of Brackets. Even with very large projects it remains usable.
 - Support to update the tags when a project file is renamed.
 - Bug fixes.
+
+v2.3.0 - Improved CDN downloader/tagger:
+- Now It consumes the new jsDelivr API, giving the user access to more libraries in their latest versions.
+- Loader animation while It fetches libraries.
+- Support for downloading/tag several libraries in one dialog instance. Before, the dialog was closed downloading or linking once.
 
 ## Credits
 Icons from [Ionicons][ionicons].
