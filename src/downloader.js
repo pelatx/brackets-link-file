@@ -11,7 +11,6 @@ define(function Downloader(require, exports, module) {
         FileUtils           = brackets.getModule("file/FileUtils"),
         ProjectManager      = brackets.getModule("project/ProjectManager"),
         FileSystem          = brackets.getModule("filesystem/FileSystem"),
-        LanguageManager     = brackets.getModule("language/LanguageManager"),
         Mustache            = brackets.getModule("thirdparty/mustache/mustache");
 
     var Linker              = require("./linker"),
@@ -27,13 +26,14 @@ define(function Downloader(require, exports, module) {
         DescriptionTemplate = require("text!templates/cdnLibDescription.html"),
         NavBar              = require("text!templates/cdnNavBar.html");
 
-
+    // Working directory of this module.
     var moduleDirPath = FileUtils.getNativeModuleDirectoryPath(module);
 
+    // JQuery element containing the "working" library list item (li).
     var _$workingLib;
 
     /**
-     * Returns the list of available libraries.
+     * Returns a page (local: 500 items) list of available libraries.
      * @private
      * @returns {object} A promise with an array of lib objects on success.
      */
@@ -92,8 +92,9 @@ define(function Downloader(require, exports, module) {
     /**
      * Creates the versions list HTML to be displayed for a library.
      * @private
-     * @param   {object} $lib JQuery object containing the 'li' of the library.
-     * @returns {string} Versions HTML.
+     * @param   {string} libName     Library name as provided by the API.
+     * @param   {object} versionsObj Versions object provided by the API.
+     * @returns {string} Versions HTML string.
      */
     function _renderVersions(libName, versionsObj) {
         var rendered = "<h4><u>" + Strings.CDN_VERSIONS + "</u></h4>";
@@ -107,8 +108,8 @@ define(function Downloader(require, exports, module) {
     /**
      * Creates the files list HTML to be displayed for a library.
      * @private
-     * @param   {object} $lib JQuery object containing the library 'li' element.
-     * @returns {object} Promise with the files HTML string on success.
+     * @param   {object} filesObj Files object provided by the API.
+     * @returns {string} Files HTML string.
      */
     function _renderFiles(filesObj) {
         var rendered = "<h4><u>" + Strings.CDN_FILES + "</u></h4>",
@@ -165,6 +166,12 @@ define(function Downloader(require, exports, module) {
         return rendered;
     }
 
+    /**
+     * Fetches and renders the library description from its name.
+     * @private
+     * @param   {string} libName Library name as provided by the API.
+     * @returns {object} Promise resolved with the description HTML string on success.
+     */
     function _renderDescription(libName) {
         var deferred = new $.Deferred(),
             rendered;
@@ -186,6 +193,10 @@ define(function Downloader(require, exports, module) {
         return deferred.promise();
     }
 
+    /**
+     * Sets to non visible some elements of the dialog.
+     * @private
+     */
     function _setStartingVisibility() {
         // Ensure that descriptions, versions and files are hidden when open the dialog.
         $("#blf-libs").find(".blf-lib-description").hide();
@@ -198,12 +209,21 @@ define(function Downloader(require, exports, module) {
         $("#blf-libs").find("#bootstrap").find(".blf-btn-download").remove();
     }
 
+    /**
+     * Updates dialog with the current page of libraries.
+     * @private
+     */
     function _updatePageView() {
         $(".modal-body").empty();
         $(".modal-body").html(_renderLibraries(CdnManager.getCurrentLibs()));
         $(".modal-footer").find("#blf-current-page").text(CdnManager.getCurrentPage());
     }
 
+    /**
+     * Enables tha navigation bar on the dialog modal footer.
+     * @private
+     * @param {string} destDirPath Full path of directory to be used if the file will be saved in filesystem.
+     */
     function _enableNavBar(destDirPath) {
         var backIconPath = moduleDirPath + "/../styles/icons/ionicons-arrow-back.png",
             forwardIconPath = moduleDirPath + "/../styles/icons/ionicons-arrow-forward.png";
@@ -239,6 +259,12 @@ define(function Downloader(require, exports, module) {
         });
     }
 
+    /**
+     * Executes the corresponding accion: download and tag or tag with remote URL.
+     * @private
+     * @param {object} libObject   Custom object retrieved inside `_downloadButtonsHandler()` and `_linkButtonsHandler()`.
+     * @param {string} destDirPath Full path of directory to be used if the file will be saved in filesystem.
+     */
     function _doDownloadOrLink(libObject, destDirPath) {
         if (destDirPath) {
             CdnManager.fetchFileContent(libObject.url).done(function (libContent) {
@@ -258,6 +284,12 @@ define(function Downloader(require, exports, module) {
         }
     }
 
+    /**
+     * Determines if a library item (`li` element) is visible for the user.
+     * @private
+     * @param   {object}  $lib JQuery object of `li` element.
+     * @returns {boolean} True if visible, False if not.
+     */
     function _isLibVisible($lib) {
         var libOffset = $lib.offset().top;
 
@@ -268,6 +300,12 @@ define(function Downloader(require, exports, module) {
         }
     }
 
+    /**
+     * Sets a library JQuery's `li` element as the working library,
+     * highlighting the item in the dialog
+     * @private
+     * @param {object} $newLib JQuery object containning the element to be highlightened.
+     */
     function _setWorkingLib($newLib) {
         var workingBgColor = $(".modal-header").css("background-color"),
             normalBgColor = $(".modal-body").css("background-color"),
@@ -295,6 +333,10 @@ define(function Downloader(require, exports, module) {
         _$workingLib = $newLib;
     }
 
+    /**
+     * Handler for the filter box events.
+     * @private
+     */
     function _filterBoxHandler() {
         $(".blf-filterinput").keyup(function () {
             var filter = $(this).val().toLowerCase();
@@ -313,6 +355,11 @@ define(function Downloader(require, exports, module) {
         });
     }
 
+    /**
+     * Handler for the library name click.
+     * Reveals the library description.
+     * @private
+     */
     function _descriptionButtonsHandler() {
         $(".blf-lib-desc-link").click(function (ev) {
             ev.preventDefault();
@@ -336,6 +383,11 @@ define(function Downloader(require, exports, module) {
         });
     }
 
+    /**
+     * Handler for versions buttons click.
+     * Reveals the version selection dialog.
+     * @private
+     */
     function _versionsButtonsHandler() {
         $(".blf-btn-versions").click(function () {
             var $li = $(this).parent().parent().parent(),
@@ -431,6 +483,11 @@ define(function Downloader(require, exports, module) {
         });
     }
 
+    /**
+     * Handler for the download buttons click.
+     * @private
+     * @param {string} destDirPath  Full path of directory where the file will be saved in filesystem.
+     */
     function _downloadButtonsHandler(destDirPath) {
         $(".blf-btn-download").click(function () {
             var libName, libFile, version, libObject,
@@ -456,6 +513,10 @@ define(function Downloader(require, exports, module) {
         });
     }
 
+    /**
+     * Handler for link/tag buttons click.
+     * @private
+     */
     function _linkButtonsHandler() {
         $(".blf-btn-link").click(function () {
             var libName, libFile, version, libObject,
@@ -479,6 +540,11 @@ define(function Downloader(require, exports, module) {
         });
     }
 
+    /**
+     * Handler for files buttons click.
+     * Reveals the file selection dialog.
+     * @private
+     */
     function _filesButtonsHandler() {
         $(".blf-btn-files").click(function () {
             var $li = $(this).parent().parent().parent(),
@@ -561,6 +627,11 @@ define(function Downloader(require, exports, module) {
         });
     }
 
+    /**
+     * Enables all handlers.
+     * @private
+     * @param {string} destDirPath Full path of directory where the files will be saved in filesystem if necessary.
+     */
     function _enableHandlers(destDirPath) {
         _filterBoxHandler();
         _descriptionButtonsHandler();
