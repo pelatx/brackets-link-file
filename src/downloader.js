@@ -301,6 +301,22 @@ define(function Downloader(require, exports, module) {
     }
 
     /**
+     * Hide the given JQuery element.
+     * @private
+     * @param {object} $div JQuery element.
+     */
+    function _hideIfVisible($div) {
+        var height = 0;
+        if ($div.is(":visible")) {
+            height = $div.height();
+            $div.slideUp("fast");
+            $div.empty();
+            $div.hide();
+        }
+        return height;
+    }
+
+    /**
      * Sets a library JQuery's `li` element as the working library,
      * highlighting the item in the dialog
      * @private
@@ -309,23 +325,16 @@ define(function Downloader(require, exports, module) {
     function _setWorkingLib($newLib) {
         var workingBgColor = $(".modal-header").css("background-color"),
             normalBgColor = $(".modal-body").css("background-color"),
-            $workingVersions, $workingFiles;
+            scroll = $(".modal-body").scrollTop(),
+            versionsHeight, filesHeight, descriptionHeight;
 
         if (_$workingLib && _$workingLib.attr("id") !== $newLib.attr("id")) {
             _$workingLib.css("background-color", normalBgColor);
-            $workingVersions = _$workingLib.find(".blf-lib-versions");
-            $workingFiles = _$workingLib.find(".blf-lib-files");
-            if ($workingVersions.is(":visible")) {
-                $workingVersions.slideUp("fast");
-                $workingVersions.empty();
-                $workingVersions.hide();
-                //document.getElementById($newLib.attr("id")).scrollIntoView();
-            }
-            if ($workingFiles.is(":visible")) {
-                $workingFiles.slideUp("fast");
-                $workingFiles.empty();
-                $workingFiles.hide();
-                //document.getElementById($newLib.attr("id")).scrollIntoView();
+            versionsHeight = _hideIfVisible(_$workingLib.find(".blf-lib-versions"));
+            filesHeight = _hideIfVisible(_$workingLib.find(".blf-lib-files"));
+            descriptionHeight = _hideIfVisible(_$workingLib.find(".blf-lib-description"));
+            if (!_isLibVisible($newLib)) {
+                $(".modal-body").scrollTop(scroll - versionsHeight - filesHeight - descriptionHeight);
             }
         }
         $newLib.css("background-color", workingBgColor);
@@ -367,16 +376,22 @@ define(function Downloader(require, exports, module) {
 
             var $libDiv = $(this).parent().parent().parent(),
                 $decriptionDiv = $libDiv.find(".blf-lib-description"),
+                $versionsDiv = $libDiv.next(),
+                $filesDiv = $versionsDiv.next(),
                 libName = $(this).text();
 
             _setWorkingLib($libDiv.parent());
 
             if ($decriptionDiv.is(":visible")) {
                 $decriptionDiv.empty();
+                $decriptionDiv.slideUp("fast");
                 $decriptionDiv.hide();
             } else {
+                _hideIfVisible($versionsDiv);
+                _hideIfVisible($filesDiv);
                 _renderDescription(libName).done(function (description) {
                     $decriptionDiv.html(description);
+                    $decriptionDiv.slideDown("fast");
                     $decriptionDiv.show();
                 });
             }
@@ -395,6 +410,7 @@ define(function Downloader(require, exports, module) {
                 $versionsDiv = $li.find(".blf-lib-versions"),
                 $selectedVersion = $li.find(".blf-lib-version"),
                 $filesDiv = $li.find(".blf-lib-files"),
+                $descriptionDiv = $li.find(".blf-lib-description"),
                 $selectedFile = $li.find(".blf-lib-file"),
                 initialScroll = $(".modal-body").scrollTop(),
                 latestVersion = "";
@@ -407,12 +423,8 @@ define(function Downloader(require, exports, module) {
                 $versionsDiv.hide();
 
             } else {
-                // Hide files if visible.
-                if ($filesDiv.is(":visible")) {
-                    $filesDiv.slideUp("fast");
-                    $filesDiv.empty();
-                    $filesDiv.hide();
-                }
+                _hideIfVisible($filesDiv);
+                _hideIfVisible($descriptionDiv);
 
                 CdnManager.fetchLibVersions(libName).done(function (versionsObj) {
                     $versionsDiv.html(_renderVersions(libName, versionsObj));
@@ -550,6 +562,7 @@ define(function Downloader(require, exports, module) {
             var $li = $(this).parent().parent().parent(),
                 $filesDiv = $li.find(".blf-lib-files"),
                 $versionsDiv = $li.find(".blf-lib-versions"),
+                $descriptionDiv = $li.find(".blf-lib-description"),
                 $selectedFile = $li.find(".blf-lib-file"),
                 libName = $li.attr("id"),
                 version = $li.find("span.blf-lib-version").text().replace(/[()]/g, ""),
@@ -562,12 +575,8 @@ define(function Downloader(require, exports, module) {
                 $filesDiv.empty();
                 $filesDiv.hide();
             } else {
-                // Hide versions if visible.
-                if ($versionsDiv.is(":visible")) {
-                    $versionsDiv.slideDown("fast");
-                    $versionsDiv.empty();
-                    $versionsDiv.hide();
-                }
+                _hideIfVisible($versionsDiv);
+                _hideIfVisible($descriptionDiv);
 
                 var _filesFunc = function () {
                     CdnManager.fetchLibFiles(libName, version).done(function (filesObj) {
