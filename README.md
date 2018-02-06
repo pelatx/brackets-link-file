@@ -164,6 +164,8 @@ v2.3.0 - Improved CDN downloader/tagger:
 - Loader animation while It fetches libraries.
 - Support for downloading/tag several libraries in one dialog instance. Before, the dialog was closed downloading or linking once.
 
+v2.3.1 - CDN downloader/tagger UI little improvements.
+
 ## Credits
 Icons from [Ionicons][ionicons].
 
