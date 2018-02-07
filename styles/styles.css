@@ -89,6 +89,7 @@
 .blf-btn-cdn-nav {
     position: absolute;
     height: 30px;
+    bottom: 9px;
 }
 
 .blf-lib-file {
@@ -101,13 +102,15 @@
 }
 
 #blf-forward {
-    left: 110px;
+    left: 94px;
     width: 30px;
 }
 
 #blf-current-page {
-    left: 45px;
-    width: 60px;
+    left: 50px;
+    width: 30px;
+    bottom:4px;
+    text-align: center;
 }
 
 .blf-loader {

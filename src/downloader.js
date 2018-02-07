@@ -216,7 +216,7 @@ define(function Downloader(require, exports, module) {
     function _updatePageView() {
         $(".modal-body").empty();
         $(".modal-body").html(_renderLibraries(CdnManager.getCurrentLibs()));
-        $(".modal-footer").find("#blf-current-page").text(CdnManager.getCurrentPage());
+        $(".modal-footer").find("#blf-current-page").val(CdnManager.getCurrentPage());
     }
 
     /**
@@ -226,9 +226,10 @@ define(function Downloader(require, exports, module) {
      */
     function _enableNavBar(destDirPath) {
         var backIconPath = moduleDirPath + "/../styles/icons/ionicons-arrow-back.png",
-            forwardIconPath = moduleDirPath + "/../styles/icons/ionicons-arrow-forward.png";
+            forwardIconPath = moduleDirPath + "/../styles/icons/ionicons-arrow-forward.png",
+            $footer = $(".modal-footer");
 
-        $(".modal-footer").prepend(
+        $footer.prepend(
             $(Mustache.render(
                 NavBar, {
                     backIconPath: backIconPath,
@@ -238,8 +239,8 @@ define(function Downloader(require, exports, module) {
              )
         );
 
-        // Navbar buttons handlers
-        $(".modal-footer").find("#blf-back").click(function () {
+        // Navbar handlers
+        $footer.find("#blf-back").click(function () {
             $(".modal-body").empty();
             $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4><div class=\"blf-loader\"></div>");
             CdnManager.fetchPreviousPage().done(function () {
@@ -248,7 +249,8 @@ define(function Downloader(require, exports, module) {
                 _setStartingVisibility();
             });
         });
-        $(".modal-footer").find("#blf-forward").click(function () {
+
+        $footer.find("#blf-forward").click(function () {
             $(".modal-body").empty();
             $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4><div class=\"blf-loader\"></div>");
             CdnManager.fetchNextPage().always(function () {
@@ -256,6 +258,33 @@ define(function Downloader(require, exports, module) {
                 _enableHandlers(destDirPath);
                 _setStartingVisibility();
             });
+        });
+
+        $footer.find("#blf-current-page")
+            .focusin(function () { $(this).val(""); })
+            .bind('copy paste', function (ev) { ev.preventDefault()} )
+            .keyup(function (ev) {
+            var value = $(this).val();
+
+            if (ev.keyCode === 13) {
+                if (!/^([0-9])*$/.test(value)) {
+                    $(this).val(CdnManager.getCurrentPage());
+                } else {
+                    value = value * 1;
+                    if (value >= 1 && value <= 28 && value !== CdnManager.getCurrentPage()) {
+                        $(".modal-body").empty();
+                        $(".modal-body").html("<h4>" + Strings.CDN_LOADING + "</h4><div class=\"blf-loader\"></div>");
+                        CdnManager.fetchPage(value).done(function () {
+                            _updatePageView();
+                            _enableHandlers(destDirPath);
+                            _setStartingVisibility();
+                        });
+                    } else {
+                        $(this).val(CdnManager.getCurrentPage());
+                    }
+                }
+                $(this).blur();
+            }
         });
     }
 
