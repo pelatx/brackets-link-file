@@ -188,7 +188,8 @@ define(function Downloader(require, exports, module) {
             );
             deferred.resolve(rendered);
         }).fail(function () {
-            deferred.resolve("No Description");
+            rendered = 'No Description (<a href="https://www.google.com/search?q=' + libName + '">Google search</a>)';
+            deferred.resolve(rendered);
         });
         return deferred.promise();
     }
