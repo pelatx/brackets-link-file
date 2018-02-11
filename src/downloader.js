@@ -396,6 +396,7 @@ define(function Downloader(require, exports, module) {
         $(".blf-clear-filterinput").click(function () {
             $(".blf-filterinput").val("");
             $(".blf-filterinput").keyup();
+            $(".blf-filterinput").focus();
         });
     }
 
