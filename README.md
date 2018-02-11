@@ -65,7 +65,9 @@ Watch it in [this video][video-watcher]
 
 #### Downloading or getting tags from JSDelivr CDN libraries.
 
-Right click on the destination directory in the Project tree -> Link File (Download Library). You will be prompted with a dialog where you can see the library list. 
+Right click on the destination directory in the Project tree -> Link File (Download Library). You will be prompted with a dialog where you can see the library list first page (500 items).
+
+In the dialog header, there is a filter box to search on the currently viewed libraries. And in the dialog footer, there is a navigation bar where you can go page up and down or write page number directly.
 
 You can click on library name to get description, author, homepage and Github page.* 
 
@@ -79,7 +81,7 @@ And the fourth button downloads the library file to the selected folder and inse
 
 Watch it in [this video][video-downloader] 
 
-\* *New jsDelivr API don't provide this kind of information. We are using the old API for that. For this reason, many libraries that were not found in the old API will not have a description.*
+\* *New jsDelivr API don't provide this kind of information. We are using the old API for that. For this reason, many libraries that were not found in the old API will not have a description. In this case, you will see a Google search link.*
 
 ## Features
 
@@ -165,6 +167,11 @@ v2.3.0 - Improved CDN downloader/tagger:
 - Support for downloading/tag several libraries in one dialog instance. Before, the dialog was closed downloading or linking once.
 
 v2.3.1 - CDN downloader/tagger UI little improvements.
+
+v2.3.2 - CDN downloader/tagger improvements:
+- Added editable page box on navigation bar.
+- Added Google search link when description is not available.
+- Added cancel button on filter box.
 
 ## Credits
 Icons from [Ionicons][ionicons].
