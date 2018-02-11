@@ -392,6 +392,11 @@ define(function Downloader(require, exports, module) {
                 $("#blf-libs").find("li").show();
             }
         });
+
+        $(".blf-clear-filterinput").click(function () {
+            $(".blf-filterinput").val("");
+            $(".blf-filterinput").keyup();
+        });
     }
 
     /**
@@ -686,7 +691,8 @@ define(function Downloader(require, exports, module) {
      */
     function init() {
         var listDialog, btnCancel, destDirPath,
-            projectItem = ProjectManager.getSelectedItem();
+            projectItem = ProjectManager.getSelectedItem(),
+            cancelIconPath = moduleDirPath + "/../styles/icons/ionicons-close.png";
 
         if (projectItem.isDirectory) {
             destDirPath = projectItem.fullPath;
@@ -698,7 +704,8 @@ define(function Downloader(require, exports, module) {
             brackets.DIALOG_ID_SAVE_CLOSE,
             Mustache.render(HeaderTemplate, {
                 title: Strings.CDN_HEADER_TITLE,
-                placeholder: Strings.CDN_HEADER_PLACEHOLDER
+                placeholder: Strings.CDN_HEADER_PLACEHOLDER,
+                cancelIconPath: cancelIconPath
             }),
             "<h4>" + Strings.CDN_LOADING + "</h4><div class=\"blf-loader\"></div>",
             [{

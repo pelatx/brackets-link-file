@@ -1,7 +1,5 @@
 .blf-filterinput {
-    position:absolute;
-    right:26px;
-    top:20px;
+    flex-grow: 2;
 }
 
 #blf-libs {
@@ -133,4 +131,21 @@
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.blf-filterbox {
+    position: absolute;
+    right: 20px;
+    top: 12px;
+    width: 180px;
+    border: none;
+    display: flex;
+    flex-direction: row;
+}
+
+
+
+.blf-clear-filterinput {
+    margin: 0px;
+    height: 28px;
 }
