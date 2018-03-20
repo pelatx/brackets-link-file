@@ -71,8 +71,8 @@ define(function DropArea(require, exports, module) {
      * Appends the drop area to Brackets sidebar.
      */
     function show() {
-        Resizer.makeResizable($dropArea, "vert", "top", 80);
         $("#sidebar").append($dropArea);
+        Resizer.makeResizable($dropArea, "vert", "top", 80);
         setDestinationDir(ProjectManager.getProjectRoot().fullPath);
         _initListeners();
     }
