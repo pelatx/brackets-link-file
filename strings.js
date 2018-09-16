@@ -4,6 +4,9 @@
  * The i18n plugin will dynamically load the strings for the right locale and populate
  * the exports variable. See nls/root/strings.js for the master file of English strings.
  */
+
+/* global define */
+
 define(function (require, exports, module) {
     "use strict";
 

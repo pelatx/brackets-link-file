@@ -198,8 +198,7 @@ define(function Linker(require, exports, module) {
 
 
         if (urls && editor && !editor.document.isUntitled()) {
-            var docPath = editor.getFile().fullPath,
-                docLang = editor.getLanguageForSelection().getId();
+            var docLang = editor.getLanguageForSelection().getId();
 
             for (var i = 0; i < urls.length; i++) {
                 fileExt = FileUtils.getFileExtension(urls[i]).toLowerCase();
