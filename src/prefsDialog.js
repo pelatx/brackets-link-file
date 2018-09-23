@@ -8,7 +8,8 @@ define(function PrefsDialog(require, exports, module) {
 
     var Dialogs             = brackets.getModule("widgets/Dialogs"),
         Menus               = brackets.getModule("command/Menus"),
-        PreferencesManager  = brackets.getModule("preferences/PreferencesManager");
+        PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
+        Mustache            = brackets.getModule("thirdparty/mustache/mustache");
 
     var DropArea            = require("src/dropArea"),
         Watcher             = require("src/watcher"),
@@ -30,8 +31,16 @@ define(function PrefsDialog(require, exports, module) {
     function init() {
         var Dialog = Dialogs.showModalDialog(
             brackets.DIALOG_ID_SAVE_CLOSE,
-            "Link File Settings",
-            PrefsTemplate,
+            Strings.PREFS_DIALOG_TITLE,
+            Mustache.render(
+                PrefsTemplate,
+                {
+                    droparea: Strings.PREF_DROP_AREA,
+                    downloader: Strings.PREF_DOWNLOADER,
+                    filebrowser: Strings.PREF_FILE_BROWSER,
+                    watcher: Strings.PREF_WATCHER
+                }
+            ),
             [{
                 className: Dialogs.DIALOG_BTN_CLASS_PRIMARY,
                 id: "blf.cancel",

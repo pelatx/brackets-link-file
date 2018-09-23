@@ -1,13 +1,14 @@
+/* global define */
+
 define({
     INSERT_TAGS:    "Link File (Insérer Tags)",
     DROP_AREA_DEST: "Link File (Répertoire Destination Drag&Drop)",
     DOWNLOADER:     "Link File (Télécharger bibliothèque)",
-    DROP_AREA:      "Link File Zone de Drag&Drop",
-    WATCHER:        "Link File Observateur",
+    PREFERENCES:    "Link File Paramètres",
 
     CDN_HEADER_TITLE: "Téléchargement de la bibliothèque",
-    CDN HEADER PLACEHOLDER: "Filtre ...",
-    CDN LOADING: "Chargement de la liste des bibliothèques ...",
+    CDN_HEADER_PLACEHOLDER: "Filtre ...",
+    CDN_LOADING: "Chargement de la liste des bibliothèques ...",
     CDN_LAST_VERSION: "Dernière version: ",
     CDN_ERROR_FETCHING_LIST: "Impossible d'extraire la liste de bibliothèque. Réessayez plus tard.",
     CDN_FILES: "Fichiers",
@@ -23,5 +24,11 @@ define({
     HIDDEN_TOGGLE_LABEL: "Montrer Caché",
 
     PFSD_TITLE: "Ajout de fichiers au Projet",
-    PFSD_FILTER_PLACEHOLDER: "Filtre ..."
+    PFSD_FILTER_PLACEHOLDER: "Filtre ...",
+
+    PREFS_DIALOG_TITLE: "Link File Préférences",
+    PREF_DROP_AREA: "Afficher la Zone de Drag&Drop",
+    PREF_DOWNLOADER: "Afficher l'Entrée du Téléchargeur CDN dans le Menu Contextuel du Projet",
+    PREF_FILE_BROWSER: "Activer le Dialogue de Sélection de Fichier dans les Répertoires de Projet",
+    PREF_WATCHER: "Activer l'Observateur des Fichiers de Projet (Bidirectionnalité)"
 });

@@ -10,7 +10,7 @@ Supports direct download of libraries from CDN. You can download and link the li
 
 #### Important!
 
-GNU/Linux users can't drag & drop files from OS file browser in Brackets 1.11 and 1.12, because It has completely lost this functionality on this operating system. 
+GNU/Linux users can't drag & drop files from OS file browser since Brackets 1.11, because It has completely lost this functionality on this operating system. 
 
 ## Install from Brackets
 
@@ -49,7 +49,7 @@ To change the destination directory, right click on the desired in the project t
 
 Open a file browser on your operating system and drop files into the drop area.
 
-You can toggle show/hide the drop area in View -> Link File Drop Area.
+You can toggle show/hide the drop area in the Preferences dialog (View -> Link File Settings).
 
 Watch it in [this video][video-dragndrop]
 
@@ -57,19 +57,19 @@ Watch it in [this video][video-dragndrop]
 
 This is a feature disabled by default. Because in projects with an extensive number of directories and files, it can slow down Brackets a bit.
 
-To enable/disable it, go to File Menu -> Link File Watcher.
+To enable/disable it, go to the Preferences dialog (View -> Link File Settings).
 
 Once enabled, the extension will recognize when a project file is deleted or renamed. If deleted, It will automatically delete the corresponding tags in the current document. If renamed, It will automatically update tags according the new name.
 
 Watch it in [this video][video-watcher]
 
-#### Downloading or getting tags from JSDelivr CDN libraries.
+#### Downloading libraries or getting tags from JSDelivr CDN.
 
 Right click on the destination directory in the Project tree -> Link File (Download Library). You will be prompted with a dialog where you can see the library list first page (500 items).
 
 In the dialog header, there is a filter box to search on the currently viewed libraries. And in the dialog footer, there is a navigation bar where you can go page up and down or write page number directly.
 
-You can click on library name to get description, author, homepage and Github page.* 
+You can click on library name to get description, author, homepage and Github page*. 
 
 Every library item has four buttons on right side. The one starting from right, lets you choose the library version to use.
 
@@ -172,6 +172,11 @@ v2.3.2 - CDN downloader/tagger improvements:
 - Added editable page box on navigation bar.
 - Added Google search link when description is not available.
 - Added cancel button on filter box.
+
+v2.4.0 - Re-organizing menu entries to be less intrusive:
+- New preferences dialog.
+- View of some menu entries according to context.
+- Eliminated unnecessary entries.
 
 ## Credits
 Icons from [Ionicons][ionicons].

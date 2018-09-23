@@ -1,9 +1,10 @@
+/* global define */
+
 define({
     INSERT_TAGS:    "Datei verlinken (Tags einfügen)",
     DROP_AREA_DEST: "Datei verlinken (Als Drop Bereich verwenden)",
     DOWNLOADER:     "Datei verlinken (Library herunterladen)",
-    DROP_AREA:      "Datei verlinken Drop Bereich",
-    WATCHER:        "Dateilinks überwachen",
+    PREFERENCES:    "Link File Settings",
 
     CDN_HEADER_TITLE: "Library herunterladen",
     CDN_HEADER_PLACEHOLDER: "Filtern ...",

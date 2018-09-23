@@ -1,9 +1,10 @@
+/* global define */
+
 define({
     INSERT_TAGS:    "Link File (Insertar Tags)",
     DROP_AREA_DEST: "Link File (Directorio Destino Drag&Drop)",
     DOWNLOADER:     "Link File (Descargar Libreria)",
-    DROP_AREA:      "Link File Área de Drag&Drop",
-    WATCHER:        "Link File Vigilante",
+    PREFERENCES:    "Link File Preferencias",
 
     CDN_HEADER_TITLE: "Descargar Librería",
     CDN_HEADER_PLACEHOLDER: "Filtrar ...",
@@ -23,5 +24,11 @@ define({
     HIDDEN_TOGGLE_LABEL: "Mostrar Ocultos",
 
     PFSD_TITLE: "Añade Archivos al Proyecto",
-    PFSD_FILTER_PLACEHOLDER: "Filtrar ..."
+    PFSD_FILTER_PLACEHOLDER: "Filtrar ...",
+
+    PREFS_DIALOG_TITLE: "Link File Preferencias",
+    PREF_DROP_AREA: "Mostrar Area de Drag&Drop",
+    PREF_DOWNLOADER: "Mostrar Entrada del Descargador CDN en Menu Contextual del Proyecto",
+    PREF_FILE_BROWSER: "Habilitar Dialogo de Selección de Archivos sobre Directorios del Proyecto",
+    PREF_WATCHER: "Habilitar Observador de Archivos del Projecto (Bidireccionalidad)"
 });

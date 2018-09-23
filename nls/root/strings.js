@@ -4,8 +4,6 @@ define({
     INSERT_TAGS:    "Link File (Insert tags)",
     DROP_AREA_DEST: "Link File (Set As DropArea Destination)",
     DOWNLOADER:     "Link File (Download Library)",
-    DROP_AREA:      "Link File Drop Area",
-    WATCHER:        "Link File Watcher",
     PREFERENCES:    "Link File Settings",
 
     CDN_HEADER_TITLE: "Library Download",
@@ -26,5 +24,11 @@ define({
     HIDDEN_TOGGLE_LABEL: "Show hidden",
 
     PFSD_TITLE: "Add Files to Project",
-    PFSD_FILTER_PLACEHOLDER: "Filter ..."
+    PFSD_FILTER_PLACEHOLDER: "Filter ...",
+
+    PREFS_DIALOG_TITLE: "Link File Settings",
+    PREF_DROP_AREA: "Show Drop Area",
+    PREF_DOWNLOADER: "Show CDN Downloader Entry in Project Context Menu",
+    PREF_FILE_BROWSER: "Enable File Selection Dialog on Project Folders",
+    PREF_WATCHER: "Enable Project Files Watcher (Bidirectionality)"
 });
