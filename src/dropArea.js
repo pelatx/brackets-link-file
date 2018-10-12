@@ -19,7 +19,7 @@ define(function DropArea(require, exports, module) {
     var dropAreaTemplate  = require("text!templates/dropArea.html");
 
     var $dropArea = $(Mustache.render(dropAreaTemplate, {
-        title: Strings.DROP_AREA
+        title: Strings.DROP_AREA_LABEL
     }));
 
     var _dirPath;
