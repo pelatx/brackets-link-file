@@ -1,10 +1,11 @@
 /* global define */
 
 define({
-    INSERT_TAGS:    "Link File (Insérer Tags)",
-    DROP_AREA_DEST: "Link File (Répertoire Destination Drag&Drop)",
-    DOWNLOADER:     "Link File (Télécharger bibliothèque)",
-    PREFERENCES:    "Link File Paramètres",
+    INSERT_TAGS:        "Link File (Insérer Tags)",
+    DROP_AREA_DEST:     "Link File (Répertoire Destination Drag&Drop)",
+    DOWNLOADER:         "Link File (Télécharger bibliothèque)",
+    PREFERENCES:        "Link File Paramètres",
+    DROP_AREA_LABEL:    "Link File (Déposer des Fichiers)",
 
     CDN_HEADER_TITLE: "Téléchargement de la bibliothèque",
     CDN_HEADER_PLACEHOLDER: "Filtre ...",

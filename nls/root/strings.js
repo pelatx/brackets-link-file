@@ -5,7 +5,7 @@ define({
     DROP_AREA_DEST:     "Link File (Set As DropArea Destination)",
     DOWNLOADER:         "Link File (Download Library)",
     PREFERENCES:        "Link File Settings",
-    DROP_AREA_LABEL:    "Link File (Drop Area)",
+    DROP_AREA_LABEL:    "Link File (Drop Files)",
 
     CDN_HEADER_TITLE: "Library Download",
     CDN_HEADER_PLACEHOLDER: "Filter ...",
