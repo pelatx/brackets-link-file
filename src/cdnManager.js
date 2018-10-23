@@ -1,5 +1,5 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global define, $, brackets */
+/*global define, $*/
 
 /**
 * Link File CDN Manager
@@ -44,7 +44,7 @@ define(function CdnManager(require, exports, module) {
      */
     function fetchPage(pageNumber) {
         var deferred = new $.Deferred(),
-            startApiPage, tmpLibs = [];
+            startApiPage, fetchedCount = 0;
 
         // A page in this manager contains 5 api pages
         pageNumber = pageNumber * 1;
@@ -53,27 +53,22 @@ define(function CdnManager(require, exports, module) {
         if (pageNumber < 1 || pageNumber > 28) {
             deferred.reject();
         } else {
-            _fetchApiPage(startApiPage).then(function (libs) {
-                tmpLibs = tmpLibs.concat(libs);
-                return _fetchApiPage(startApiPage + 1);
-            }).then(function (libs) {
-                tmpLibs = tmpLibs.concat(libs);
-                return _fetchApiPage(startApiPage + 2);
-            }).then(function (libs) {
-                tmpLibs = tmpLibs.concat(libs);
-                return _fetchApiPage(startApiPage + 3);
-            }).then(function (libs) {
-                tmpLibs = tmpLibs.concat(libs);
-                return _fetchApiPage(startApiPage + 4);
-            }).then(function (libs) {
-                tmpLibs = tmpLibs.concat(libs);
-                _currentLibs = tmpLibs;
-                _currentPage = pageNumber;
-                tmpLibs = [];
-                deferred.resolve();
-            }).fail(function () {
-                deferred.reject();
-            });
+            _currentLibs = [];
+            _currentPage = pageNumber;
+
+            for (var i = 0; i < 5; i++) {
+                _fetchApiPage(startApiPage + i).done(function (libs) {
+                    _currentLibs = _currentLibs.concat(libs);
+                    fetchedCount++;
+                    if (fetchedCount === 4 && _currentLibs.length !== 0) {
+                        deferred.resolve();
+                    } else if (fetchedCount === 4 && _currentLibs.length === 0) {
+                        deferred.reject();
+                    }
+                }).fail(function () {
+                    fetchedCount++;
+                });
+            }
         }
         return deferred.promise();
     }
