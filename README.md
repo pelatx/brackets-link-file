@@ -178,6 +178,9 @@ v2.4.0 - Re-organizing menu entries to be less intrusive:
 - View of some menu entries according to context.
 - Eliminated unnecessary entries.
 
+v2.4.1 - CDN libraries first page pre-loading
+- Accelerates the first execution of the CDN libraries dialog.
+
 ## Credits
 Icons from [Ionicons][ionicons].
 
