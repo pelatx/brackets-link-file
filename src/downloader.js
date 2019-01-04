@@ -32,24 +32,10 @@ define(function Downloader(require, exports, module) {
     // JQuery element containing the "working" library list item (li).
     var _$workingLib;
 
-    /**
-     * Returns a page (local: 500 items) list of available libraries.
-     * @private
-     * @returns {object} A promise with an array of lib objects on success.
-     */
-    function _getLibraryFirstPage() {
-        var deferred = new $.Deferred();
-
-        if (CdnManager.getCurrentLibs().length === 0) {
-            CdnManager.fetchPage(1).done(function () {
-                deferred.resolve(CdnManager.getCurrentLibs());
-            }).fail(function () {
-                deferred.reject();
-            });
-        } else {
-            deferred.resolve(CdnManager.getCurrentLibs());
-        }
-        return deferred.promise();
+    function preloadLibraries() {
+        CdnManager.fetchPage(1).done(function () {
+            console.log("Libraries first page pre-loaded successfully");
+        });
     }
 
     /**
@@ -188,7 +174,7 @@ define(function Downloader(require, exports, module) {
             );
             deferred.resolve(rendered);
         }).fail(function () {
-            rendered = 'No Description (<a href="https://www.google.com/search?q=' + libName + '">Google search</a>)';
+            rendered = 'No Description (<a href="https://www.google.com/search?q=' + libName + ' library">Google search</a>)';
             deferred.resolve(rendered);
         });
         return deferred.promise();
@@ -729,8 +715,9 @@ define(function Downloader(require, exports, module) {
         });
 
         // Fetch the library list.
-        _getLibraryFirstPage().done(function (libs) {
-            $(".modal-body").html(_renderLibraries(libs));
+        //_getLibraryFirstPage().done(function (libs) {
+        if (CdnManager.getCurrentLibs().length > 0) {
+            $(".modal-body").html(_renderLibraries(CdnManager.getCurrentLibs()));
 
             // Enable page navigation
             _enableNavBar(destDirPath);
@@ -739,12 +726,25 @@ define(function Downloader(require, exports, module) {
             // Ensures that all items that must be hidden, are.
             _setStartingVisibility();
 
-        }).fail(function () {
-            $(".modal-body").html("<h4>" + Strings.CDN_ERROR_FETCHING_LIST + "</h4>");
-        });
+        } else {
+            CdnManager.fetchPage(1).done(function () {
+                $(".modal-body").html(_renderLibraries(CdnManager.getCurrentLibs()));
+
+                // Enable page navigation
+                _enableNavBar(destDirPath);
+                // Enable library handlers.
+                _enableHandlers(destDirPath);
+                // Ensures that all items that must be hidden, are.
+                _setStartingVisibility();
+
+            }).fail(function () {
+                $(".modal-body").html("<h4>" + Strings.CDN_ERROR_FETCHING_LIST + "</h4>");
+            });
+        }
     }
 
     module.exports = {
-        init: init
+        init: init,
+        preloadLibraries: preloadLibraries
     }
 });

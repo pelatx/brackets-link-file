@@ -46,6 +46,9 @@ define(function Main(require, exports, module) {
     // Styles
     ExtensionUtils.loadStyleSheet(module, "styles/styles.css");
 
+    // Pre-loading fisrt page of libraries from JsDelivr.
+    Downloader.preloadLibraries();
+
     /* Functions */
 
     /**
