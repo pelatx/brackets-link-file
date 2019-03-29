@@ -181,6 +181,8 @@ v2.4.0 - Re-organizing menu entries to be less intrusive:
 v2.4.1 - CDN libraries first page pre-loading
 - Accelerates the first execution of the CDN libraries dialog.
 
+v2.4.2 - German translation fixes
+
 ## Credits
 Icons from [Ionicons][ionicons].
 
