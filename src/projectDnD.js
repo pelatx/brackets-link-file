@@ -2,7 +2,7 @@
 /*global define, $, brackets */
 
 /**
-* Brackets Link File Project Drag&Drop.
+* Brackets Link File Project Tree Drag&Drop on editor to link supported files.
 */
 define(function ProjectDnD(require, exports, module) {
     'use strict';
