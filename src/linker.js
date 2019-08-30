@@ -220,12 +220,12 @@ define(function Linker(require, exports, module) {
      * @param {Array} tags Tag strings.
      */
     function insertTags(tags) {
-        var editor = EditorManager. getActiveEditor();
+        var editor = EditorManager.getActiveEditor();
 
         if (tags && editor && !editor.document.isUntitled()) {
             for (var i = 0; i < tags.length; i++) {
                 //if (i < tags.length - 1) {
-                    tags[i] += "\n";
+                tags[i] += "\n";
                 //}
                 var selection = editor.getSelection();
                 editor.document.replaceRange(

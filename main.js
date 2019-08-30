@@ -18,6 +18,7 @@ define(function Main(require, exports, module) {
     var File                = require("src/pFileUtils"),
         Linker              = require("src/linker"),
         Dialog              = require("src/pFSD/pFileSelectionDialog"),
+        ProjectDnD          = require("src/projectDnD"),
         DropArea            = require("src/dropArea"),
         Watcher             = require("src/watcher"),
         Downloader          = require("src/downloader"),
@@ -91,6 +92,8 @@ define(function Main(require, exports, module) {
     /* Initializes extension */
     AppInit.appReady(function () {
         var contextMenu, viewMenu;
+
+        ProjectDnD.init();
 
         CommandManager.register(MENU_ITEM_LINK, CMD_LINK, doLinking);
         CommandManager.register(MENU_ITEM_DROP_DEST, CMD_SET_DROP_DEST, function () {
