@@ -7,18 +7,18 @@
 define(function ProjectDnD(require, exports, module) {
     'use strict';
 
-    var Linker          = require("./linker");
+    var Linker = require("./linker");
 
     function init() {
-        $("#editor-holder").on("dragover", function(e) {
-            e.preventDefault();
+        $("#editor-holder").on("dragover", function(event) {
+            event.preventDefault();
         });
 
-        $("#editor-holder").on("drop", function(e) {
-            e.stopPropagation();
-            e.preventDefault();
+        $("#editor-holder").on("drop", function(event) {
+            event.stopPropagation();
+            event.preventDefault();
 
-            var data = JSON.parse(e.originalEvent.dataTransfer.getData("text"));
+            var data = JSON.parse(event.originalEvent.dataTransfer.getData("text"));
             var tag = Linker.getTagsFromFiles([data.path]);
             Linker.insertTags(tag);
         });

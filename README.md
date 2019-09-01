@@ -29,7 +29,9 @@ GNU/Linux users can't drag & drop files from OS file browser since Brackets 1.11
 (Note that the extension only works if the focused document was saved previously).
 #### Files already in the project tree
 
-Just right click on a file in the Project tree -> Link File (Insert Tags), and the link with the correct relative path will be inserted into the document.  
+Just drag the file from the project tree and drop it on the editor. The link with the correct relative path will be inserted into the document on cursor postion.
+
+Or right click on a file in the Project tree -> Link File (Insert Tags) for the same result.
 
 Watch it in [this video][video-only-linking].  
 
@@ -182,6 +184,8 @@ v2.4.1 - CDN libraries first page pre-loading
 - Accelerates the first execution of the CDN libraries dialog.
 
 v2.4.2 - German translation fixes
+
+v2.5.0 - Added ability to drag files directly from the project tree and drop them onto the editor to get the file linked.
 
 ## Credits
 Icons from [Ionicons][ionicons].
