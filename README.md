@@ -187,6 +187,8 @@ v2.4.2 - German translation fixes
 
 v2.5.0 - Added ability to drag files directly from the project tree and drop them onto the editor to get the file linked.
 
+v2.5.1 - Update to publish the extension in Phoenix Online Editor (Brackets based)
+
 ## Credits
 Icons from [Ionicons][ionicons].
 
